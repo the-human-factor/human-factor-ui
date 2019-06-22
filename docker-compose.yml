@@ -1,0 +1,31 @@
+version: '3.4'
+
+volumes:
+  devdb:
+
+services:
+  db:
+    image: "postgres:11.3"
+    command: postgres -c log_statement=all
+    environment:
+      POSTGRES_USER: human_factors_user
+      POSTGRES_DB: human_factors
+    ports:
+      - 5432
+    volumes:
+      - devdb:/var/lib/postgresql/data
+  api:
+    build:
+      context: .
+      target: dev-env
+    command: ./bin/wait-for-postgres.sh db pipenv run flask run --host=0.0.0.0 --port=9000
+    tty: true
+    stdin_open: true
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "9000:9000"
+    volumes:
+        - ./:/app
+    depends_on:
+      - db
