@@ -1,0 +1,57 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python:3.5-stretch
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+          DB_URL: postgresql://root@localhost/circle_test?sslmode=disable
+      - image: circleci/postgres:11.4-alpine-ram
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
+          POSTGRES_PASSWORD: ""
+
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.5/site-packages
+
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+        key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+
+      - run:
+          name: install dependencies
+          command: |
+            echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
+            echo 'export IMAGE_NAME=human-api' >> $BASH_ENV
+            sudo pip install pipenv
+            pipenv install --dev
+
+      - save_cache:
+          name: save cache
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.5/site-packages"
+
+      - run:
+          name: run tests
+          command: |
+            mkdir test-reports
+            pipenv run pytest --junitxml=test-reports/junit.xml
+
+      - store_test_results:
+         path: test-reports
+      - store_artifacts:
+         path: test-reports
+         destination: test-reports
+
+      - setup_remote_docker:
+         docker_layer_caching: true
+
+      - run:
+          name: Build and push Docker image
+          command:
