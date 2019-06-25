@@ -4,7 +4,7 @@ import api.models as m
 
 class Video(Resource):
   def get(self, video_id):
-    return m.Video
+    return m.Video.query
 
 class VideoList(Resource):
   def get(self):
