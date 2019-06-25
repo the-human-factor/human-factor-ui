@@ -14,6 +14,7 @@ psycopg2 = "*"
 flask = "*"
 flask-migrate = "*"
 pytest-flask-sqlalchemy = "*"
+flask-restful = "*"
 
 [requires]
 python_version = "3.5"
