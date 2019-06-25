@@ -17,7 +17,7 @@ COPY ./Pipfile* /app/
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
-ENV FLASK_APP /app/src/app.py
+ENV FLASK_APP /app/api/app.py
 
 RUN pip install pipenv && pipenv install --dev
 
@@ -42,6 +42,7 @@ COPY ./Pipfile* /app/
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
+ENV FLASK_APP /app/api/app.py
 
 RUN pip install pipenv && pipenv install
 
