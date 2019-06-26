@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "@reach/router";
 
 const Home = () => (
-  <div>
+  <div className="home">
   <Link to="/createchallenge">
       <button>Create a new challenge!</button>
     </Link>

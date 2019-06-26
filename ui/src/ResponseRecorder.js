@@ -34,8 +34,7 @@ class ResponseRecorder extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
+      <div className="ResponseRecorder">
           <title> Record a challenge </title>
           <div>Record A Challenge {this.challengeString()}</div>
           <button id="btn-start-recording" onClick={this.startRecording}>
@@ -49,7 +48,6 @@ class ResponseRecorder extends React.Component {
             <source src = "https://fat.gfycat.com/PowerlessDiligentAstarte.webm" type="video/webm" />
           </video>
           <VideoRecorder ref={this.videoRecorder}/>
-        </header>
       </div>
     );
   }

@@ -30,18 +30,15 @@ class ChallengeRecorder extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <title> Record a challenge </title>
-          <div>Record A Challenge {this.challengeString()}</div>
-          <button id="btn-start-recording" onClick={this.startRecording}>
-            Start Recording
-          </button>
-          <button id="btn-stop-recording" onClick={this.stopRecording}>
-            Stop Recording
-          </button>
-          <VideoRecorder ref={this.videoRecorder}/>
-        </header>
+      <div className="ChallengeRecorder">
+        <div>Record A Challenge {this.challengeString()}</div>
+        <button id="btn-start-recording" onClick={this.startRecording}>
+          Start Recording
+        </button>
+        <button id="btn-stop-recording" onClick={this.stopRecording}>
+          Stop Recording
+        </button>
+        <VideoRecorder ref={this.videoRecorder}/>
       </div>
     );
   }

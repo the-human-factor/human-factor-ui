@@ -60,7 +60,6 @@ class VideoRecorder extends React.Component {
   }
 
   stopRecording = () => {
-    //this.recorder.stopRecording(() => {console.log('huh', arguments)});
     this.recorder.stopRecording(this.stopRecordingCallback.bind(this));
   };
 
@@ -69,11 +68,11 @@ class VideoRecorder extends React.Component {
   }
 
   render() {
-      return (
-	      <div>
-	    <video ref={this.videoRecording} autoPlay playsInline> </video>
-	      </div>
-	      );
+    return (
+	  <div>
+        <video ref={this.videoRecording} autoPlay playsInline />
+	  </div>
+	);
   }
 }
 
