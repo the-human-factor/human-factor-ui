@@ -57,11 +57,23 @@ class VideoRecorder extends React.Component {
   };
 
   render() {
-      return (
-	      <div>
-	    <video ref={this.videoRecording} controls autoPlay playsInline> </video>
-	      </div>
-	      );
+    return (
+      <div className="App">
+        <header className="App-header">
+          <title> Record a challenge </title>
+          <div>Hello Challenge {this.props.challengeId}</div>
+          <button id="btn-start-recording" onClick={this.startRecording}>
+            Start Recording
+          </button>
+          <button id="btn-stop-recording" onClick={this.stopRecording}>
+            Stop Recording
+          </button>
+          <video ref={this.videoRecording} controls autoPlay playsInline>
+            {" "}
+          </video>
+        </header>
+      </div>
+    );
   }
 }
 

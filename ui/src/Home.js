@@ -4,8 +4,11 @@ import { Link } from "@reach/router";
 const Home = () => (
   <div>
     Hey Brian!
+  <Link to="/createchallenge">
+      <button>Create a new challenge!</button>
+    </Link>
     <Link to="/challenge/2341234">
-      <button>Record a video!</button>
+      <button>Record a response!</button>
     </Link>
   </div>
 );
