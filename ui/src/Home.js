@@ -3,7 +3,6 @@ import { Link } from "@reach/router";
 
 const Home = () => (
   <div>
-    Hey Brian!
   <Link to="/createchallenge">
       <button>Create a new challenge!</button>
     </Link>

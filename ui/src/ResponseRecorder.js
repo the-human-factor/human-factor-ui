@@ -1,80 +1,59 @@
 import React from "react";
 import RecordRTC from "recordrtc";
+import VideoRecorder from "./VideoRecorder";
 
-class VideoRecorder extends React.Component {
+class ResponseRecorder extends React.Component {
   constructor(props) {
     super(props);
-    this.videoRecording = React.createRef();
-    this.recording = false;
-    this.recorder = null;
+    
+    this.videoChallenge = React.createRef();
+    this.videoRecorder = React.createRef();
   }
 
-  async captureCamera() {
-    try {
-      return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    } catch (error) {
-      alert("Unable to capture your camera. Please check console logs.");
-      console.error(error);
-    }
-  }
-
-  startRecording = async () => {
+  startRecording = () => {
     let self = this;
-    self.recording = true;
-    let camera = await this.captureCamera();
-
-    self.videoRecording.current.muted = true;
-    self.videoRecording.current.volume = 0;
-    self.videoRecording.current.srcObject = camera;
-    self.recorder = RecordRTC(camera, {
-      type: "video"
-    });
-    self.recorder.startRecording();
-    self.recorder.camera = camera;
-    window.recorder = self.recorder;
+    console.log(self.videoChallenge)
+    self.videoChallenge.current.play();
+    self.videoRecorder.current.startRecording();
   };
-
-  stopRecordingCallback() {
-    let self = this;
-    self.recording = false;
-    self.videoRecording.current.src = self.videoRecording.current.srcObject = null;
-    self.videoRecording.current.muted = false;
-    self.videoRecording.current.volume = 1;
-    console.log(self.recorder);
-    let blob = self.recorder.getBlob();
-    console.log(blob);
-    window.blobber = blob;
-    self.videoRecording.current.src = URL.createObjectURL(blob);
-
-    this.recorder.camera.stop();
-    this.recorder.destroy();
-    this.recorder = null;
-  }
 
   stopRecording = () => {
-    //this.recorder.stopRecording(() => {console.log('huh', arguments)});
-    this.recorder.stopRecording(this.stopRecordingCallback.bind(this));
+    let self = this;
+    self.videoChallenge.current.currentTime = 0;
+    self.videoChallenge.current.play();
+    self.videoRecorder.current.stopRecording();
   };
+  
+
+  challengeString() {
+      if (this.props.challengeId) {
+    return this.props.challengeId;
+      } 
+      return "no challenge id";
+  }
 
   render() {
     return (
       <div className="App">
         <header className="App-header">
           <title> Record a challenge </title>
-          <div>Hello Challenge {this.props.challengeId}</div>
+          <div>Record A Challenge {this.challengeString()}</div>
           <button id="btn-start-recording" onClick={this.startRecording}>
             Start Recording
           </button>
           <button id="btn-stop-recording" onClick={this.stopRecording}>
             Stop Recording
           </button>
-          <video ref={this.videoRecording} controls autoPlay playsInline>
-            {" "}
+          <video width="250" ref={this.videoChallenge}>
+            
+            <source src = "https://fat.gfycat.com/PowerlessDiligentAstarte.webm" type="video/webm" />
           </video>
+          <VideoRecorder ref={this.videoRecorder}/>
         </header>
       </div>
     );
   }
 }
+// <source src="http://dl5.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm" />
 
-export default VideoRecorder;
+export default ResponseRecorder;

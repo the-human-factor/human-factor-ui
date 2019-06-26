@@ -7,6 +7,8 @@ class VideoRecorder extends React.Component {
     this.videoRecording = React.createRef();
     this.recording = false;
     this.recorder = null;
+    this.camera = null;
+    this.blob = null;
   }
 
   async captureCamera() {
@@ -18,33 +20,39 @@ class VideoRecorder extends React.Component {
     }
   }
 
-  startRecording = async () => {
+  setup = async () => {
     let self = this;
-    self.recording = true;
-    let camera = await this.captureCamera();
-
+    self.camera = await this.captureCamera();
     self.videoRecording.current.muted = true;
     self.videoRecording.current.volume = 0;
-    self.videoRecording.current.srcObject = camera;
-    self.recorder = RecordRTC(camera, {
+    self.videoRecording.current.srcObject = self.camera;
+  }
+
+  startRecording = async () => {
+    let self = this;
+    if (self.camera == null) {
+      await self.setup()
+    }
+    self.recording = true;
+    
+    self.recorder = RecordRTC(self.camera, {
       type: "video"
     });
     self.recorder.startRecording();
-    self.recorder.camera = camera;
+    self.recorder.camera = self.camera;
     window.recorder = self.recorder;
-  };
+  }
 
   stopRecordingCallback() {
     let self = this;
     self.recording = false;
+
     self.videoRecording.current.src = self.videoRecording.current.srcObject = null;
     self.videoRecording.current.muted = false;
     self.videoRecording.current.volume = 1;
-    console.log(self.recorder);
-    let blob = self.recorder.getBlob();
-    console.log(blob);
-    window.blobber = blob;
-    self.videoRecording.current.src = URL.createObjectURL(blob);
+    self.blob = self.recorder.getBlob();
+    console.log(self.blob);
+    self.videoRecording.current.src = URL.createObjectURL(self.blob);
 
     this.recorder.camera.stop();
     this.recorder.destroy();
@@ -56,10 +64,14 @@ class VideoRecorder extends React.Component {
     this.recorder.stopRecording(this.stopRecordingCallback.bind(this));
   };
 
+  componentDidMount() {
+    this.setup()
+  }
+
   render() {
       return (
 	      <div>
-	    <video ref={this.videoRecording} controls autoPlay playsInline> </video>
+	    <video ref={this.videoRecording} autoPlay playsInline> </video>
 	      </div>
 	      );
   }
