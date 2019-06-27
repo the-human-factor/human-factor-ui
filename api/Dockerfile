@@ -52,4 +52,4 @@ RUN pip install pipenv && pipenv install
 
 COPY . /app
 
-CMD ["pipenv", "run", "python", "src/app.py"]
+CMD ["pipenv", "run", "python", "api/app.py"]

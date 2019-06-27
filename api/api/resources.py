@@ -32,7 +32,7 @@ class VideoList(Resource):
     video.save()
 
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket(os.environ.get('VIDEO_BUCKET', 'the-human-factor-videos-staging'))
+    bucket = storage_client.get_bucket(os.environ.get('VIDEO_BUCKET', 'the-human-factor-videos'))
     blob = bucket.blob(str(video.id))
 
     blob.upload_from_file(f.stream, predefined_acl="publicRead")

@@ -14,3 +14,7 @@ test:
 .PHONY: psql
 psql:
 	docker-compose exec db psql -U human_factors_user human_factors
+
+.PHONY: migrate
+migrate:
+	docker-compose exec api pipenv run flask db upgrade
