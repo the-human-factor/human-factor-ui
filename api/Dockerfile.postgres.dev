@@ -1,0 +1,5 @@
+FROM postgres:11.4
+
+WORKDIR /db
+
+COPY ./bin/init-db-extensions.sh /docker-entrypoint-initdb.d/

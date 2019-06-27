@@ -16,6 +16,11 @@ flask = "*"
 flask-migrate = "*"
 pytest-flask-sqlalchemy = "*"
 flask-restful = "*"
+marshmallow-sqlalchemy = "*"
+marshmallow = "*"
+flask-marshmallow = "*"
+factory-boy = "*"
+google-cloud-storage = "*"
 
 [requires]
 python_version = "3.5"
