@@ -1,16 +1,16 @@
 """Adds initial models
 
-Revision ID: ab49650819ee
+Revision ID: 6e159345b189
 Revises: 
-Create Date: 2019-06-25 15:05:04.769794
+Create Date: 2019-06-27 16:26:38.826635
 
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'ab49650819ee'
+revision = '6e159345b189'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,14 +28,12 @@ def upgrade():
     sa.UniqueConstraint('email')
     )
     op.create_table('video',
-    sa.Column('uid', sa.String(length=32), nullable=False),
+    sa.Column('id', postgresql.UUID(as_uuid=True), server_default=sa.text('uuid_generate_v4()'), nullable=False),
     sa.Column('name', sa.Unicode(length=255), nullable=True),
-    sa.Column('ready_to_stream', sa.Boolean(), nullable=True),
-    sa.Column('thumbnail_url', sa.String(length=512), nullable=True),
-    sa.Column('preview_url', sa.String(length=512), nullable=True),
+    sa.Column('url', sa.String(length=512), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.PrimaryKeyConstraint('uid')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('challenge',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -43,22 +41,23 @@ def upgrade():
     sa.Column('description', sa.UnicodeText(), nullable=False),
     sa.Column('grading_rubric', sa.UnicodeText(), nullable=False),
     sa.Column('notes', sa.UnicodeText(), nullable=False),
-    sa.Column('video_id', sa.String(length=32), nullable=True),
+    sa.Column('video_id', postgresql.UUID(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['video_id'], ['video.uid'], ),
+    sa.ForeignKeyConstraint(['video_id'], ['video.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('response',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=False),
-    sa.Column('challenge_id', sa.Integer(), nullable=True),
-    sa.Column('responder_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('challenge_id', sa.Integer(), nullable=False),
+    sa.Column('responder_id', sa.Integer(), nullable=False),
+    sa.Column('video_id', postgresql.UUID(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['challenge_id'], ['challenge.id'], ),
     sa.ForeignKeyConstraint(['responder_id'], ['responder.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['video_id'], ['video.id'], ),
+    sa.PrimaryKeyConstraint('id', 'challenge_id', 'responder_id')
     )
     # ### end Alembic commands ###
 

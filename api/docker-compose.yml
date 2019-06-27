@@ -5,7 +5,9 @@ volumes:
 
 services:
   db:
-    image: "postgres:11.4"
+    build:
+      context: ./
+      dockerfile: Dockerfile.postgres.dev
     command: postgres -c log_statement=all
     environment:
       POSTGRES_USER: human_factors_user

@@ -3,6 +3,8 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy # This needs to come before Marshmallow
+from flask_marshmallow import Marshmallow
 
 import api.models as models
 import api.resources as resources
@@ -18,6 +20,7 @@ api = Api(app)
 db = models.db
 db.init_app(app)
 migrate = Migrate(app, db)
+ma = Marshmallow(app)
 
 api.add_resource(resources.VideoList, '/api/videos')
 api.add_resource(resources.Video, '/api/videos/<string:video_id>')
@@ -38,11 +41,12 @@ def make_shell_context():
     """
     Adds these to the global scope of the shell for more convenient prototyping/debugging in the shell
     """
+    from api.utils import module_classes_as_dict
+
     return {'db': db,
-            'Video': models.Video,
-            'Challenge': models.Challenge,
-            'Response': models.Response,
-            'Responder': models.Responder}
+            **module_classes_as_dict('api.models'),
+            **module_classes_as_dict('api.schemas'),
+            **module_classes_as_dict('api.tests.factories')}
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=os.environ.get('PORT', 9000))
