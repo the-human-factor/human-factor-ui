@@ -6,6 +6,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button';
 
+const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />);
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -30,11 +32,11 @@ export default function NavPage(props) {
             <Typography variant="h3" color="inherit" className={classes.title}>
               The Human Factor
             </Typography>
-            <Button color="inherit" to="/challenge/create">Create A Challenge</Button>
-            <Button color="inherit" to="/challenge/list">List Challenges</Button>
+            <Button color="inherit" component={AdapterLink} to="/challenge/create">Create A Challenge</Button>
+            <Button color="inherit" component={AdapterLink} to="/challenge/list">List Challenges</Button>
           </div>
           <div>
-            <Button color="inherit" to="/login">Login</Button>
+            <Button color="inherit" component={AdapterLink} to="/login">Login</Button>
           </div>
         </Toolbar>
       </AppBar>
