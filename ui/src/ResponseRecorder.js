@@ -1,13 +1,14 @@
 import React from "react";
-import RecordRTC from "recordrtc";
 import VideoRecorder from "./components/VideoRecorder";
+import HumanApi from "./api";
 
 class ResponseRecorder extends React.Component {
   constructor(props) {
     super(props);
-    
     this.videoChallenge = React.createRef();
     this.videoRecorder = React.createRef();
+    this.api = new HumanApi();
+    this.challenge = this.api.getChallenge(this.props.challengeId);
   }
 
   startRecording = () => {
@@ -35,8 +36,12 @@ class ResponseRecorder extends React.Component {
   render() {
     return (
       <div className="ResponseRecorder">
-          <title> Record a challenge </title>
-          <div>Record A Challenge {this.challengeString()}</div>
+          <title> Record a Response </title>
+          <div>Record A Response {this.challengeString()}</div>
+      <h1> Instructions </h1>
+      <div> {this.challenge.instructions} 
+      </div>
+<br/>
           <button id="btn-start-recording" onClick={this.startRecording}>
             Start Recording
           </button>
@@ -45,7 +50,7 @@ class ResponseRecorder extends React.Component {
           </button>
           <video width="250" ref={this.videoChallenge}>
             
-            <source src = "https://fat.gfycat.com/PowerlessDiligentAstarte.webm" type="video/webm" />
+      <source src ={this.challenge.link} type="video/webm" />
           </video>
           <VideoRecorder ref={this.videoRecorder}/>
       </div>

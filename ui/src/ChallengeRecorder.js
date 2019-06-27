@@ -1,5 +1,4 @@
 import React from "react";
-import RecordRTC from "recordrtc";
 import VideoRecorder from "./components/VideoRecorder";
 
 class ChallengeRecorder extends React.Component {
@@ -28,13 +27,6 @@ class ChallengeRecorder extends React.Component {
   stopRecording() {
     this.videoRecorder.current.stopRecording();
   }
-	
-  challengeString() {
-    if (this.props.challengeId) {
-	    return this.props.challengeId;
-    } 
-    return "no challenge id";
-  }
 
   toggleString() {
     if (this.recording) {
@@ -46,7 +38,7 @@ class ChallengeRecorder extends React.Component {
   render() {
     return (
       <div className="ChallengeRecorder">
-        <h2>Record A Challenge {this.challengeString()}</h2>
+        <h2>Record A Challenge</h2>
         <VideoRecorder ref={this.videoRecorder}/>
         <button id="btn-start-recording" onClick={this.toggleRecording}>
           {this.toggleString()}
