@@ -1,20 +1,44 @@
 import uuid
 
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, Model
 
 import sqlalchemy
+from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 
+# Lifted from https://chase-seibert.github.io/blog/2016/03/31/flask-sqlalchemy-sessionless.html
+class MyBase(Model):
+  '''Adds convenience methods to every model instance. '''
+  def save(self):
+    db.session.add(self)
+    self._flush()
+    return self
 
-db = SQLAlchemy()
+  def update(self, **kwargs):
+    for attr, value in kwargs.items():
+      setattr(self, attr, value)
+      return self.save()
+
+  def delete(self):
+    db.session.delete(self)
+    self._flush()
+
+  def _flush(self):
+    try:
+      db.session.flush()
+    except DatabaseError:
+      db.session.rollback()
+      raise
+
+db = SQLAlchemy(model_class=MyBase)
 
 class Video(db.Model):
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("uuid_generate_v4()"), primary_key=True)
 
-  name = db.Column(db.Unicode(255))
+  name = db.Column(db.Unicode(255), nullable=False)
   url = db.Column(db.String(512))
 
   created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
