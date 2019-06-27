@@ -19,6 +19,7 @@ ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 ENV FLASK_APP /app/api/app.py
 ENV FLASK_SKIP_DOTENV 1
+ENV GOOGLE_APPLICATION_CREDENTIALS /app/secrets/google_credentials.json
 
 RUN pip install pipenv && pipenv install --dev
 
@@ -45,6 +46,7 @@ ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 ENV FLASK_APP /app/api/app.py
 ENV FLASK_SKIP_DOTENV 1
+ENV GOOGLE_APPLICATION_CREDENTIALS /app/secrets/google_credentials.json
 
 RUN pip install pipenv && pipenv install
 

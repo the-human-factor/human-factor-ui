@@ -5,6 +5,7 @@ import api.models as models
 class VideoSchema(ModelSchema):
   class Meta:
     model = models.Video
+    exclude = ["challenges", "response"]
 
 class ChallengeSchema(ModelSchema):
   class Meta:
