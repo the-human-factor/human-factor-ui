@@ -1,6 +1,6 @@
 import React from "react";
 import Home from "./Home";
-import Header from "./Header";
+import NavBar from './components/NavBar'
 import ChallengeRecorder from "./ChallengeRecorder";
 import ResponseRecorder from "./ResponseRecorder";
 import { Router } from "@reach/router";
@@ -9,11 +9,11 @@ import "./App.css";
 const App = () => (
   <React.Fragment>
     <Router>
-      <Header path="/">
+      <NavBar path="/">
         <Home path="/" />
         <ResponseRecorder path="/challenge/:challengeId" />
         <ChallengeRecorder path="/createchallenge/" />
-      </Header>
+      </NavBar>
     </Router>
   </React.Fragment>
 );

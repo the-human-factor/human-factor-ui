@@ -1,6 +1,6 @@
 import React from "react";
 import RecordRTC from "recordrtc";
-import VideoRecorder from "./VideoRecorder";
+import VideoRecorder from "./components/VideoRecorder";
 
 class ResponseRecorder extends React.Component {
   constructor(props) {
