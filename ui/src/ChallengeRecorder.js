@@ -7,38 +7,50 @@ class ChallengeRecorder extends React.Component {
     super(props);
     
     this.videoRecorder = React.createRef();
-    
+    this.recording = false;
   }
 
-  startRecording = () => {
+  toggleRecording = () => {
     let self = this;
-    self.videoRecorder.current.startRecording();
-  };
+    if (self.recording) {
+      self.stopRecording()
+    } else {
+      self.startRecording()
+    }
+    self.recording = !self.recording;
+    console.log(self.recording);
+  }
 
-  stopRecording = () => {
-    let self = this;
-    self.videoRecorder.current.stopRecording();
-  };
+  startRecording() {
+    this.videoRecorder.current.startRecording();
+  }
+
+  stopRecording() {
+    this.videoRecorder.current.stopRecording();
+  }
 	
-
   challengeString() {
-      if (this.props.challengeId) {
-	  return this.props.challengeId;
-      } 
-      return "no challenge id";
+    if (this.props.challengeId) {
+	    return this.props.challengeId;
+    } 
+    return "no challenge id";
+  }
+
+  toggleString() {
+    if (this.recording) {
+      return "STOP"
+    }
+    return "START"
   }
 
   render() {
     return (
       <div className="ChallengeRecorder">
-        <div>Record A Challenge {this.challengeString()}</div>
-        <button id="btn-start-recording" onClick={this.startRecording}>
-          Start Recording
-        </button>
-        <button id="btn-stop-recording" onClick={this.stopRecording}>
-          Stop Recording
-        </button>
+        <h2>Record A Challenge {this.challengeString()}</h2>
         <VideoRecorder ref={this.videoRecorder}/>
+        <button id="btn-start-recording" onClick={this.toggleRecording}>
+          {this.toggleString()}
+        </button>
       </div>
     );
   }

@@ -2,7 +2,7 @@ import React from "react";
 
 const Header = props => (
   <div>
-    <div>This is a header</div>
+    <h1>The Human Factor</h1>
     {props.children}
   </div>
 );

@@ -3,12 +3,9 @@ import { Link } from "@reach/router";
 
 const Home = () => (
   <div className="home">
-  <Link to="/createchallenge">
-      <button>Create a new challenge!</button>
-    </Link>
-    <Link to="/challenge/2341234">
-      <button>Record a response!</button>
-    </Link>
+  	<Link to="/createchallenge">Create a new challenge!</Link>
+  	<br />
+  	<Link to="/challenge/2341234">Record a response!</Link>
   </div>
 );
 
