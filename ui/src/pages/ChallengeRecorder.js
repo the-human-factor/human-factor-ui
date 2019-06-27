@@ -1,5 +1,5 @@
 import React from "react";
-import VideoRecorder from "./components/VideoRecorder";
+import VideoRecorder from "../components/VideoRecorder";
 
 class ChallengeRecorder extends React.Component {
   constructor(props) {

@@ -1,6 +1,6 @@
 import React from "react";
-import VideoRecorder from "./components/VideoRecorder";
-import HumanApi from "./api";
+import VideoRecorder from "../components/VideoRecorder";
+import HumanApi from "../api";
 
 class ResponseRecorder extends React.Component {
   constructor(props) {

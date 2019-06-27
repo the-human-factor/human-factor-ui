@@ -1,21 +1,26 @@
 import React from "react";
-import Home from "./Home";
-import NavBar from './components/NavBar'
-import ChallengeRecorder from "./ChallengeRecorder";
-import ResponseRecorder from "./ResponseRecorder";
+
+import HumanTheme from "./themes/HumanTheme";
+import Home from "./pages/Home";
+import NavPage from "./pages/NavPage";
+import ChallengeRecorder from "./pages/ChallengeRecorder";
+import ResponseRecorder from "./pages/ResponseRecorder";
+import ListChallenges from "./pages/ListChallenges";
+
 import { Router } from "@reach/router";
-import "./App.css";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 const App = () => (
-  <React.Fragment>
+  <MuiThemeProvider theme={HumanTheme}>
     <Router>
-      <NavBar path="/">
+      <NavPage path="/">
         <Home path="/" />
         <ResponseRecorder path="/challenge/:challengeId" />
-        <ChallengeRecorder path="/createchallenge/" />
-      </NavBar>
+        <ChallengeRecorder path="/challenge/create" />
+        <ListChallenges path="/challenge/list" />
+      </NavPage>
     </Router>
-  </React.Fragment>
+  </MuiThemeProvider>
 );
 
 export default App;
