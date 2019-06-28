@@ -17,6 +17,10 @@ class ResponseViewer extends React.Component {
     let self = this;
     self.videoChallenge.current.play();
     self.videoResponse.current.play();
+    // Mute the response video until the challenge is played.
+    // This should be done more react-ily.
+    self.videoResponse.current.volume = 0;
+    self.videoChallenge.current.onended =  () => {self.videoResponse.current.volume=1};
   };
   
 

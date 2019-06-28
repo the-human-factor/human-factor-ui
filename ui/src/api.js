@@ -26,7 +26,16 @@ class HumanApi {
 	      'gradingCriteria': "How empathetic and curious are you?",
 	      'link': "https://storage.googleapis.com/the-human-factor-videos/d8912f88-3726-48e5-b280-fde3bf17d2b4",
 	      'author': "Brian Basham"
-	     }];
+	     },
+	     {'challengeId': '888', 
+	      'name': 'alex_cant_trust_tech',
+	      'instructions': "Find a way forward in the conversation",
+	      'gradingCriteria': "How empathetic and curious are you?",
+	      'link': "https://storage.googleapis.com/the-human-factor-videos/70e70f89-072e-4de1-9357-5214e5d6d6c9",
+	      'author': "Alex Warren"
+	     }
+	     ];
+		
     
    
 	this.responses = 
@@ -44,8 +53,16 @@ class HumanApi {
 		 'responder': "Alex Warren",
 		 'notes': "That was uncomfortable.",
 		 'link': "https://storage.googleapis.com/the-human-factor-videos/c1c57ea6-00bd-432f-a71c-09c7685ae70f"
+	     },
+	     {
+		 'responseId': '999',
+		 'challengeId': '888',
+		 'responder': "Brian Basham",
+		 'notes': "Couldn't stop laughing.",
+		 'link': "https://storage.googleapis.com/the-human-factor-videos/10ded6f0-5e9f-45a9-88ce-a273cd1bb4ad",
 	     }
 	     ]
+
 
 
 	    }
