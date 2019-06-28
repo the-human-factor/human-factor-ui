@@ -56,13 +56,24 @@ class HumanApi {
 
     getChallenge(challengeId) {
 	for (let challenge of this.challenges) {
-		console.log(challenge);
-		console.log(challengeId);
-		if (challenge.challengeId === challengeId) {
+	    if (challenge.challengeId === challengeId) {
 		    return challenge;
 		}
 	}
 	alert('no such challenge' + challengeId);
+    }
+    
+    getResponseIds() {
+	return this.responses.map((response) => {return response.responseId});
+    }
+
+    getResponse(responseId) {
+	for (let response of this.responses) {
+	    if (response.responseId === responseId) {
+		return response;
+	    }
+	}
+	alert('no such response' + responseId);
     }
 
     
