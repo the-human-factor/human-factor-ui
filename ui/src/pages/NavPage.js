@@ -34,6 +34,7 @@ export default function NavPage(props) {
             </Typography>
             <Button color="inherit" component={AdapterLink} to="/challenge/create">Create A Challenge</Button>
             <Button color="inherit" component={AdapterLink} to="/challenge/list">List Challenges</Button>
+            <Button color="inherit" component={AdapterLink} to="/response/list">List Responses</Button>
           </div>
           <div>
             <Button color="inherit" component={AdapterLink} to="/login">Login</Button>
