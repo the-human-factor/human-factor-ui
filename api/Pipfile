@@ -21,6 +21,8 @@ marshmallow = "*"
 flask-marshmallow = "*"
 factory-boy = "*"
 google-cloud-storage = "*"
+gunicorn = "*"
+dynaconf = "*"
 
 [requires]
 python_version = "3.5"

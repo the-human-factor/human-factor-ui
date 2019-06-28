@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: human-api-deployment
+  labels:
+    app: human-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: human-api
+  template:
+    metadata:
+      labels:
+        app: human-api
+    spec:
+      containers:
+        - name: human-api
+          image: gcr.io/the-human-factor/human-api:latest
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: credentials
+              mountPath: "/credentials"
+              readOnly: true
+          env:
+            FLASK_ENV: development
+            DB_URL: human-api-db-postgresql.development.svc.cluster.local
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: human-api-service
+spec:
+  selector:
+    app: human-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9000
+      protocol: TCP

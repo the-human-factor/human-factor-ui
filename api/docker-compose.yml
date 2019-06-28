@@ -10,8 +10,8 @@ services:
       dockerfile: Dockerfile.postgres.dev
     command: postgres -c log_statement=all
     environment:
-      POSTGRES_USER: human_factors_user
-      POSTGRES_DB: human_factors
+      POSTGRES_USER: human_factor_user
+      POSTGRES_DB: human_factor
     ports:
       - 5432
     volumes:

@@ -1,0 +1,15 @@
+[default]
+SQLALCHEMY_DATABASE_URI="postgres://human_factor_user@db/human_factor"
+SQLALCHEMY_TRACK_MODIFICATIONS="False"
+VIDEO_BUCKET="dev.videos.thehumanfactor.ai"
+
+
+[development]
+
+[testing]
+
+[staging]
+VIDEO_BUCKET="staging.videos.thehumanfactor.ai"
+
+[production]
+VIDEO_BUCKET="prod.videos.thehumanfactor.ai"

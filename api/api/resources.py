@@ -1,7 +1,7 @@
 import os
 import json
 
-from flask import request, abort, jsonify
+from flask import request, abort, jsonify, current_app
 from flask_restful import Resource
 
 from google.cloud import storage
@@ -32,7 +32,7 @@ class VideoList(Resource):
     video.save()
 
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket(os.environ.get('VIDEO_BUCKET', 'the-human-factor-videos'))
+    bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
     blob = bucket.blob(str(video.id))
 
     blob.upload_from_file(f.stream, predefined_acl="publicRead")

@@ -3,23 +3,20 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy # This needs to come before Marshmallow
+from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from dynaconf import FlaskDynaconf
 from sqlalchemy.exc import DatabaseError
 
 import api.models as models
 import api.resources as resources
 
 app = Flask(__name__)
-app.config.from_mapping(
-    SQLALCHEMY_DATABASE_URI=os.environ.get('DB_URL', "postgres://human_factors_user@db/human_factors"),
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
-)
-
+FlaskDynaconf(app) # Initialize config
 api = Api(app)
 
 db = models.db
-db.init_app(app)
+db.init_app(app) # This needs to come before Marshmallow
 migrate = Migrate(app, db)
 ma = Marshmallow(app)
 
@@ -61,6 +58,3 @@ def session_commit(response):
     print("ECXECPTION")
     db.session.rollback()
     raise
-
-if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=os.environ.get('PORT', 9000))
