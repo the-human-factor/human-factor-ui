@@ -1,47 +1,55 @@
 import React from 'react';
 import { Link } from "@reach/router";
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 
 const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />);
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
+  fullPage: {
+    backgroundColor: '#EEE',
+    minHeight: '100vh',
+    paddingBottom: 10,
   },
-  toolbar: {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    'padding-top': 5,
+  toolBar: {
     display: 'flex',
-    'flex-direction': 'row',
-    'justify-content': 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
+  appBar: {
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+    paddingTop: 5,
+    marginBottom: 15,
+  }
 }));
 
 export default function NavPage(props) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar className={classes.toolbar}>
+    <div className={classes.fullPage}>
+      <AppBar position="static" className={classes.appBar}>
+        <Toolbar className={classes.toolBar}>
           <div>
-            <Typography variant="h3" color="inherit" className={classes.title}>
+            <Typography variant="h1" color="inherit">
               The Human Factor
             </Typography>
             <Button color="inherit" component={AdapterLink} to="/challenge/create">Create A Challenge</Button>
-            <Button color="inherit" component={AdapterLink} to="/challenge/list">List Challenges</Button>
-            <Button color="inherit" component={AdapterLink} to="/response/list">List Responses</Button>
+            <Button color="inherit" component={AdapterLink} to="/list/challenge">List Challenges</Button>
+            <Button color="inherit" component={AdapterLink} to="/list/response">List Responses</Button>
           </div>
           <div>
             <Button color="inherit" component={AdapterLink} to="/login">Login</Button>
           </div>
         </Toolbar>
       </AppBar>
-      {props.children}
+      <Container maxWidth="md">
+        {props.children}
+      </Container>
     </div>
   );
 }

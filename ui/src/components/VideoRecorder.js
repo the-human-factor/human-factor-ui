@@ -2,13 +2,59 @@ import React from "react";
 import RecordRTC from "recordrtc";
 
 class VideoRecorder extends React.Component {
+  static STATUS = {
+    WAITING_FOR_CAMERA: 'waiting_for_camera',
+    READY_TO_RECORD: 'ready_to_record',
+    RECORDING: 'recording',
+    REPLAY: 'replay',
+  };
+
   constructor(props) {
     super(props);
-    this.videoRecording = React.createRef();
-    this.recording = false;
+    this.videoElement = React.createRef();
     this.recorder = null;
     this.camera = null;
     this.blob = null;
+
+    this.status = VideoRecorder.STATUS.WAITING_FOR_CAMERA;
+
+    this.loadedData = this.loadedData.bind(this);
+    this.startRecording = this.startRecording.bind(this);
+    this.stopRecording = this.stopRecording.bind(this);
+    this.resetForRecording = this.resetForRecording.bind(this);
+    this.setup = this.setup.bind(this);
+  }
+
+  static defaultProps = {
+    width: "640",
+    height: "480",
+    allowReview: false,
+    onStatusChange: (status) => {}
+  };
+
+  componentDidMount() {
+    this.setup()
+    this.videoElement.current.addEventListener('loadeddata', this.loadedData)
+  }
+
+  updateStatus(status) {
+    this.status = status;
+    this.props.onStatusChange(status);
+  }
+
+  loadedData(event) {
+    if (this.status === VideoRecorder.STATUS.WAITING_FOR_CAMERA) {
+      this.updateStatus(VideoRecorder.STATUS.READY_TO_RECORD)
+    }
+  };
+
+  async setup() {
+    this.camera = await this.captureCamera();
+    this.videoElement.current.muted = true;
+    this.videoElement.current.volume = 0;
+    this.videoElement.current.srcObject = this.camera;
+    this.videoElement.current.controls = false;
+    this.videoElement.current.autoPlay = true;
   }
 
   async captureCamera() {
@@ -20,59 +66,69 @@ class VideoRecorder extends React.Component {
     }
   }
 
-  setup = async () => {
-    let self = this;
-    self.camera = await this.captureCamera();
-    self.videoRecording.current.muted = true;
-    self.videoRecording.current.volume = 0;
-    self.videoRecording.current.srcObject = self.camera;
-  }
-
-  startRecording = async () => {
-    let self = this;
-    if (self.camera == null) {
-      await self.setup()
+  async startRecording() {
+    if (this.camera == null || this.status !== VideoRecorder.STATUS.READY_TO_RECORD) {
+      throw new Error("Can't start playing status:" + this.status)
     }
-    self.recording = true;
+    this.updateStatus(VideoRecorder.STATUS.RECORDING)
     
-    self.recorder = RecordRTC(self.camera, {
-      type: "video"
-    });
-    self.recorder.startRecording();
-    self.recorder.camera = self.camera;
-    window.recorder = self.recorder;
+    this.recorder = RecordRTC(this.camera, {type: "video"});
+    this.recorder.startRecording();
+    this.recorder.camera = this.camera;
+    window.recorder = this.recorder;
   }
 
   stopRecordingCallback() {
-    let self = this;
-    self.recording = false;
+    this.videoElement.current.src = this.videoElement.current.srcObject = null;
+    this.videoElement.current.muted = false;
+    this.videoElement.current.volume = 1;
+    this.videoElement.current.autoPlay = false;
 
-    self.videoRecording.current.src = self.videoRecording.current.srcObject = null;
-    self.videoRecording.current.muted = false;
-    self.videoRecording.current.volume = 1;
-    self.blob = self.recorder.getBlob();
-    console.log(self.blob);
-    self.videoRecording.current.src = URL.createObjectURL(self.blob);
+    if (this.props.allowReview) {
+      this.videoElement.current.controls = true;
+    }
+    this.blob = this.recorder.getBlob();
+    this.videoElement.current.src = URL.createObjectURL(this.blob);
 
     this.recorder.camera.stop();
     this.recorder.destroy();
     this.recorder = null;
+
+    this.updateStatus(VideoRecorder.STATUS.REPLAY);
   }
 
-  stopRecording = () => {
+  stopRecording() {
     this.recorder.stopRecording(this.stopRecordingCallback.bind(this));
   };
 
-  componentDidMount() {
-    this.setup()
+  resetForRecording() {
+    this.blob = null;
+    this.updateStatus(VideoRecorder.STATUS.WAITING_FOR_CAMERA)
+    this.setup();
+  }
+
+  getBlob() {
+    return this.blob;
   }
 
   render() {
+    // const divStyle = {
+    //   backgroundColor: '#333',
+    //   width: this.props.width + "px",
+    //   height: this.props.height + "px",
+    // };
+
     return (
-	  <div>
-        <video ref={this.videoRecording} autoPlay playsInline />
-	  </div>
-	);
+      <div>
+        <video
+          ref={this.videoElement}
+          autoPlay
+          playsInline
+          width={this.props.width}
+          height={this.props.height}
+        />
+      </div>
+    );
   }
 }
 

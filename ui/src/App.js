@@ -19,8 +19,8 @@ const App = () => (
         <Home path="/" />
         <ResponseRecorder path="/challenge/:challengeId" />
         <ChallengeRecorder path="/challenge/create" />
-        <ListChallenges path="/challenge/list" />
-        <ListResponses path="/response/list" />
+        <ListChallenges path="/list/challenge" />
+        <ListResponses path="/list/response" />
         <ResponseViewer path="/response/:responseId" />
       </NavPage>
     </Router>

@@ -54,3 +54,10 @@ flycheck_*.el
 
 
 # End of https://www.gitignore.io/api/emacs
+
+# Sublime Ignores
+.eslintrc
+*.sublime-project
+*.sublime-workspace
+
+# End Sublime Ignores
