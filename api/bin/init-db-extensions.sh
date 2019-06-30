@@ -6,5 +6,5 @@ set -e
 export PGUSER="$POSTGRES_USER"
 
 "psql" --dbname=human_factor <<-'EOSQL'
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 EOSQL

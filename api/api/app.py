@@ -13,6 +13,15 @@ import api.resources as resources
 
 app = Flask(__name__)
 FlaskDynaconf(app) # Initialize config
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://{}:{}@{}/{}".format(
+  app.config['DB_USER'],
+  app.config['DB_PASSWORD'],
+  app.config['DB_HOST'],
+  app.config['DB_NAME'])
+
+app.logger.info('App configured to talk to DB: %s', app.config['SQLALCHEMY_DATABASE_URI'])
+
 api = Api(app)
 
 db = models.db

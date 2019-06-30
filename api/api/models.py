@@ -36,7 +36,7 @@ class MyBase(Model):
 db = SQLAlchemy(model_class=MyBase)
 
 class Video(db.Model):
-  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("uuid_generate_v4()"), primary_key=True)
+  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   name = db.Column(db.Unicode(255), nullable=False)
   url = db.Column(db.String(512))
@@ -50,7 +50,7 @@ class Video(db.Model):
 
 
 class Challenge(db.Model):
-  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("uuid_generate_v4()"), primary_key=True)
+  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   name = db.Column(db.Unicode(length=255), nullable=False)
   description = db.Column(db.UnicodeText, nullable=False)
@@ -68,7 +68,7 @@ class Challenge(db.Model):
 
 
 class Responder(db.Model):
-  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("uuid_generate_v4()"), primary_key=True)
+  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
   name = db.Column(db.Unicode(255))
   email = db.Column(db.String(255), unique=True, nullable=False)
 
@@ -80,7 +80,7 @@ class Responder(db.Model):
 
 
 class Response(db.Model):
-  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("uuid_generate_v4()"), primary_key=True)
+  id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   challenge = db.relationship('Challenge', backref='responses')
   challenge_id = db.Column(UUID(as_uuid=True), db.ForeignKey('challenge.id'), primary_key=True)
