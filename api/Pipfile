@@ -8,6 +8,7 @@ flask-shell-ipython = "*"
 pytest = "*"
 pytest-flask-sqlalchemy = "*"
 pytest-factoryboy = "*"
+ipdb = "*"
 
 [packages]
 flask-sqlalchemy = "*"
@@ -23,7 +24,6 @@ factory-boy = "*"
 google-cloud-storage = "*"
 gunicorn = "*"
 dynaconf = "*"
-ipdb = "*"
 
 [requires]
 python_version = "3.5"
