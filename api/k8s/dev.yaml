@@ -28,6 +28,8 @@ spec:
               value: development
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /credentials/google-credentials.json
+            - name: FLASK_DB_HOST
+              value: human-api-db-postgresql.development.svc.cluster.local
             - name: FLASK_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -52,6 +54,5 @@ spec:
   selector:
     app: human-api
   ports:
-    - port: 80
-      targetPort: 9000
+    - port: 9000
       protocol: TCP

@@ -1,6 +1,7 @@
 import os
+import json
 
-from flask import Flask
+from flask import Flask, request
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
@@ -59,11 +60,10 @@ def make_shell_context():
 @app.after_request
 def session_commit(response):
   if response.status_code >= 400:
-    return
+    return response
   try:
     db.session.commit()
     return response
   except DatabaseError:
-    print("ECXECPTION")
     db.session.rollback()
     raise

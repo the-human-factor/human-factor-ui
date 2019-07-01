@@ -23,6 +23,7 @@ factory-boy = "*"
 google-cloud-storage = "*"
 gunicorn = "*"
 dynaconf = "*"
+ipdb = "*"
 
 [requires]
 python_version = "3.5"
