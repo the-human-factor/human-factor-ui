@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 import VideoRecorder from "../components/VideoRecorder";
+import HumanApi from "../api";
 
 const styles = theme => ({
   paper: {
@@ -47,6 +48,7 @@ const styles = theme => ({
 class ChallengeRecorder extends React.Component {
   constructor(props) {
     super(props);
+    this.api = new HumanApi();
     
     this.videoRecorder = React.createRef();
     
@@ -120,9 +122,13 @@ class ChallengeRecorder extends React.Component {
 
   submit(event) {
     event.preventDefault();
-    const formData = this.state.formData;
-    console.log(formData);
-    console.log(this.videoRecorder.current.getBlob());
+    let challenge = {
+      ...this.state.formData,
+      videoBlob: this.videoRecorder.current.getBlob()
+    }
+    this.api.createChallenge(challenge, (status) => {
+      alert("posted challenge")
+    });
   }
 
   render() {

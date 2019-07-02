@@ -62,7 +62,7 @@ class ListChallenges extends React.Component {
           Challenges
         </Typography>
 
-        <Container className={classes.instructionsContainer}>
+        <Container>
           {challengeLinks}
         </Container>
       </Paper>
