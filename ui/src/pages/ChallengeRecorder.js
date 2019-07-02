@@ -112,7 +112,7 @@ class ChallengeRecorder extends React.Component {
   }
 
   updateReadyToSubmit() {
-    const valid = ["name", "email", "description"].reduce((acum, field) => {
+    const valid = ["name", "email", "instructions", "title", "grading_notes"].reduce((acum, field) => {
       return acum && Boolean(this.state.formData[field]);
     });
     this.setState({
@@ -127,7 +127,7 @@ class ChallengeRecorder extends React.Component {
       videoBlob: this.videoRecorder.current.getBlob()
     }
     this.api.createChallenge(challenge, (status) => {
-      alert("posted challenge")
+      console.log(status);
     });
   }
 
@@ -172,8 +172,19 @@ class ChallengeRecorder extends React.Component {
             />
 
             <TextField
-              name="description"
-              label="Description"
+              name="instructions"
+              label="Instructions"
+              placeholder="This will be displayed to the person taking the challenge."
+              multiline
+              rows="6"
+              style={{width: "100%"}}
+              margin="normal"
+            />
+
+            <TextField
+              name="grading_notes"
+              label="Grading Notes"
+              placeholder="Instructions for the grader to know what to look for."
               multiline
               rows="6"
               style={{width: "100%"}}

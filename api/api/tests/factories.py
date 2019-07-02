@@ -23,9 +23,9 @@ class ChallengeFactory(factory.alchemy.SQLAlchemyModelFactory):
 
   video = factory.SubFactory(VideoFactory)
 
-class ResponderFactory(factory.alchemy.SQLAlchemyModelFactory):
+class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
   class Meta:
-    model = m.Responder
+    model = m.User
     sqlalchemy_session = m.db.session
 
   name = factory.Faker('name')
@@ -39,7 +39,7 @@ class ResponseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
   challenge = factory.SubFactory(ChallengeFactory)
   video = factory.SubFactory(VideoFactory)
-  responder = factory.SubFactory(ResponderFactory)
+  user = factory.SubFactory(ResponderFactory)
 
 class ChallengeWithResponseFactory(ChallengeFactory):
   membership = factory.RelatedFactory(ResponseFactory, 'challenge')

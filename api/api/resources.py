@@ -41,11 +41,32 @@ class CreateChallenge(Resource):
     if 'videoBlob' not in request.files:
       abort(400)
 
+    json = request.get_json()
+
+    current_app.logger.debug(request.files)
+    current_app.logger.debug(request.form)
+
     video = create_and_upload_video(request.files['videoBlob'])
 
-    
+    # TODO: don't create a new user each time!
+    user = m.User(
+      name = request.form['name'],
+      email = request.form['email']
+    )
 
-    return s.VideoSchema().dump(video).data, 201
+    user.save()
+
+    challenge = m.Challenge(
+      title = request.form['title'],
+      instructions = request.form['instructions'],
+      grading_notes = request.form['grading_notes'],
+      creator = user,
+      video = video
+    )
+
+    challenge.save()
+
+    return str(challenge.id), 201
 
 class ChallengeList(Resource):
   def get(self):
@@ -60,7 +81,8 @@ class ResponseList(Resource):
     return ["responses", "go", "here"]
 
 def create_and_upload_video(file):
-  video = m.Video(name=file.filename)
+  # app.logger.info('create_and_upload_video')
+  video = m.Video()
   video.save()
 
   storage_client = storage.Client()

@@ -11,9 +11,9 @@ class ChallengeSchema(ModelSchema):
   class Meta:
     model = models.Challenge
 
-class ResponderSchema(ModelSchema):
+class UserSchema(ModelSchema):
   class Meta:
-    model = models.Responder
+    model = models.User
 
 class ResponseSchema(ModelSchema):
   class Meta:

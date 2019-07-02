@@ -95,3 +95,13 @@ We use [pipenv](https://github.com/pypa/pipenv) to manage our python dependencie
 ```
 # pipenv install <dependency>
 ```
+
+### Recreate the db and blow away old versions
+rm migrations/versions/*
+make db-reset
+
+make shell
+pipenv shell
+
+flask db migrate
+flask db upgrade

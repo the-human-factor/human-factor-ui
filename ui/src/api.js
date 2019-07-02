@@ -1,7 +1,8 @@
 class HumanApi {
   constructor() {
     this.endpoint = "/api/";
-    this.createChallengeEndpoint = this.endpoint + "videos";
+    this.videosEndpoint = this.endpoint + "videos";
+    this.createChallengeEndpoint = this.endpoint + "challenges/create";
 
     this.challenges =
       [{
