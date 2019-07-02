@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/repo/api
+    working_directory: ~/repo
     docker:
       - image: google/cloud-sdk
     steps:
@@ -19,6 +19,7 @@ jobs:
 
       - run:
           name: Start container and verify it is working
+          working_directory: ~/repo/api
           command: |
             set -x
             docker-compose up -d
@@ -26,6 +27,7 @@ jobs:
             make test
       - run:
           name: Build and push Docker image
+          working_directory: ~/repo/api
           command: |
             docker build --target prod-env -t gcr.io/the-human-factor/human-api:0.1.${CIRCLE_BUILD_NUM} .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
