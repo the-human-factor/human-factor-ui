@@ -5,7 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 flask-shell-ipython = "*"
-pytest = "*"
+pytest = "==4.6.3"
+pytest-flask = "*"
 pytest-flask-sqlalchemy = "*"
 pytest-factoryboy = "*"
 ipdb = "*"
@@ -25,8 +26,6 @@ google-cloud-storage = "*"
 gunicorn = "*"
 dynaconf = "*"
 flask-cors = "*"
-pytest = "==4.6.3"
-pytest-flask = "*"
 
 [requires]
 python_version = "3.5"
