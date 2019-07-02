@@ -22,3 +22,12 @@ migrate:
 .PHONY: db-reset
 db-reset:
 	docker-compose build api && docker-compose down && docker volume rm human-factor-api_devdb && docker-compose up --force-recreate -d api
+
+.PHONY: db-reset-all
+db-reset-all:
+	docker-compose build api && docker-compose down && docker volume rm human-factor-api_devdb && docker-compose up --force-recreate -d api
+
+.PHONY: recreate-schema
+recreate-schema: db-reset-all
+	rm -f migrations/versions/*
+	docker-compose exec api pipenv run flask db migrate && docker-compose exec api pipenv run flask db upgrade
