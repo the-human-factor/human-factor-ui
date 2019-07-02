@@ -21,6 +21,7 @@ jobs:
           name: Start container and verify it is working
           command: |
             set -x
+            cd api
             docker-compose up -d
             make migrate
             make test
