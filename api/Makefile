@@ -13,7 +13,7 @@ test:
 
 .PHONY: psql
 psql:
-	docker-compose exec db psql -U human_factor_user human_factor
+	docker-compose exec db psql -U postgres human_factor
 
 .PHONY: migrate
 migrate:

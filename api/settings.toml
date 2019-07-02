@@ -1,6 +1,6 @@
 [default]
 SQLALCHEMY_DATABASE_URI="" # Setting this to avoid warnings
-DB_USER="human_factor_user"
+DB_USER="postgres"
 DB_PASSWORD=""
 DB_HOST="db"
 DB_NAME="human_factor"

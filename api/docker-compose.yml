@@ -9,9 +9,6 @@ services:
       context: ./
       dockerfile: Dockerfile.postgres.dev
     command: postgres -c log_statement=all
-    environment:
-      POSTGRES_USER: human_factor_user
-      POSTGRES_DB: human_factor
     ports:
       - 5432
     volumes:
@@ -25,6 +22,7 @@ services:
     stdin_open: true
     environment:
       FLASK_ENV: development
+      POSTGRES_USER: postgres
     ports:
       - "9000:9000"
     volumes:
