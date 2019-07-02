@@ -24,6 +24,7 @@ factory-boy = "*"
 google-cloud-storage = "*"
 gunicorn = "*"
 dynaconf = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.5"

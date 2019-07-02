@@ -23,27 +23,29 @@ class VideoList(Resource):
     return ["videos", "more", "video"]
 
   def post(self):
-    if 'file' not in request.files:
+    if 'videoBlob' not in request.files:
       abort(400)
 
-    f = request.files['file']
-
-    video = m.Video(name=f.filename)
-    video.save()
-
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
-    blob = bucket.blob(str(video.id))
-
-    blob.upload_from_file(f.stream, predefined_acl="publicRead")
-
-    video.update(url=blob.public_url)
+    video = create_and_upload_video(request.files['videoBlob'])
 
     return s.VideoSchema().dump(video).data, 201
+
+    
 
 class Challenge(Resource):
   def get(self, challenge_id):
     return {"challenge": challenge_id}
+
+class CreateChallenge(Resource):
+  def post(self):
+    if 'videoBlob' not in request.files:
+      abort(400)
+
+    video = create_and_upload_video(request.files['videoBlob'])
+
+    
+
+    return s.VideoSchema().dump(video).data, 201
 
 class ChallengeList(Resource):
   def get(self):
@@ -56,3 +58,17 @@ class Response(Resource):
 class ResponseList(Resource):
   def get(self):
     return ["responses", "go", "here"]
+
+def create_and_upload_video(file):
+  video = m.Video(name=file.filename)
+  video.save()
+
+  storage_client = storage.Client()
+  bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
+  blob = bucket.blob(str(video.id))
+
+  blob.upload_from_file(file.stream, predefined_acl="publicRead")
+
+  video.update(url=blob.public_url)
+
+  return video

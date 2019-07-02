@@ -34,10 +34,11 @@ api.add_resource(resources.VideoList, '/api/videos')
 api.add_resource(resources.Video, '/api/videos/<string:video_id>')
 
 api.add_resource(resources.ChallengeList, '/api/challenges')
-api.add_resource(resources.Challenge, '/api/challenges/<int:challenge_id>')
+api.add_resource(resources.CreateChallenge, '/api/challenges/create')
+api.add_resource(resources.Challenge, '/api/challenges/<string:challenge_id>')
 
 api.add_resource(resources.ResponseList, '/api/responses')
-api.add_resource(resources.Response, '/api/responses/<int:response_id>')
+api.add_resource(resources.Response, '/api/responses/<string:response_id>')
 
 
 @app.route('/')
