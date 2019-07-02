@@ -23,8 +23,8 @@ jobs:
           command: |
             set -x
             docker-compose -f docker-compose.circle.yaml up -d
-            make migrate
-            make test
+            docker-compose exec api pipenv run flask db upgrade
+            docker-compose exec api pipenv run pytest
       - run:
           name: Build and push Docker image
           working_directory: ~/repo/api

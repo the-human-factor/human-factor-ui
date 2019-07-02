@@ -15,7 +15,7 @@ def create_app():
   app = Flask(__name__)
   FlaskDynaconf(app) # Initialize config
 
-  app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://{}:{}@{}/{}".format(
+  app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://{}:{}@{}/{}".format(
     app.config['DB_USER'],
     app.config['DB_PASSWORD'],
     app.config['DB_HOST'],
