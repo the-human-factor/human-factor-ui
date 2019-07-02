@@ -83,6 +83,8 @@ class User(db.Model):
 class Response(db.Model):
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
+  # Todo: this was giving a
+  # there is no unique constraint matching given keys for referenced table "challenge"
   # challenge = db.relationship('Challenge', backref='responses')
   # challenge_id = db.Column(UUID(as_uuid=True), db.ForeignKey('challenge.id'), primary_key=True)
 
