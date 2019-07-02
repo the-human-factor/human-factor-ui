@@ -11,30 +11,22 @@ import api.schemas as s
 
 class Video(Resource):
   def get(self, video_id):
-    video = m.Video.query.get(video_id)
-
-    if video:
-      return s.VideoSchema().dumps(video).data
-    else:
-      abort(404)
+    video = m.Video.query.get_or_404(video_id)
+    return s.VideoSchema().jsonify(video).json, 200
 
 class VideoList(Resource):
-  def get(self):
-    return ["videos", "more", "video"]
-
   def post(self):
     if 'videoBlob' not in request.files:
       abort(400)
 
     video = create_and_upload_video(request.files['videoBlob'])
 
-    return s.VideoSchema().dump(video).data, 201
-
-    
+    return s.VideoSchema().jsonify(video).json, 201
 
 class Challenge(Resource):
   def get(self, challenge_id):
-    return {"challenge": challenge_id}
+    challenge = m.Challenge.query.get_or_404(challenge_id)
+    return s.ChallengeSchema().jsonify(challenge).json, 200
 
 class CreateChallenge(Resource):
   def post(self):
@@ -66,19 +58,23 @@ class CreateChallenge(Resource):
 
     challenge.save()
 
-    return str(challenge.id), 201
+    return s.ChallengeSchema().jsonify(challenge).json, 201
 
 class ChallengeList(Resource):
   def get(self):
-    return ["more", "challenges", "here"]
+    challenges = m.Challenge.query.all()
+
+    return s.ChallengeSchema(many=True).jsonify(challenges).json, 200
 
 class Response(Resource):
   def get(self, response_id):
-    return {"response": response_id}
+    response = m.Response.get_or_404(response_id)
+    return s.ResponseSchema().jsonify(response).json, 200
 
 class ResponseList(Resource):
   def get(self):
-    return ["responses", "go", "here"]
+    responses = m.Response.query.all()
+    return s.ResponseSchema(many=True).jsonify(responses).json, 200
 
 def create_and_upload_video(file):
   # app.logger.info('create_and_upload_video')

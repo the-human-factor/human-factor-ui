@@ -36,6 +36,8 @@ class MyBase(Model):
 db = SQLAlchemy(model_class=MyBase)
 
 class Video(db.Model):
+  __tablename__ = 'videos'
+
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   url = db.Column(db.String(512))
@@ -45,10 +47,12 @@ class Video(db.Model):
 
 
   def __repr__(self):
-    return '<Video:{} - {}>'.format(self.id)
+    return '<Video:{}>'.format(self.id)
 
 
 class Challenge(db.Model):
+  __tablename__ = 'challenges'
+
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   title = db.Column(db.Unicode(length=255), nullable=False)
@@ -56,19 +60,21 @@ class Challenge(db.Model):
   grading_notes = db.Column(db.UnicodeText, nullable=False)
 
   creator = db.relationship('User', backref='challenges')
-  creator_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'), primary_key=True)
+  creator_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'))
 
   video = db.relationship('Video', backref=backref('challenges', uselist=False))
-  video_id = db.Column(UUID(as_uuid=True), db.ForeignKey('video.id'), nullable=True)
+  video_id = db.Column(UUID(as_uuid=True), db.ForeignKey('videos.id'), nullable=True)
 
   created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
   updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=datetime.utcnow, nullable=False)
 
   def __repr__(self):
-    return '<Challenge:{} - {}>'.format(self.id, self.name)
+    return '<Challenge:{} - {}>'.format(self.id, self.title)
 
 
 class User(db.Model):
+  __tablename__ = 'users'
+
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
   name = db.Column(db.Unicode(255))
   email = db.Column(db.String(255), unique=True, nullable=False)
@@ -81,18 +87,20 @@ class User(db.Model):
 
 
 class Response(db.Model):
+  __tablename__ = 'responses'
+
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
 
   # Todo: this was giving a
   # there is no unique constraint matching given keys for referenced table "challenge"
-  # challenge = db.relationship('Challenge', backref='responses')
-  # challenge_id = db.Column(UUID(as_uuid=True), db.ForeignKey('challenge.id'), primary_key=True)
+  challenge = db.relationship('Challenge', backref='responses')
+  challenge_id = db.Column(UUID(as_uuid=True), db.ForeignKey('challenges.id'), primary_key=True)
 
   user = db.relationship('User', backref='responses')
-  user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'), primary_key=True)
+  user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'), primary_key=True)
 
   video = db.relationship('Video', backref=backref('response', uselist=False))
-  video_id = db.Column(UUID(as_uuid=True), db.ForeignKey('video.id'), nullable=True)
+  video_id = db.Column(UUID(as_uuid=True), db.ForeignKey('videos.id'), nullable=True)
 
   created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
   updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=datetime.utcnow, nullable=False)

@@ -8,20 +8,8 @@ class VideoFactory(factory.alchemy.SQLAlchemyModelFactory):
     model = m.Video
     sqlalchemy_session = m.db.session
 
-  name = factory.Faker('name')
   url = factory.Faker('url')
 
-class ChallengeFactory(factory.alchemy.SQLAlchemyModelFactory):
-  class Meta:
-    model = m.Challenge
-    sqlalchemy_session = m.db.session
-
-  name = factory.Faker('name')
-  description = factory.Faker('text')
-  grading_rubric = factory.Faker('text')
-  notes = factory.Faker('text')
-
-  video = factory.SubFactory(VideoFactory)
 
 class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
   class Meta:
@@ -32,6 +20,19 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
   email = factory.Faker('email')
 
 
+class ChallengeFactory(factory.alchemy.SQLAlchemyModelFactory):
+  class Meta:
+    model = m.Challenge
+    sqlalchemy_session = m.db.session
+
+  title = factory.Faker('name')
+  instructions = factory.Faker('text')
+  grading_notes = factory.Faker('text')
+
+  video = factory.SubFactory(VideoFactory)
+  creator = factory.SubFactory(UserFactory)
+
+
 class ResponseFactory(factory.alchemy.SQLAlchemyModelFactory):
   class Meta:
     model = m.Response
@@ -39,7 +40,7 @@ class ResponseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
   challenge = factory.SubFactory(ChallengeFactory)
   video = factory.SubFactory(VideoFactory)
-  user = factory.SubFactory(ResponderFactory)
+  user = factory.SubFactory(UserFactory)
 
 class ChallengeWithResponseFactory(ChallengeFactory):
   membership = factory.RelatedFactory(ResponseFactory, 'challenge')

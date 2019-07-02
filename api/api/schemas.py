@@ -1,4 +1,4 @@
-from flask_marshmallow.sqla import ModelSchema
+from flask_marshmallow.sqla import ModelSchema, HyperlinkRelated
 import api.models as models
 
 
@@ -7,13 +7,15 @@ class VideoSchema(ModelSchema):
     model = models.Video
     exclude = ["challenges", "response"]
 
+class UserSchema(ModelSchema):
+  class Meta:
+    model = models.User
+
 class ChallengeSchema(ModelSchema):
   class Meta:
     model = models.Challenge
 
-class UserSchema(ModelSchema):
-  class Meta:
-    model = models.User
+  video = ("video_id")
 
 class ResponseSchema(ModelSchema):
   class Meta:
