@@ -22,7 +22,7 @@ jobs:
           working_directory: ~/repo/api
           command: |
             set -x
-            docker-compose up -d
+            docker-compose -f docker-compose.circle.yaml up -d
             make migrate
             make test
       - run:
