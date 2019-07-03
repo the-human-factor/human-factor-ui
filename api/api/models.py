@@ -1,6 +1,7 @@
 import uuid
 
 from datetime import datetime
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy, Model
 
 import sqlalchemy
@@ -8,6 +9,8 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
+
+from google.cloud import storage
 
 # Lifted from https://chase-seibert.github.io/blog/2016/03/31/flask-sqlalchemy-sessionless.html
 class MyBase(Model):
@@ -45,6 +48,20 @@ class Video(db.Model):
   created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
   updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=datetime.utcnow, nullable=False)
 
+  @staticmethod
+  def create_and_upload(file):
+    video = Video()
+    video.save()
+
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
+    blob = bucket.blob(str(video.id))
+
+    blob.upload_from_file(file.stream, predefined_acl="publicRead")
+
+    video.update(url=blob.public_url)
+
+    return video
 
   def __repr__(self):
     return '<Video:{}>'.format(self.id)

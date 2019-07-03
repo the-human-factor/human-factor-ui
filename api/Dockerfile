@@ -18,7 +18,7 @@ COPY ./Pipfile* /app/
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
-ENV FLASK_APP /app/api/app.py
+ENV FLASK_APP /app/api/app.py:create_app()
 ENV FLASK_SKIP_DOTENV 1
 ENV GOOGLE_APPLICATION_CREDENTIALS /app/secrets/google_credentials.json
 
@@ -46,7 +46,7 @@ COPY ./Pipfile* /app/
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
-ENV FLASK_APP /app/api/app.py
+ENV FLASK_APP /app/api/app.py:create_app()
 ENV FLASK_SKIP_DOTENV 1
 ENV GOOGLE_APPLICATION_CREDENTIALS /app/secrets/google-credentials.json
 ENV HOST 0.0.0.0

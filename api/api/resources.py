@@ -4,7 +4,6 @@ import json
 from flask import request, abort, jsonify, current_app
 from flask_restful import Resource
 
-from google.cloud import storage
 
 import api.models as m
 import api.schemas as s
@@ -14,13 +13,12 @@ class Video(Resource):
     video = m.Video.query.get_or_404(video_id)
     return s.VideoSchema().jsonify(video).json, 200
 
-class VideoList(Resource):
+class CreateVideo(Resource):
   def post(self):
     if 'videoBlob' not in request.files:
       abort(400)
 
-    video = create_and_upload_video(request.files['videoBlob'])
-
+    video = m.Video.create_and_upload(request.files['videoBlob'])
     return s.VideoSchema().jsonify(video).json, 201
 
 class Challenge(Resource):
@@ -35,10 +33,8 @@ class CreateChallenge(Resource):
 
     json = request.get_json()
 
-    current_app.logger.debug(request.files)
-    current_app.logger.debug(request.form)
-
-    video = create_and_upload_video(request.files['videoBlob'])
+    print("REQUESTFIEL", request.files['videoBlob'])
+    video = m.Video().create_and_upload(request.files['videoBlob'])
 
     # TODO: don't create a new user each time!
     user = m.User(
@@ -76,17 +72,7 @@ class ResponseList(Resource):
     responses = m.Response.query.all()
     return s.ResponseSchema(many=True).jsonify(responses).json, 200
 
-def create_and_upload_video(file):
-  # app.logger.info('create_and_upload_video')
-  video = m.Video()
-  video.save()
 
-  storage_client = storage.Client()
-  bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
-  blob = bucket.blob(str(video.id))
-
-  blob.upload_from_file(file.stream, predefined_acl="publicRead")
-
-  video.update(url=blob.public_url)
-
-  return video
+class CreateResponse(Resource):
+  def post(self):
+    return {"<response>": "response"}, 201

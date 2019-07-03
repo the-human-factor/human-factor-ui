@@ -1,4 +1,4 @@
 import api
 
-def test_something():
-  print("Hello world")
+def test_app(client):
+  assert client.get('/').status_code == 200

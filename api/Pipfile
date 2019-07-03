@@ -25,6 +25,8 @@ google-cloud-storage = "*"
 gunicorn = "*"
 dynaconf = "*"
 flask-cors = "*"
+pytest = "==4.6.3"
+pytest-flask = "*"
 
 [requires]
 python_version = "3.5"
