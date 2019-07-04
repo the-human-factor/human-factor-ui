@@ -75,6 +75,7 @@ class ListChallenges extends React.Component {
     this.gotChallenges = this.gotChallenges.bind(this);
     this.gotUsers = this.gotUsers.bind(this);
 
+    //TODO: Probably put on ComponentWillMount?
     this.api.getChallenges(this.gotChallenges);
   }
 

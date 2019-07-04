@@ -76,7 +76,8 @@ class ResponseRecorder extends React.Component {
     this.api = new HumanApi();
 
     this.state = {
-      challenge: this.api.getChallenge(this.props.challengeId),
+      challenge: null,
+      video: null,
       formData: {
         id: this.props.challengeId,
       },
@@ -93,9 +94,31 @@ class ResponseRecorder extends React.Component {
     this.submit = this.submit.bind(this);
     this.formChange = this.formChange.bind(this);
     this.updateReadyToSubmit = this.updateReadyToSubmit.bind(this);
-
+    this.gotChallenge = this.gotChallenge.bind(this);
+    this.gotVideo = this.gotVideo.bind(this);
+    
+    this.api.getChallenge(this.props.challengeId, this.gotChallenge);
   }
 
+    getVideoUrl() {
+	if (this.state.video !== null) {
+	    return this.state.video.url;
+	}
+	return null;
+    }
+  
+  gotChallenge(result) {
+	console.log(result);
+	this.setState({
+		challenge: result});
+	this.api.getVideo(result.video, this.gotVideo);
+    }
+  
+    gotVideo(result) {
+	console.log(result);
+	this.setState({
+		video: result});
+    }
   startRecording() {
     this.challengeVideo.current.play();
     this.videoRecorder.current.startRecording();
@@ -165,16 +188,23 @@ class ResponseRecorder extends React.Component {
     });
   }
 
+
   submit(event) {
     event.preventDefault();
-    const formData = this.state.formData;
-    console.log(formData);
-    console.log(this.videoRecorder.current.getBlob());
+    let response = {
+      ...this.state.formData,
+      videoBlob: this.videoRecorder.current.getBlob()
+    }
+    this.api.createResponse(response, (status) => {
+      console.log(status);
+    });
   }
 
+
   render() {
+      console.log('render start');
     const { classes } = this.props;
-    if (this.challenge == null) {
+    if (this.state.challenge == null | this.state.video == null) {
       return (
         <Paper className={classes.paper}>
           <Typography variant="h2">
@@ -183,7 +213,7 @@ class ResponseRecorder extends React.Component {
         </Paper>
       )
     }
-
+    console.log('rendering for real');
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
@@ -203,7 +233,7 @@ class ResponseRecorder extends React.Component {
               ref={this.challengeVideo}
               className={classes.challengeVideo}
             > 
-              <source src ={this.state.challenge.link} type="video/webm" />
+      <source src ={this.state.video.url} type="video/webm" />
             </video>
             <div className={classes.responseVideo}>
             <VideoRecorder

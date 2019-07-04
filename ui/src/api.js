@@ -3,7 +3,10 @@ class HumanApi {
     this.endpoint = "/api/";
     this.videosEndpoint = this.endpoint + "videos";
     this.createChallengeEndpoint = this.endpoint + "challenges/create";
-    this.listChallengesEndpoint = this.endpoint + "challenges"
+    this.createResponseEndpoint = this.endpoint + "responses/create";
+    this.listChallengesEndpoint = this.endpoint + "challenges";
+    this.getVideoEndpoint = this.endpoint + "videos";
+    this.getChallengeEndpoint = this.endpoint + "challenges";
     this.listUsersEndpoint = this.endpoint + "users"
     this.challenges = {};
     this.responses = {};
@@ -62,13 +65,22 @@ class HumanApi {
   }
 
 
+    getVideo(id, callback) {
+    fetch(this.getVideoEndpoint + '/' + id, {
+	    method: 'GET'
+		}).catch(error => {
+			console.error('Failed to get Video: ', id, ", error: ", error);
+		    }).then(response => response.json().then(callback))
+}	
+	
 
-  getChallenge(id) {
-    if (!(id in this.challenges)) {
-      console.error("Missing id, ", id)
-    }
-    return this.challenges[id];
-  }
+    getChallenge(id, callback) {
+    fetch(this.getChallengeEndpoint + '/' + id, {
+	    method: 'GET'
+		}).catch(error => {
+			console.error('Failed to get Challenge: ', id, ", error: ", error);
+		    }).then(response => response.json().then(callback))
+}						 
 
   getResponseIds() {
     return this.responses.map((response) => {
@@ -122,6 +134,21 @@ class HumanApi {
       callback(response);
     });
   }
+
+
+  createResponse(response, callback) {
+      //TODO:  This isn't implemented on the backend
+    let formData = this.convertToForm(response);
+    fetch(this.createResponseEndpoint, {
+      method: 'POST',
+      body: formData
+    }).catch(error => {
+      console.error('Failed to createResponse:', error);
+    }).then(result => {
+      callback(result);
+    });
+  }
+
 
   convertToForm(obj) {
     var formData = new FormData();
