@@ -55,7 +55,8 @@ class Video(db.Model):
 
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(current_app.config['VIDEO_BUCKET'])
-    blob = bucket.blob(str(video.id))
+    # TODO(Alex): Validate file type and also use the video's hash for it's bucket name.
+    blob = bucket.blob(str(video.id) + ".webm")
 
     blob.upload_from_file(file.stream, predefined_acl="publicRead")
 

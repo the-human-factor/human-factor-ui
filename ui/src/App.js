@@ -14,6 +14,7 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 const App = () => (
   <MuiThemeProvider theme={HumanTheme}>
+
     <Router>
       <NavPage path="/">
         <Home path="/" />

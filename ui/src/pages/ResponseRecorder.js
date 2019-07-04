@@ -174,11 +174,21 @@ class ResponseRecorder extends React.Component {
 
   render() {
     const { classes } = this.props;
+    if (this.challenge == null) {
+      return (
+        <Paper className={classes.paper}>
+          <Typography variant="h2">
+            Loading
+          </Typography>
+        </Paper>
+      )
+    }
+
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
-          Respond to challenge {this.state.challenge.challengeId}:&nbsp;
-          {this.state.challenge.name}
+          Respond to challenge {this.state.challenge.id}:&nbsp;
+          {this.state.challenge.title}
         </Typography>
 
         <Container className={classes.instructionsContainer}>

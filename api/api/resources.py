@@ -4,7 +4,6 @@ import json
 from flask import request, abort, jsonify, current_app
 from flask_restful import Resource
 
-
 import api.models as m
 import api.schemas as s
 
@@ -33,15 +32,25 @@ class CreateChallenge(Resource):
 
     json = request.get_json()
 
-    print("REQUESTFIEL", request.files['videoBlob'])
+    print("REQUESTFILE", request.files['videoBlob'])
+    print("dir", dir(request.files['videoBlob']))
+
     video = m.Video().create_and_upload(request.files['videoBlob'])
 
-    # TODO: don't create a new user each time!
-    user = m.User(
-      name = request.form['name'],
-      email = request.form['email']
-    )
+    user_name = request.form['name']
+    user_email = request.form['email']
 
+    try:
+      user = m.User.query.filter_by(name=user_name, email=user_email).one_or_none()
+    except e:
+      return "multiple users with email and name", 500
+    
+    if user == None:
+      user = m.User(
+        name = user_name,
+        email = user_email
+      )
+    
     user.save()
 
     challenge = m.Challenge(
@@ -76,3 +85,14 @@ class ResponseList(Resource):
 class CreateResponse(Resource):
   def post(self):
     return {"<response>": "response"}, 201
+
+class UserList(Resource):
+  def get(self):
+    ids = request.args.get('ids')
+    if ids:
+      # TODO: sanatize this? Seems sqlalchemy should handle it.
+      users = m.User.query.filter(m.User.id.in_(ids.split(','))).all()
+    else:
+      users = m.User.query.all()
+    
+    return s.UserSchema(many=True).jsonify(users).json, 200

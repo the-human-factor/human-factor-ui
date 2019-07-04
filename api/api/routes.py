@@ -13,3 +13,5 @@ api.add_resource(resources.Challenge, '/api/challenges/<string:challenge_id>')
 api.add_resource(resources.ResponseList, '/api/responses')
 api.add_resource(resources.CreateResponse, '/api/responses/create')
 api.add_resource(resources.Response, '/api/responses/<string:response_id>')
+
+api.add_resource(resources.UserList, '/api/users')

@@ -101,7 +101,7 @@ rm migrations/versions/*
 make db-reset
 
 make shell
-pipenv shell
 
+pipenv shell
 flask db migrate
 flask db upgrade

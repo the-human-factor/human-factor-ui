@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "@reach/router";
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
 import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
+import VideoPlaceholder from '../images/VideoPlaceholder.jpg'; // Tell Webpack this JS file uses this image
 import HumanApi from "../api";
 
 const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />);
@@ -13,29 +14,50 @@ const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...pr
 const styles = theme => ({
   paper: {
     padding: 10,
-  }
-
-});
-
-const useStyles = makeStyles({
-  challengeCard: {
+  },
+  paperHeader: {
+    margin: 15,
+    marginBottom: 30,
+  },
+  divider: {
     margin: 15,
     marginBottom: 30,
   }
 });
 
+const useChallengeStyles = makeStyles({
+  challenge: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  text: {
+    padding: 10
+  },
+  preview: {
+    width: 100,
+    height: 75,
+    backgroundColor: '#333'
+  },
+});
+
 function ChallengeCard(props) {
-  const classes = useStyles();
+  const classes = useChallengeStyles();
   const link = "/challenge/" + props.id;
   return (
-    <Card className={classes.challengeCard}>
-      <Typography variant="h2">
-          <Link component={AdapterLink} to={link}>{props.name}</Link>
-      </Typography>
-      <Typography variant="h3">
-          Challenge {props.id}
-      </Typography>
-    </Card>
+    <div className={classes.challenge} key={props.id}>
+      <img className={classes.preview} src={VideoPlaceholder} alt="placeholder"/>
+      <div className={classes.text}>
+        <Typography variant="h2">
+            <Link component={AdapterLink} to={link}>{props.title}</Link>
+        </Typography>
+        <Typography variant="h3">
+          Created by: {props.creator}
+        </Typography>
+        <div>
+          {props.instructions}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -43,27 +65,66 @@ class ListChallenges extends React.Component {
   constructor(props) {
     super(props);
     this.api = new HumanApi();
+
+    this.state = {
+      status: 'WAITING_FOR_DATA',
+      challenges: {},
+      users: {}
+    }
+
+    this.gotChallenges = this.gotChallenges.bind(this);
+    this.gotUsers = this.gotUsers.bind(this);
+
+    this.api.getChallenges(this.gotChallenges);
+  }
+
+  gotChallenges(result) {
+    this.setState({
+      challenges: result,
+    });
+    let usersIds = result.map(challenge => {return challenge.creator});
+    this.api.getUsers(usersIds, this.gotUsers);
+  }
+
+  gotUsers(result) {
+    let users = result.reduce((map, user) => {
+      map[user.id] = user;
+      return map;
+    }, {});
+    this.setState({
+      users: users,
+      status: 'GOT_DATA',
+    });
   }
 
   render() {
     const { classes } = this.props;
-    let challengeLinks = this.api.getChallengeIds().map(
-      (id) => {
-        const challenge = this.api.getChallenge(id);
-        return (
-          <ChallengeCard id={id} name={challenge.name} />
-        );
-      }
-    );
 
+    let challengeLinks = null;
+    if (this.state.status === 'GOT_DATA') {
+      const challenges = this.state.challenges;
+      challengeLinks = challenges.map(challenge => {
+        const user = this.state.users[challenge.creator];
+        return (
+          <ChallengeCard
+            id={challenge.id}
+            title={challenge.title}
+            creator={user.name}
+            instructions={challenge.instructions}
+          />
+        );
+      }).reduce((prev, curr) => 
+        [prev, <Divider variant="middle" className={classes.divider} />, curr]
+      );
+    }
+    
     return (
       <Paper className={classes.paper}>
-        <Typography variant="h2">
+        <Typography variant="h2" className={classes.paperHeader}>
           Challenges
         </Typography>
-
         <Container>
-          {challengeLinks}
+          {challengeLinks ? challengeLinks : '...'}
         </Container>
       </Paper>
     );

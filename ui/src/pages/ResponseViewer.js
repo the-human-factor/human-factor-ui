@@ -1,5 +1,4 @@
 import React from "react";
-import VideoRecorder from "../components/VideoRecorder";
 import HumanApi from "../api";
 
 class ResponseViewer extends React.Component {
