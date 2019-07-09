@@ -1,4 +1,4 @@
 import { combineReducers } from "redux";
-import challengesReducer from "modules/challenges";
+import challenges from "modules/challenges";
 
-export default combineReducers({ challengesReducer });
+export default combineReducers({ challenges });

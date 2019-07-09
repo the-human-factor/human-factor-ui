@@ -1,11 +1,22 @@
 import { actions } from "./index";
-import HumanApi from "api";
-
-const api = new HumanApi();
+import api from "api";
+import { selectors } from "./";
 
 export const createChallenge = data => dispatch => {
   dispatch(actions.createChallengePending());
   return api.createChallenge(data).then(challenge => {
     dispatch(actions.createChallengeSuccess(challenge));
   });
+};
+
+export const fetchChallenges = (force = false) => (dispatch, getState) => {
+  if (selectors.isLoaded(getState()) && !force) {
+    console.log("Challenges already loaded");
+    return;
+  }
+
+  dispatch(actions.fetchChallengesPending());
+  return api
+    .fetchChallenges()
+    .then(challenges => dispatch(actions.fetchChallengesSuccess(challenges)));
 };

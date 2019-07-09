@@ -1,69 +1,73 @@
 import React from "react";
+import { connect } from "react-redux";
+import { compose, lifecycle, branch, renderNothing } from "recompose";
+import { bindActionCreators } from "redux";
 
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
 
-import VideoRecorder from "../components/VideoRecorder";
-import HumanApi from "../api";
+import * as ChallengeSelectors from "modules/challenges/selectors";
+import * as ChallengeActions from "modules/challenges/actions";
+import VideoRecorder from "components/VideoRecorder";
 
 const styles = theme => ({
   paper: {
     padding: 10,
-    minWidth: 650,
+    minWidth: 650
   },
   instructionsContainer: {
     padding: 10,
     width: 650,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'left',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "left"
   },
   videoContainer: {
     padding: 10,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center"
   },
   videoOverlay: {
     width: 640,
     height: 480,
-    position: 'relative',
+    position: "relative"
   },
   responseVideo: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     bottom: 0,
     right: 0,
-    position: 'absolute',
+    position: "absolute"
   },
   challengeVideo: {
-    position: 'absolute',
-    bottom: 0,
+    position: "absolute",
+    bottom: 0
   },
   toggleButton: {
     width: 640,
-    margin: 5,
+    margin: 5
   },
   formContainer: {
     padding: 10,
     width: 650,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'left',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "left"
   },
   formControl: {
-    display: 'block',
-    width: 400,
+    display: "block",
+    width: 400
   },
   fullWidth: {
-    width: "100%",
+    width: "100%"
   },
   textField: {
-    marginRight: theme.spacing(5),
+    marginRight: theme.spacing(5)
   }
 });
 
@@ -73,19 +77,16 @@ class ResponseRecorder extends React.Component {
     this.challengeVideo = React.createRef();
     this.videoRecorder = React.createRef();
 
-    this.api = new HumanApi();
-
     this.state = {
-      challenge: this.api.getChallenge(this.props.challengeId),
       formData: {
-        id: this.props.challengeId,
+        id: this.props.challengeId
       },
       status: VideoRecorder.STATUS.WAITING_FOR_CAMERA,
       readyToSubmit: false,
       toggleBehavior: () => {},
       toggleString: "...",
-      toggleDisabled: true,
-    }
+      toggleDisabled: true
+    };
 
     this.onStatusChange = this.onStatusChange.bind(this);
     this.startRecording = this.startRecording.bind(this);
@@ -93,7 +94,6 @@ class ResponseRecorder extends React.Component {
     this.submit = this.submit.bind(this);
     this.formChange = this.formChange.bind(this);
     this.updateReadyToSubmit = this.updateReadyToSubmit.bind(this);
-
   }
 
   startRecording() {
@@ -109,20 +109,20 @@ class ResponseRecorder extends React.Component {
   }
 
   onStatusChange(status) {
-    let toggleString = '...';
+    let toggleString = "...";
     let toggleBehavior = () => {};
     let toggleDisabled = false;
-    switch(status) {
+    switch (status) {
       case VideoRecorder.STATUS.WAITING_FOR_CAMERA:
-        toggleString = 'START CHALLENGE';
+        toggleString = "START CHALLENGE";
         toggleDisabled = true;
         break;
       case VideoRecorder.STATUS.READY_TO_RECORD:
-        toggleString = 'START CHALLENGE';
+        toggleString = "START CHALLENGE";
         toggleBehavior = this.startRecording;
         break;
       case VideoRecorder.STATUS.RECORDING:
-        toggleString = 'FINISH';
+        toggleString = "FINISH";
         toggleBehavior = this.stopRecording;
         break;
       case VideoRecorder.STATUS.REPLAY:
@@ -132,11 +132,11 @@ class ResponseRecorder extends React.Component {
         throw new Error("Unknown State" + this.state.status);
     }
     this.setState(() => {
-      return { 
+      return {
         status: status,
         toggleString: toggleString,
         toggleBehavior: toggleBehavior,
-        toggleDisabled: toggleDisabled,
+        toggleDisabled: toggleDisabled
       };
     });
     this.updateReadyToSubmit();
@@ -161,7 +161,7 @@ class ResponseRecorder extends React.Component {
       return acum && Boolean(this.state.formData[field]);
     });
     this.setState({
-      readyToSubmit: valid && Boolean(this.videoRecorder.current.getBlob()),
+      readyToSubmit: valid && Boolean(this.videoRecorder.current.getBlob())
     });
   }
 
@@ -173,17 +173,18 @@ class ResponseRecorder extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, challenge } = this.props;
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
-          Respond to challenge {this.state.challenge.challengeId}:&nbsp;
-          {this.state.challenge.name}
+          Respond to challenge {challenge.title}
+          :&nbsp;
+          {challenge.name}
         </Typography>
 
         <Container className={classes.instructionsContainer}>
           <Typography variant="h3">Instructions:</Typography>
-          <div>{this.state.challenge.instructions}</div>
+          <div>{challenge.instructions}</div>
         </Container>
 
         <Container className={classes.videoContainer}>
@@ -192,16 +193,16 @@ class ResponseRecorder extends React.Component {
               width="640"
               ref={this.challengeVideo}
               className={classes.challengeVideo}
-            > 
-              <source src ={this.state.challenge.link} type="video/webm" />
+            >
+              <source src={challenge.video.url} type="video/webm" />
             </video>
             <div className={classes.responseVideo}>
-            <VideoRecorder
-              width="200"
-              height="150"
-              ref={this.videoRecorder}
-              onStatusChange={this.onStatusChange}
-            />
+              <VideoRecorder
+                width="200"
+                height="150"
+                ref={this.videoRecorder}
+                onStatusChange={this.onStatusChange}
+              />
             </div>
           </div>
           <Button
@@ -217,7 +218,6 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.formContainer}>
           <form className="recordForm" onChange={this.formChange}>
-
             <TextField
               className={classes.textField}
               name="name"
@@ -238,19 +238,44 @@ class ResponseRecorder extends React.Component {
               label="Notes"
               multiline
               rows="6"
-              style={{width: "100%"}}
+              style={{ width: "100%" }}
               margin="normal"
             />
 
-            <Button onClick={this.submit} variant="contained" color="primary" disabled={!this.state.readyToSubmit}>
+            <Button
+              onClick={this.submit}
+              variant="contained"
+              color="primary"
+              disabled={!this.state.readyToSubmit}
+            >
               Submit Response
             </Button>
           </form>
         </Container>
-
       </Paper>
     );
   }
 }
 
-export default withStyles(styles)(ResponseRecorder);
+export default compose(
+  connect(
+    (state, ownProps) => {
+      return {
+        isLoading: !ChallengeSelectors.isLoaded(state),
+        challenge: ChallengeSelectors.challenge(state, {
+          challengeId: ownProps.challengeId
+        })
+      };
+    },
+    dispatch => ({
+      actions: bindActionCreators(ChallengeActions, dispatch)
+    })
+  ),
+  lifecycle({
+    componentDidMount() {
+      this.props.actions.fetchChallenges(); // This is overkill, we could just fetch the single challenge that is being responded
+    }
+  }),
+  branch(props => props.isLoading, renderNothing), // TODO: replace with a loading component
+  withStyles(styles)
+)(ResponseRecorder);

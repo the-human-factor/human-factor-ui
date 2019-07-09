@@ -1,15 +1,13 @@
 import React from "react";
-//import VideoRecorder from "../components/VideoRecorder";
-import HumanApi from "../api";
+import api from "api";
 
 class ResponseViewer extends React.Component {
   constructor(props) {
     super(props);
     this.videoChallenge = React.createRef();
     this.videoResponse = React.createRef();
-    this.api = new HumanApi();
-    this.response = this.api.getResponse(this.props.responseId);
-    this.challenge = this.api.getChallenge(this.response.challengeId);
+    this.response = api.getResponse(this.props.responseId);
+    this.challenge = api.getChallenge(this.response.challengeId);
   }
 
   startPlaying = () => {
