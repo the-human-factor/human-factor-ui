@@ -6,8 +6,8 @@ import NavPage from "./pages/NavPage";
 import ChallengeRecorder from "./pages/ChallengeRecorder";
 import ResponseRecorder from "./pages/ResponseRecorder";
 import ResponseViewer from "./pages/ResponseViewer";
-import ListChallenges from "./pages/ListChallenges";
-import ListResponses from "./pages/ListResponses";
+import ChallengeList from "./pages/ChallengeList";
+import ResponseList from "./pages/ResponseList";
 
 import { Router } from "@reach/router";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
@@ -17,11 +17,12 @@ const App = () => (
     <Router>
       <NavPage path="/">
         <Home path="/" />
-        <ResponseRecorder path="/challenge/:challengeId" />
-        <ChallengeRecorder path="/challenge/create" />
-        <ListChallenges path="/list/challenge" />
-        <ListResponses path="/list/response" />
-        <ResponseViewer path="/response/:responseId" />
+        <ChallengeList path="/challenges" />
+        <ChallengeRecorder path="/challenges/create" />
+        <ResponseRecorder path="/challenges/:challengeId" />
+
+        <ResponseList path="/responses" />
+        <ResponseViewer path="/responses/:responseId" />
       </NavPage>
     </Router>
   </MuiThemeProvider>

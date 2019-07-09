@@ -8,6 +8,12 @@ import * as serviceWorker from "./serviceWorker";
 
 const store = createStore();
 
+if (process.env.NODE_ENV !== "production") {
+  window.store = store;
+  window.api = require("api");
+  window.challenges = require("modules/challenges");
+}
+
 const renderApp = () => {
   render(
     <Provider store={store}>

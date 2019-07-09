@@ -13,8 +13,6 @@ import Typography from "@material-ui/core/Typography";
 import VideoRecorder from "../components/VideoRecorder";
 import * as ChallengeActions from "modules/challenges/actions";
 
-console.log("CHALLENGE ACTIONS", ChallengeActions.createChallenge);
-
 const styles = theme => ({
   paper: {
     padding: 10,
@@ -135,7 +133,7 @@ class ChallengeRecorder extends React.Component {
       ...this.state.formData,
       videoBlob: this.videoRecorder.current.getBlob()
     };
-    this.props.createChallenge(challenge).then(status => {
+    this.props.actions.createChallenge(challenge).then(status => {
       console.log(status);
     });
   };
@@ -220,15 +218,12 @@ class ChallengeRecorder extends React.Component {
   }
 }
 
-const mapStateToProps = () => ({}); // Nothing here for now
-
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(ChallengeActions, dispatch);
-
 export default compose(
   withStyles(styles),
   connect(
-    mapStateToProps,
-    mapDispatchToProps
+    () => ({}), // Nothing here for now
+    dispatch => ({
+      actions: bindActionCreators(ChallengeActions, dispatch)
+    })
   )
 )(ChallengeRecorder);

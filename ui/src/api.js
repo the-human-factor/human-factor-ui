@@ -1,9 +1,9 @@
+const API = "/api";
+const VIDEO_API = `${API}/videos`;
+const CHALLENGE_API = `${API}/challenges`;
+
 class HumanApi {
   constructor() {
-    this.endpoint = "/api/";
-    this.videosEndpoint = this.endpoint + "videos";
-    this.createChallengeEndpoint = this.endpoint + "challenges/create";
-
     this.challenges = [
       {
         challengeId: "45",
@@ -70,21 +70,6 @@ class HumanApi {
     ];
   }
 
-  getChallengeIds() {
-    return this.challenges.map(challenge => {
-      return challenge.challengeId;
-    });
-  }
-
-  getChallenge(challengeId) {
-    for (let challenge of this.challenges) {
-      if (challenge.challengeId === challengeId) {
-        return challenge;
-      }
-    }
-    alert("no such challenge" + challengeId);
-  }
-
   getResponseIds() {
     return this.responses.map(response => {
       return response.responseId;
@@ -103,9 +88,8 @@ class HumanApi {
   addVideo(blob, callback) {}
 
   createChallenge(challenge) {
-    console.log(challenge);
     let formData = this.convertToForm(challenge);
-    return fetch(this.createChallengeEndpoint, {
+    return fetch(`${CHALLENGE_API}/create`, {
       method: "POST",
       body: formData
     })
@@ -124,6 +108,14 @@ class HumanApi {
     }
     return formData;
   }
+
+  fetchChallenges() {
+    return fetch(`${CHALLENGE_API}`)
+      .then(res => res.json())
+      .catch(error => {
+        console.error("Failed to fetch challenges");
+      });
+  }
 }
 
-export default HumanApi;
+export default new HumanApi();

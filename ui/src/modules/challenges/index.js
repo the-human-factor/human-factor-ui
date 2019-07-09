@@ -1,18 +1,5 @@
-import { createSlice } from "redux-starter-kit";
-
-const challengesSlice = createSlice({
-  slice: "challenges",
-  initialState: {},
-  reducers: {
-    createChallengePending() {},
-    createChallengeSuccess(state, action) {
-      const challenge = action.payload;
-      state[challenge.id] = challenge;
-    }
-  }
-});
-
-const { actions, selectors, reducer } = challengesSlice;
+import { actions, reducer } from "./slice";
+import * as selectors from "./selectors";
 
 export { actions, selectors };
 export default reducer;

@@ -1,6 +1,7 @@
 import os
 import json
 
+from sqlalchemy.orm import joinedload
 from flask import request, abort, jsonify, current_app
 from flask_restful import Resource
 
@@ -58,13 +59,14 @@ class CreateChallenge(Resource):
 
 class ChallengeList(Resource):
   def get(self):
-    challenges = m.Challenge.query.all()
+    challenges = m.Challenge.query.options(joinedload('video')).all()
 
     return s.ChallengeSchema(many=True).jsonify(challenges).json, 200
 
 class Response(Resource):
   def get(self, response_id):
     response = m.Response.get_or_404(response_id)
+
     return s.ResponseSchema().jsonify(response).json, 200
 
 class ResponseList(Resource):
