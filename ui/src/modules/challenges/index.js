@@ -1,7 +1,7 @@
 import { createSlice } from "redux-starter-kit";
 
 const challengesSlice = createSlice({
-  slice: "chalenges",
+  slice: "challenges",
   initialState: {},
   reducers: {
     createChallengePending() {},
