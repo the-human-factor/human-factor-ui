@@ -7,7 +7,6 @@ const challengesSlice = createSlice({
     createChallengePending() {},
     createChallengeSuccess(state, action) {
       const challenge = action.payload;
-      debugger;
       state[challenge.id] = challenge;
     }
   }
