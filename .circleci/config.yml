@@ -29,5 +29,9 @@ jobs:
           name: Build and push Docker image
           working_directory: ~/repo/api
           command: |
-            docker build --target prod-env -t gcr.io/the-human-factor/human-api:0.1.${CIRCLE_BUILD_NUM} .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker build --target prod-env -t gcr.io/the-human-factor/human-api:0.1.${CIRCLE_SHA1} .
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud config set project $GOOGLE_PROJECT_ID
+            gcloud config set compute/zone $GOOGLE_COMPUTE_ZONE
+            echo $GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+            docker push gcr.io/the-human-factor/human-api:${CIRCLE_SHA1}
