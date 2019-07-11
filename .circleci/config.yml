@@ -1,4 +1,8 @@
-version: 2
+version: 2.1
+
+orbs:
+  gcp-gke: circleci/gcp-gke@0.2.0
+
 jobs:
   build:
     working_directory: ~/repo
@@ -6,8 +10,6 @@ jobs:
       - image: google/cloud-sdk
     steps:
       - checkout
-      - run: echo "A first hello"
-
       - run:
           name: Install Docker Compose
           command: |
