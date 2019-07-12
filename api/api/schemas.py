@@ -6,7 +6,6 @@ import api.models as models
 class VideoSchema(ModelSchema):
   class Meta:
     model = models.Video
-    exclude = ["challenges", "response"]
 
 class UserSchema(ModelSchema):
   class Meta:
@@ -17,7 +16,12 @@ class ChallengeSchema(ModelSchema):
     model = models.Challenge
 
   video = fields.Nested(VideoSchema)
+  user = fields.Nested(UserSchema)
 
 class ResponseSchema(ModelSchema):
   class Meta:
     model = models.Response
+
+  challenge = fields.Nested(ChallengeSchema)
+  video = fields.Nested(VideoSchema)
+  user = fields.Nested(UserSchema)

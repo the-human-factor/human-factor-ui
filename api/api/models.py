@@ -76,8 +76,8 @@ class Challenge(db.Model):
   instructions = db.Column(db.UnicodeText, nullable=False)
   grading_notes = db.Column(db.UnicodeText, nullable=False)
 
-  creator = db.relationship('User', backref='challenges')
-  creator_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'))
+  user = db.relationship('User', backref='challenges')
+  user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'))
 
   video = db.relationship('Video', backref=backref('challenges', uselist=False))
   video_id = db.Column(UUID(as_uuid=True), db.ForeignKey('videos.id'), nullable=True)
@@ -95,6 +95,7 @@ class User(db.Model):
   id = db.Column(UUID(as_uuid=True), server_default=sqlalchemy.text("gen_random_uuid()"), primary_key=True)
   name = db.Column(db.Unicode(255))
   email = db.Column(db.String(255), unique=True, nullable=False)
+  # password = db.Column(db.Varchar(255))
 
   created_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), nullable=False)
   updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=datetime.utcnow, nullable=False)

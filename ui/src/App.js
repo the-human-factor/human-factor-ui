@@ -20,7 +20,6 @@ const App = () => (
         <ChallengeList path="/challenges" />
         <ChallengeRecorder path="/challenges/create" />
         <ResponseRecorder path="/challenges/:challengeId" />
-
         <ResponseList path="/responses" />
         <ResponseViewer path="/responses/:responseId" />
       </NavPage>

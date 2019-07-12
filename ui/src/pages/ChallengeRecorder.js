@@ -70,6 +70,10 @@ class ChallengeRecorder extends React.Component {
   onStatusChange(status) {
     let toggleString = "...";
     let toggleBehavior = () => {};
+    if (!this.videoRecorder.current) {
+      console.error("Can't change state of uninstatiated videoRecorder");
+      return;
+    }
     switch (status) {
       case VideoRecorder.STATUS.WAITING_FOR_CAMERA:
         break;
@@ -144,17 +148,13 @@ class ChallengeRecorder extends React.Component {
       <Paper className={classes.paper}>
         <Typography variant="h2">Record A Challenge</Typography>
         <Container className={classes.videoContainer}>
-          <VideoRecorder
-            ref={this.videoRecorder}
-            onStatusChange={this.onStatusChange}
-            allowReview
-          />
-          <Button
-            className={classes.toggleButton}
-            onClick={this.state.toggleBehavior}
-            variant="contained"
-            color="primary"
-          >
+          <VideoRecorder ref={this.videoRecorder}
+                         onStatusChange={this.onStatusChange}
+                         allowReview/>
+          <Button className={classes.toggleButton}
+                  onClick={this.state.toggleBehavior}
+                  variant="contained"
+                  color="primary">
             {this.state.toggleString}
           </Button>
         </Container>

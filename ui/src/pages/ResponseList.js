@@ -1,61 +1,109 @@
 import React from "react";
-import { connect } from "react-redux";
-import { compose, branch, lifecycle, renderNothing } from "recompose";
 import { Link } from "@reach/router";
+import { compose, lifecycle, branch, renderNothing } from "recompose";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
+import Divider from '@material-ui/core/Divider';
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
-import api from "api";
+// TODO: Tell Webpack this JS file uses this image
+import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
+import * as ResponseActions from "modules/responses/actions";
+import { selectors as ResponseSelectors } from "modules/responses";
 
-const AdapterLink = React.forwardRef((props, ref) => (
-  <Link innerRef={ref} {...props} />
-));
+const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />);
 
 const styles = theme => ({
   paper: {
-    padding: 10
-  }
-});
-
-const useStyles = makeStyles({
-  challengeCard: {
+    padding: 10,
+  },
+  paperHeader: {
     margin: 15,
-    marginBottom: 30
+    marginBottom: 30,
+  },
+  divider: {
+    margin: 15,
+    marginBottom: 30,
   }
 });
 
-function ResponseCard(props) {
-  const classes = useStyles();
-  const link = `challenges/${props.id}`;
+const useItemStyles = makeStyles({
+  item: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  text: {
+    padding: 10
+  },
+  preview: {
+    width: 100,
+    height: 75,
+    backgroundColor: '#333'
+  },
+});
+
+const ResponseListItem = props => {
+  const classes = useItemStyles();
+  const link = "/responses/" + props.id;
   return (
-    <Card className={classes.challengeCard}>
-      <Typography variant="h2">
-        <Link component={AdapterLink} to={link}>
-          {props.name}
-        </Link>
-      </Typography>
-      <Typography variant="h3">Challenge {props.id}</Typography>
-    </Card>
-  );
+    <div className={classes.item} key={props.id}>
+      <img className={classes.preview} src={VideoPlaceholder} alt="placeholder"/>
+      <div className={classes.text}>
+        <Typography variant="h2">
+            <Link component={AdapterLink} to={link}>{props.challengeTitle}</Link>
+        </Typography>
+        <Typography variant="h3">
+          Responder: {props.user}
+        </Typography>
+      </div>
+    </div>
+  )
 }
 
 const ResponseList = props => {
-  const { classes } = props;
-  let challengeLinks = api.getResponseIds().map(id => {
-    const response = api.getResponse(id);
-    return <ResponseCard id={response.responseId} name={response.responder} />;
-  });
+  const { classes, responses } = props;
+  let responseItems = Object.values(responses).map(response => (
+    <React.Fragment key={response.id}>
+      <ResponseListItem
+        id={response.id}
+        challengeTitle={response.challenge.title}
+        user={response.user.name}
+        />
+      <Divider variant="middle" className={classes.divider}/>
+    </React.Fragment>
+  ))
 
   return (
     <Paper className={classes.paper}>
-      <Typography variant="h2">Responses</Typography>
-
-      <Container>{challengeLinks}</Container>
+      <Typography variant="h2" className={classes.paperHeader}>
+          Responses
+        </Typography>
+      <Container>
+        {responseItems}
+      </Container>
     </Paper>
   );
 };
 
-export default compose(withStyles(styles))(ResponseList);
+export default compose(
+  connect(
+    state => ({
+      isLoading: ResponseSelectors.isLoading(state),
+      responses: ResponseSelectors.responses(state)
+    }),
+    dispatch => ({
+      actions: bindActionCreators(ResponseActions, dispatch)
+    })
+  ),
+  lifecycle({
+    componentDidMount() {
+      this.props.actions.fetchResponses();
+    }
+  }),
+  branch(props => props.isLoading, renderNothing), // TODO: replace with a loading component
+  withStyles(styles)
+)(ResponseList);

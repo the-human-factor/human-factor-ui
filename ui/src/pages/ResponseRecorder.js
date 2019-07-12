@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 
 import * as ChallengeSelectors from "modules/challenges/selectors";
 import * as ChallengeActions from "modules/challenges/actions";
+import * as ResponseActions from "modules/responses/actions";
 import VideoRecorder from "components/VideoRecorder";
 
 const styles = theme => ({
@@ -165,12 +166,17 @@ class ResponseRecorder extends React.Component {
     });
   }
 
-  submit(event) {
+  submit = event => {
     event.preventDefault();
-    const formData = this.state.formData;
-    console.log(formData);
-    console.log(this.videoRecorder.current.getBlob());
-  }
+    let response = {
+      ...this.state.formData,
+      challengeId: this.props.challenge.id,
+      videoBlob: this.videoRecorder.current.getBlob()
+    };
+    this.props.actions.createResponse(response).then(status => {
+      console.log(status);
+    });
+  };
 
   render() {
     const { classes, challenge } = this.props;
@@ -189,65 +195,51 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.videoContainer}>
           <div className={classes.videoOverlay}>
-            <video
-              width="640"
-              ref={this.challengeVideo}
-              className={classes.challengeVideo}
-            >
+            <video width="640"
+                   ref={this.challengeVideo}
+                   className={classes.challengeVideo}>
               <source src={challenge.video.url} type="video/webm" />
             </video>
             <div className={classes.responseVideo}>
-              <VideoRecorder
-                width="200"
-                height="150"
-                ref={this.videoRecorder}
-                onStatusChange={this.onStatusChange}
-              />
+              <VideoRecorder width="200"
+                             height="150"
+                             ref={this.videoRecorder}
+                             onStatusChange={this.onStatusChange}/>
             </div>
           </div>
-          <Button
-            className={classes.toggleButton}
-            onClick={this.state.toggleBehavior}
-            variant="contained"
-            color="primary"
-            disabled={this.state.toggleDisabled}
-          >
+          <Button className={classes.toggleButton}
+                  onClick={this.state.toggleBehavior}
+                  variant="contained"
+                  color="primary"
+                  disabled={this.state.toggleDisabled}>
             {this.state.toggleString}
           </Button>
         </Container>
 
         <Container className={classes.formContainer}>
           <form className="recordForm" onChange={this.formChange}>
-            <TextField
-              className={classes.textField}
-              name="name"
-              label="Name"
-              defaultValue=""
-              margin="normal"
-            />
+            <TextField className={classes.textField}
+                       name="name"
+                       label="Name"
+                       defaultValue=""
+                       margin="normal"/>
 
-            <TextField
-              className={classes.textField}
-              name="email"
-              label="Email Address"
-              margin="normal"
-            />
+            <TextField className={classes.textField}
+                       name="email"
+                       label="Email Address"
+                       margin="normal"/>
 
-            <TextField
-              name="notes"
-              label="Notes"
-              multiline
-              rows="6"
-              style={{ width: "100%" }}
-              margin="normal"
-            />
+            <TextField name="notes"
+                    label="Notes"
+                    multiline
+                    rows="6"
+                    style={{ width: "100%" }}
+                    margin="normal"/>
 
-            <Button
-              onClick={this.submit}
-              variant="contained"
-              color="primary"
-              disabled={!this.state.readyToSubmit}
-            >
+            <Button onClick={this.submit}
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.state.readyToSubmit}>
               Submit Response
             </Button>
           </form>
@@ -268,7 +260,7 @@ export default compose(
       };
     },
     dispatch => ({
-      actions: bindActionCreators(ChallengeActions, dispatch)
+      actions: bindActionCreators({...ChallengeActions, ...ResponseActions}, dispatch)
     })
   ),
   lifecycle({

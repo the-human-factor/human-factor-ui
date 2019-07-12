@@ -5,11 +5,13 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
+import Divider from '@material-ui/core/Divider';
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
+// TODO: Tell Webpack this JS file uses this image
+import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
 import * as ChallengeActions from "modules/challenges/actions";
 import { selectors as ChallengeSelectors } from "modules/challenges";
 
@@ -19,44 +21,79 @@ const AdapterLink = React.forwardRef((props, ref) => (
 
 const styles = theme => ({
   paper: {
-    padding: 10
-  }
-});
-
-const useStyles = makeStyles({
-  challengeCard: {
+    padding: 10,
+  },
+  paperHeader: {
     margin: 15,
-    marginBottom: 30
+    marginBottom: 30,
+  },
+  divider: {
+    margin: 15,
+    marginBottom: 30,
   }
 });
 
-function ChallengeCard(props) {
-  const classes = useStyles();
+const useItemStyles = makeStyles({
+  item: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  text: {
+    padding: 10
+  },
+  preview: {
+    width: 100,
+    height: 75,
+    backgroundColor: '#333'
+  },
+});
+
+function ChallengeListItem(props) {
+  const classes = useItemStyles();
   const link = "/challenges/" + props.id;
   return (
-    <Link component={AdapterLink} to={link}>
-      <Card className={classes.challengeCard}>
-        <Typography variant="h2">{props.title}</Typography>
-        <Typography variant="h3">Challenge {props.id}</Typography>
-      </Card>
-    </Link>
-  );
+    <div className={classes.item}>
+      <img className={classes.preview} src={VideoPlaceholder} alt="placeholder"/>
+      <div className={classes.text}>
+        <Typography variant="h2">
+            <Link component={AdapterLink} to={link}>{props.title}</Link>
+        </Typography>
+        <Typography variant="h3">
+          Created by: {props.creator}
+        </Typography>
+        <div>
+          {props.instructions}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const ChallengeList = props => {
   const { classes, challenges } = props;
-  let challengeLinks = Object.values(challenges).map(challenge => (
-    <ChallengeCard
-      id={challenge.id}
-      key={challenge.id}
-      title={challenge.title}
-    />
-  ));
+  let challengeItems = Object.values(challenges).map(challenge => (
+    <React.Fragment key={`${challenge.id}`}>
+      <ChallengeListItem
+        id={challenge.id}
+        title={challenge.title}
+        creator={challenge.name}
+        instructions={challenge.instructions}
+      />
+      <Divider
+        variant="middle"
+        className={classes.divider}
+      />
+    </React.Fragment>
+  ))
 
   return (
     <Paper className={classes.paper}>
-      <Typography variant="h2">Challenges</Typography>
-      <Container>{challengeLinks}</Container>
+      <Typography variant="h2" className={classes.paperHeader}>
+          Challenges
+        </Typography>
+      <Container>
+        {challengeItems}
+      </Container>
     </Paper>
   );
 };
