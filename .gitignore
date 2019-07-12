@@ -1,63 +1,23 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Created by https://www.gitignore.io/api/emacs
-# Edit at https://www.gitignore.io/?templates=emacs
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-### Emacs ###
-# -*- mode: gitignore; -*-
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
+# testing
+/coverage
 
-# Org-mode
-.org-id-locations
-*_archive
+# production
+/build
 
-# flymake-mode
-*_flymake.*
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# eshell files
-/eshell/history
-/eshell/lastdir
-
-# elpa packages
-/elpa/
-
-# reftex files
-*.rel
-
-# AUCTeX auto folder
-/auto/
-
-# cask packages
-.cask/
-dist/
-
-# Flycheck
-flycheck_*.el
-
-# server auth directory
-/server/
-
-# projectiles files
-.projectile
-
-# directory configuration
-.dir-locals.el
-
-# network security
-/network-security.data
-
-
-# End of https://www.gitignore.io/api/emacs
-
-# Sublime Ignores
-.eslintrc
-*.sublime-project
-*.sublime-workspace
-
-# End Sublime Ignores
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
