@@ -16,7 +16,7 @@ export const fetchChallenges = (force = false) => (dispatch, getState) => {
   }
 
   dispatch(actions.fetchChallengesPending());
-  return api
-    .fetchChallenges()
-    .then(challenges => dispatch(actions.fetchChallengesSuccess(challenges)));
+  return api.fetchChallenges().then(challenges =>
+    dispatch(actions.fetchChallengesSuccess(challenges));
+  );
 };

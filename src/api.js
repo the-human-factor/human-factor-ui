@@ -1,6 +1,12 @@
-const API = "/api";
+import { getEnv } from "./env";
+
+const env = getEnv();
+const API = `http://${env}.api.thehumanfactor.ai/api`;
+
 const CHALLENGE_API = `${API}/challenges`;
 const RESPONSE_API = `${API}/responses`;
+
+console.log("API", API);
 
 class HumanApi {
   createChallenge(challenge) {

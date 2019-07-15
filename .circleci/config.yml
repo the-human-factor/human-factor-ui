@@ -6,26 +6,23 @@ jobs:
       - image: google/cloud-sdk
     steps:
       - checkout
-      - run: echo "A first hello"
+      - run:
+          name: Install Yarn
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update && sudo apt-get install yarn
 
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            mv ~/docker-compose /usr/local/bin/docker-compose
-      - setup_remote_docker:
-         docker_layer_caching: true
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
-      - run:
-          name: Start container and verify it is working
-          command: |
-            set -x
-            docker-compose up -d
-            make migrate
-            make test
-      - run:
-          name: Build and push Docker image
-          command: |
-            docker build --target prod-env -t gcr.io/the-human-factor/human-api:0.1.${CIRCLE_BUILD_NUM} .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+     - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
