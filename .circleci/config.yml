@@ -31,3 +31,20 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          name: Run tests
+          command: yarn test
+      - run:
+          name: Build production bundle
+          command: yarn build
+      - run:
+          name: Auth with GCP
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud config set project $GOOGLE_PROJECT_ID
+            gcloud config set compute/zone $GOOGLE_COMPUTE_ZONE
+      - run:
+          name: Upload files to bucket
+          command: |
+            gsutil -m cp -r build/** gs://static.thehumanfactor.ai/${CIRCLE_SHA1}
