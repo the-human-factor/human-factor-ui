@@ -5,6 +5,12 @@ export const getEnv = () => {
   if (match) {
     // eslint-disable-next-line
     const [_, res] = match;
+
+    if (typeof res === "undefined") {
+      // undefined means we're in 'app.thehumanfactor.ai'
+      return "prod";
+    }
+
     return res.slice(0, -1);
   }
 
