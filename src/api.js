@@ -53,7 +53,9 @@ class HumanApi {
 
   fetchResponses() {
     return fetch(`${RESPONSE_API}`)
-      .then(res => res.json())
+      .then(res => res.json(), {
+        mode: "cors"
+      })
       .catch(error => {
         console.error("Failed to fetch challenges");
       });
