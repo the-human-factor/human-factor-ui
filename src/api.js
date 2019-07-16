@@ -47,7 +47,7 @@ class HumanApi {
     })
       .then(res => res.json())
       .catch(error => {
-        console.error("Failed to fetch challenges");
+        console.error("Failed to fetch challenges", error);
       });
   }
 
