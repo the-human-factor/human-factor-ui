@@ -6,35 +6,37 @@ import { bindActionCreators } from "redux";
 
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Divider from '@material-ui/core/Divider';
+import Divider from "@material-ui/core/Divider";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 // TODO: Tell Webpack this JS file uses this image
-import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
+import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
 import * as ResponseActions from "modules/responses/actions";
 import { selectors as ResponseSelectors } from "modules/responses";
 
-const AdapterLink = React.forwardRef((props, ref) => <Link innerRef={ref} {...props} />);
+const AdapterLink = React.forwardRef((props, ref) => (
+  <Link innerRef={ref} {...props} />
+));
 
 const styles = theme => ({
   paper: {
-    padding: 10,
+    padding: 10
   },
   paperHeader: {
     margin: 15,
-    marginBottom: 30,
+    marginBottom: 30
   },
   divider: {
     margin: 15,
-    marginBottom: 30,
+    marginBottom: 30
   }
 });
 
 const useItemStyles = makeStyles({
   item: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row"
   },
   text: {
     padding: 10
@@ -42,8 +44,8 @@ const useItemStyles = makeStyles({
   preview: {
     width: 100,
     height: 75,
-    backgroundColor: '#333'
-  },
+    backgroundColor: "#333"
+  }
 });
 
 const ResponseListItem = props => {
@@ -51,18 +53,22 @@ const ResponseListItem = props => {
   const link = "/responses/" + props.id;
   return (
     <div className={classes.item} key={props.id}>
-      <img className={classes.preview} src={VideoPlaceholder} alt="placeholder"/>
+      <img
+        className={classes.preview}
+        src={VideoPlaceholder}
+        alt="placeholder"
+      />
       <div className={classes.text}>
         <Typography variant="h2">
-            <Link component={AdapterLink} to={link}>{props.challengeTitle}</Link>
+          <Link component={AdapterLink} to={link}>
+            {props.challengeTitle}
+          </Link>
         </Typography>
-        <Typography variant="h3">
-          Responder: {props.user}
-        </Typography>
+        <Typography variant="h3">Responder: {props.user}</Typography>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ResponseList = props => {
   const { classes, responses } = props;
@@ -72,19 +78,17 @@ const ResponseList = props => {
         id={response.id}
         challengeTitle={response.challenge.title}
         user={response.user.name}
-        />
-      <Divider variant="middle" className={classes.divider}/>
+      />
+      <Divider variant="middle" className={classes.divider} />
     </React.Fragment>
-  ))
+  ));
 
   return (
     <Paper className={classes.paper}>
       <Typography variant="h2" className={classes.paperHeader}>
-          Responses
-        </Typography>
-      <Container>
-        {responseItems}
-      </Container>
+        Responses
+      </Typography>
+      <Container>{responseItems}</Container>
     </Paper>
   );
 };

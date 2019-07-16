@@ -1,4 +1,6 @@
-const API = "/api";
+import config from "./config";
+
+const API = config["API"];
 const CHALLENGE_API = `${API}/challenges`;
 const RESPONSE_API = `${API}/responses`;
 
@@ -40,7 +42,9 @@ class HumanApi {
   }
 
   fetchChallenges() {
-    return fetch(`${CHALLENGE_API}`)
+    return fetch(`${CHALLENGE_API}`, {
+      mode: "cors"
+    })
       .then(res => res.json())
       .catch(error => {
         console.error("Failed to fetch challenges");
