@@ -13,10 +13,10 @@ const CONFIG = {
     API: "http://localhost:9000/api"
   },
   dev: {
-    API: "http://dev.api.thehumanfactor.ai/api"
+    API: "https://dev.api.thehumanfactor.ai/api"
   },
   prod: {
-    API: "http://dev.api.thehumanfactor.ai/api"
+    API: "https://dev.api.thehumanfactor.ai/api"
   }
 };
 
