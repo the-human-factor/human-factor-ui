@@ -3,14 +3,23 @@ import { render } from "react-dom";
 import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
+import { initLogin } from "./modules/user/actions";
 import createStore from "./store";
 import * as serviceWorker from "./serviceWorker";
 
 const store = createStore();
 
+// Actually it should redirect to /login ( /register)
+// if needed and save the previous path
+// 
+// but it could be loggingOn, in which case
+// the FullPageLoader should be first 
+const boundInitLogin = () => store.dispatch(initLogin())
+boundInitLogin();
+
 if (process.env.NODE_ENV !== "production") {
   window.store = store;
-  window.api = require("api");
+  window.api = require("modules/api");
   window.challenges = require("modules/challenges");
 }
 

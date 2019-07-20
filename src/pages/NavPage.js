@@ -40,11 +40,9 @@ export default function NavPage(props) {
             <Typography variant="h1" color="inherit">
               The Human Factor
             </Typography>
-            <Button
-              color="inherit"
-              component={AdapterLink}
-              to="/challenges/create"
-            >
+            <Button color="inherit"
+                    component={AdapterLink}
+                    to="/challenges/create">
               Create A Challenge
             </Button>
             <Button color="inherit" component={AdapterLink} to="/challenges">
@@ -61,7 +59,9 @@ export default function NavPage(props) {
           </div>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md">{props.children}</Container>
+      <Container maxWidth="md">
+        {props.children}
+      </Container>
     </div>
   );
 }

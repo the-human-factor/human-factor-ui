@@ -1,10 +1,53 @@
-import config from "./config";
+import config from "config";
 
 const API = config["API"];
 const CHALLENGE_API = `${API}/challenges`;
 const RESPONSE_API = `${API}/responses`;
+const AUTH_API = `${API}/auth`;
+
 
 class HumanApi {
+  constructor() {
+    this.token = "";
+    this.authenticatedFetch = this.authenticatedFetch.bind(this);
+  }
+
+  setToken(token) {
+    // The token should be kept in sync with the user slice, so that the redux
+    // records are sensible.
+    this.token = token;
+  }
+
+  authenticatedFetch(resource, init) {
+    if (!init.headers) {
+      init.headers = new Headers();
+    }
+    init.headers.set('Authorization', `Basic ${this.token}`);
+    return fetch(resource, init);
+  }
+
+  fetchUser() {
+    return this.authenticatedFetch(`${AUTH_API}/status`, {
+      method: "GET",
+    })
+      .then(res => {
+        console.log("Got auth/status response");
+        console.log(res);
+      });
+  }
+
+  login() {
+    // TODO
+  }
+
+  logout() {
+    // TODO
+  }
+
+  register() {
+    // TODO
+  }
+
   createChallenge(challenge) {
     let formData = this.convertToForm(challenge);
     return fetch(`${CHALLENGE_API}/create`, {

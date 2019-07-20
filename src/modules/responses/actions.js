@@ -1,5 +1,5 @@
 import { actions } from "./index";
-import api from "api";
+import api from "modules/api";
 import { selectors } from "./";
 
 export const createResponse = data => dispatch => {
