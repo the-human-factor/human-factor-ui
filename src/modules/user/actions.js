@@ -2,11 +2,11 @@ import { actions } from "./index";
 import api from "modules/api";
 import { loadToken } from "modules/localStorage";
 
-export const initLogin = () => dispatch => {
+export const tryTokenVerification = () => dispatch => {
   const token = loadToken();
   if (token) {
     api.setToken(token);
-    dispatch(actions.initLogin());
+    dispatch(actions.initialCheck());
     return api
       .fetchUser(token)
       .then(user => {
@@ -22,6 +22,17 @@ export const initLogin = () => dispatch => {
 };
 
 export const redirectForLogin = (previousPath="/") => dispatch => {
-  console.log("dispatching setReturnToRoute: " + previousPath)
   dispatch(actions.setReturnToRoute(previousPath));
 };
+
+export const login = (values) => dispatch => {
+  console.log(values);
+  dispatch(actions.loginPending());
+  return api
+    .login(values)
+    .then(user => {
+      // TODO: I need both token and user
+      // const
+      console.log("Logging in!")
+    })
+}

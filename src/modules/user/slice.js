@@ -7,14 +7,14 @@ export const { actions, selectors, reducer } = createSlice({
     user: {},
     token: "",
     returnToRoute: "/",
-    meta: LoginState.INIT_STATE
+    meta: LoginState.INITIAL_CHECK
   },
   reducers: {
     setReturnToRoute(state, action) {
       state.returnToRoute = action.payload;
     },
-    initLogin(state) {
-      state.meta = LoginState.INIT_STATE;
+    initialCheck(state) {
+      state.meta = LoginState.INITIAL_CHECK;
     },
     unauthenticated(state) {
       state.meta = LoginState.LOGGED_OUT;
@@ -28,13 +28,19 @@ export const { actions, selectors, reducer } = createSlice({
       state.user = action.payload;
       state.meta = LoginState.LOGGED_IN;
     },
+    logoutPending(state) {
+      state.meta = LoginState.LOGGING_OUT;
+    },
+    logoutSuccess(state, action) {
+      state.user = action.payload;
+      state.meta = LoginState.LOGGED_OUT;
+    },
     registerPending(state) {
-      state.meta = LoginState.LOGGING_IN;
+      state.meta = LoginState.REGISTERING;
     },
     registerSuccess(state, action) {
       state.user = action.payload;
       state.meta = LoginState.LOGGED_IN;
     }
-    // TODO: logout
   }
 });

@@ -159,7 +159,7 @@ class ChallengeRecorder extends React.Component {
           </Button>
         </Container>
         <Container className={classes.formContainer}>
-          <form className="recordForm" onChange={this.formChange}>
+          <form onChange={this.formChange}>
             <TextField className={classes.textField}
                        name="name"
                        label="Name"

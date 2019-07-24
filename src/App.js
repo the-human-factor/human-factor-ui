@@ -18,24 +18,14 @@ import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
 
-
-// Actually it should redirect to /login ( /register)
-// if needed and save the previous path
-// 
-// but it could be loggingOn, in which case
-// the FullPageLoader should be first 
-
 const App = props => {
-  if (props.isLoginInit) {
+  if (props.isInitialCheck) {
     return <FullPageLoader />;
   }
 
-  // TODO: Is this really the best place for this?
-  // No because it doesn't notice route changes....
+  // TODO: Is this the correct place for the redirect?
   const pathname = window.location.pathname;
-  console.log("render");
-  if (!props.isLoggedOn && pathname !== "/login" && pathname !== "/register") {
-    console.log("conditions true");
+  if (!props.isLoggedIn && pathname !== "/login" && pathname !== "/register") {
     props.actions.redirectForLogin(pathname);
     navigate("/login");
     return <Router><FullPageLoader default /></Router>;
@@ -62,8 +52,9 @@ const App = props => {
 export default compose(
   connect(
     state => ({
-        isLoginInit: UserSelectors.isLoginInit(state),
-        isLoggedOn: UserSelectors.isLoggedOn(state),
+        isInitialCheck: UserSelectors.isInitialCheck(state),
+        isLoggedIn: UserSelectors.isLoggedIn(state),
+        // returnToRoute is included to cause a rerender after redirectForLogin.
         returnToRoute: UserSelectors.returnToRoute(state)
 
     }),

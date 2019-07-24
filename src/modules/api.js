@@ -36,11 +36,21 @@ class HumanApi {
       });
   }
 
-  login() {
-    // TODO
+  login(credentials) {
+    let formData = this.convertToForm(credentials);
+    return fetch(`${AUTH_API}/logon`, {
+      method: "POST",
+      body: formData
+    })
+      .then(res => {
+        return res.json();
+      })
+      .catch(error => {
+        console.error("Failed to createChallenge:", error);
+      });
   }
 
-  logout() {
+  logoff() {
     // TODO
   }
 

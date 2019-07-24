@@ -3170,6 +3170,11 @@ es-to-primitive@^1.2.0:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
+es6-error@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/es6-error/-/es6-error-4.1.1.tgz#9e3af407459deed47e9a91f9b885a84eb05c561d"
+  integrity sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==
+
 escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
@@ -4253,6 +4258,11 @@ immer@1.10.0:
 immer@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/immer/-/immer-2.1.5.tgz#0389947455c5a2c7a47f1e6f415c9d1a62a1ebed"
+
+immutable@3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+  integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -5380,6 +5390,11 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash-es@^4.17.11:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
+  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
 
 lodash._reinterpolate@~3.0.0:
   version "3.0.0"
@@ -7384,6 +7399,24 @@ redux-devtools-extension@^2.13.8:
 redux-first-history@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/redux-first-history/-/redux-first-history-4.0.4.tgz#6f492d58244d4794920bef66909d3ee5fefe5f66"
+
+redux-form@^8.2.4:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-8.2.4.tgz#6c21c49e31b473cebe718def03487fc9d4665923"
+  integrity sha512-+MMD5XWVUgrtgXBuQiIYtHstPT7Lz0Izuc6vqBr1S9+7HbGgvJg4V5qDr2nigE1V5hKgsqnoAmWOWtzXc9ErZA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    es6-error "^4.1.1"
+    hoist-non-react-statics "^3.2.1"
+    invariant "^2.2.4"
+    is-promise "^2.1.0"
+    lodash "^4.17.11"
+    lodash-es "^4.17.11"
+    prop-types "^15.6.1"
+    react-is "^16.7.0"
+    react-lifecycles-compat "^3.0.4"
+  optionalDependencies:
+    immutable "3.8.2"
 
 redux-immutable-state-invariant@^2.1.0:
   version "2.1.0"
