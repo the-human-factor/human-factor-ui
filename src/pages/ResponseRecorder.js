@@ -195,9 +195,12 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.videoContainer}>
           <div className={classes.videoOverlay}>
-            <video width="640"
-                   ref={this.challengeVideo}
-                   className={classes.challengeVideo}>
+            <video
+              width="640"
+              ref={this.challengeVideo}
+              type="video/webm"
+              className={classes.challengeVideo}
+            >
               <source src={challenge.video.url} type="video/webm" />
             </video>
             <div className={classes.responseVideo}>
