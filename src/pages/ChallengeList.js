@@ -73,16 +73,12 @@ const ChallengeList = props => {
   const { classes, challenges } = props;
   let challengeItems = Object.values(challenges).map(challenge => (
     <React.Fragment key={`${challenge.id}`}>
-      <ChallengeListItem
-        id={challenge.id}
-        title={challenge.title}
-        creator={challenge.name}
-        instructions={challenge.instructions}
-      />
-      <Divider
-        variant="middle"
-        className={classes.divider}
-      />
+      <ChallengeListItem id={challenge.id}
+                         title={challenge.title}
+                         creator={challenge.name}
+                         instructions={challenge.instructions}/>
+      <Divider variant="middle"
+               className={classes.divider}/>
     </React.Fragment>
   ))
 
@@ -90,7 +86,7 @@ const ChallengeList = props => {
     <Paper className={classes.paper}>
       <Typography variant="h2" className={classes.paperHeader}>
           Challenges
-        </Typography>
+      </Typography>
       <Container>
         {challengeItems}
       </Container>

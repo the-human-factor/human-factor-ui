@@ -159,56 +159,44 @@ class ChallengeRecorder extends React.Component {
           </Button>
         </Container>
         <Container className={classes.formContainer}>
-          <form className="recordForm" onChange={this.formChange}>
-            <TextField
-              className={classes.textField}
-              name="name"
-              label="Name"
-              defaultValue=""
-              margin="normal"
-            />
+          <form onChange={this.formChange}>
+            <TextField className={classes.textField}
+                       name="name"
+                       label="Name"
+                       defaultValue=""
+                       margin="normal"/>
 
-            <TextField
-              className={classes.textField}
-              name="email"
-              label="Email Address"
-              margin="normal"
-            />
+            <TextField className={classes.textField}
+                       name="email"
+                       label="Email Address"
+                       margin="normal"/>
 
-            <TextField
-              className={classes.textField}
-              name="title"
-              label="Challenge Title"
-              style={{ width: "100%" }}
-              margin="normal"
-            />
+            <TextField className={classes.textField}
+                       name="title"
+                       label="Challenge Title"
+                       style={{ width: "100%" }}
+                       margin="normal"/>
 
-            <TextField
-              name="instructions"
-              label="Instructions"
-              placeholder="This will be displayed to the person taking the challenge."
-              multiline
-              rows="6"
-              style={{ width: "100%" }}
-              margin="normal"
-            />
+            <TextField name="instructions"
+                       label="Instructions"
+                       placeholder="This will be displayed to the person taking the challenge."
+                       multiline
+                       rows="6"
+                       style={{ width: "100%" }}
+                       margin="normal"/>
 
-            <TextField
-              name="grading_notes"
-              label="Grading Notes"
-              placeholder="Instructions for the grader to know what to look for."
-              multiline
-              rows="6"
-              style={{ width: "100%" }}
-              margin="normal"
-            />
+            <TextField name="grading_notes"
+                       label="Grading Notes"
+                       placeholder="Instructions for the grader to know what to look for."
+                       multiline
+                       rows="6"
+                       style={{ width: "100%" }}
+                       margin="normal"/>
 
-            <Button
-              onClick={this.submit}
-              variant="contained"
-              color="primary"
-              disabled={!this.state.readyToSubmit}
-            >
+            <Button onClick={this.submit}
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.state.readyToSubmit}>
               Submit Challenge
             </Button>
           </form>

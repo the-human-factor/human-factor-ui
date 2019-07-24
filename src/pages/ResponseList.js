@@ -53,11 +53,9 @@ const ResponseListItem = props => {
   const link = "/responses/" + props.id;
   return (
     <div className={classes.item} key={props.id}>
-      <img
-        className={classes.preview}
-        src={VideoPlaceholder}
-        alt="placeholder"
-      />
+      <img className={classes.preview}
+           src={VideoPlaceholder}
+           alt="placeholder"/>
       <div className={classes.text}>
         <Typography variant="h2">
           <Link component={AdapterLink} to={link}>
