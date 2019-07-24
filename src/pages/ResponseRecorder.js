@@ -106,7 +106,12 @@ class ResponseRecorder extends React.Component {
     this.challengeVideo.current.pause();
     this.challengeVideo.current.currentTime = 0;
     this.challengeVideo.current.play();
-    this.videoRecorder.current.stopRecording();
+    this.videoRecorder.current.stopRecordingWithCallback(() => {this.videoRecorder.current.mute();});
+    // Mutes the video while the challenge is playing.
+    // TODO: make this more reacty.
+    this.challengeVideo.current.onended = () => {
+	this.videoRecorder.current.unmute();
+    }
   }
 
   onStatusChange(status) {
@@ -204,7 +209,7 @@ class ResponseRecorder extends React.Component {
               <VideoRecorder width="200"
                              height="150"
                              ref={this.videoRecorder}
-                             onStatusChange={this.onStatusChange}/>
+                             onStatusChange={this.onStatusChange} />
             </div>
           </div>
           <Button className={classes.toggleButton}
