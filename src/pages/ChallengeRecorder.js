@@ -118,8 +118,6 @@ class ChallengeRecorder extends React.Component {
 
   updateReadyToSubmit() {
     const valid = [
-      "name",
-      "email",
       "instructions",
       "title",
       "grading_notes"
@@ -160,17 +158,6 @@ class ChallengeRecorder extends React.Component {
         </Container>
         <Container className={classes.formContainer}>
           <form onChange={this.formChange}>
-            <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
             <TextField className={classes.textField}
                        name="title"
                        label="Challenge Title"

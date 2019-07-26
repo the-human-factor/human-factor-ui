@@ -3,12 +3,12 @@ import { render } from "react-dom";
 import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
-import { tryTokenVerification } from "./modules/user/actions";
+import { initLogin } from "./modules/user/actions";
 import createStore from "./store";
 import * as serviceWorker from "./serviceWorker";
 
 const store = createStore();
-store.dispatch(tryTokenVerification());
+store.dispatch(initLogin());
 
 if (process.env.NODE_ENV !== "production") {
   window.store = store;

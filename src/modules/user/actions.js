@@ -1,24 +1,17 @@
 import { actions } from "./index";
 import api from "modules/api";
-import { loadToken } from "modules/localStorage";
 
-export const tryTokenVerification = () => dispatch => {
-  const token = loadToken();
-  if (token) {
-    api.setToken(token);
-    dispatch(actions.initialCheck());
-    return api
-      .fetchUser(token)
-      .then(user => {
-        const payload = { token: token, user: user };
-        dispatch(actions.loginSuccess(payload));
-      })
-      .catch(error => {
-        dispatch(actions.unauthenticated());
-        console.error(error);
-      });
-  }
-  dispatch(actions.unauthenticated());
+export const initLogin = () => dispatch => {
+  dispatch(actions.initialCheck());
+  return api
+    .getUser()
+    .then(user => {
+      dispatch(actions.loginSuccess(user));
+    })
+    .catch(error => {
+      dispatch(actions.unauthenticated());
+      console.error(error);
+    });
 };
 
 export const redirectForLogin = (previousPath="/") => dispatch => {

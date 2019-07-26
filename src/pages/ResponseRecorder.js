@@ -158,7 +158,7 @@ class ResponseRecorder extends React.Component {
   }
 
   updateReadyToSubmit() {
-    const valid = ["name", "email", "notes"].reduce((acum, field) => {
+    const valid = ["notes"].reduce((acum, field) => {
       return acum && Boolean(this.state.formData[field]);
     });
     this.setState({
@@ -218,17 +218,6 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.formContainer}>
           <form className="recordForm" onChange={this.formChange}>
-            <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
             <TextField name="notes"
                     label="Notes"
                     multiline

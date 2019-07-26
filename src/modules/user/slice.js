@@ -5,7 +5,6 @@ export const { actions, selectors, reducer } = createSlice({
   slice: "user",
   initialState: {
     user: {},
-    token: "",
     returnToRoute: "/",
     meta: LoginState.INITIAL_CHECK
   },
@@ -19,7 +18,6 @@ export const { actions, selectors, reducer } = createSlice({
     unauthenticated(state) {
       state.meta = LoginState.LOGGED_OUT;
       state.user = {};
-      state.token = "";
     },
     loginPending(state) {
       state.meta = LoginState.LOGGING_IN;
