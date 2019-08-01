@@ -135,8 +135,15 @@ class ChallengeRecorder extends React.Component {
       ...this.state.formData,
       videoBlob: this.videoRecorder.current.getBlob()
     };
+    // If we submit, we shouldn't submit twice.
+    this.setState({
+	    readyToSubmit: false});
     this.props.actions.createChallenge(challenge).then(status => {
-      console.log(status);
+	    // TODO: Redux this shit
+	    console.log(status);
+      if (status.hasOwnProperty('video')) {
+	  alert('Submitted Challenge!');
+      }
     });
   };
 

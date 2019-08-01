@@ -106,7 +106,12 @@ class ResponseRecorder extends React.Component {
     this.challengeVideo.current.pause();
     this.challengeVideo.current.currentTime = 0;
     this.challengeVideo.current.play();
-    this.videoRecorder.current.stopRecording();
+    this.videoRecorder.current.stopRecordingWithCallback(() => {this.videoRecorder.current.mute();});
+    // Mutes the video while the challenge is playing.
+    // TODO: make this more reacty.
+    this.challengeVideo.current.onended = () => {
+	this.videoRecorder.current.unmute();
+    }
   }
 
   onStatusChange(status) {
@@ -195,16 +200,19 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.videoContainer}>
           <div className={classes.videoOverlay}>
-            <video width="640"
-                   ref={this.challengeVideo}
-                   className={classes.challengeVideo}>
+            <video
+              width="640"
+              ref={this.challengeVideo}
+              type="video/webm"
+              className={classes.challengeVideo}
+            >
               <source src={challenge.video.url} type="video/webm" />
             </video>
             <div className={classes.responseVideo}>
               <VideoRecorder width="200"
                              height="150"
                              ref={this.videoRecorder}
-                             onStatusChange={this.onStatusChange}/>
+                             onStatusChange={this.onStatusChange} />
             </div>
           </div>
           <Button className={classes.toggleButton}

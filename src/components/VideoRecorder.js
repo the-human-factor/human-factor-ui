@@ -21,8 +21,12 @@ class VideoRecorder extends React.Component {
     this.loadedData = this.loadedData.bind(this);
     this.startRecording = this.startRecording.bind(this);
     this.stopRecording = this.stopRecording.bind(this);
+    this.stopRecordingWithCallback = this.stopRecordingWithCallback.bind(this);
     this.resetForRecording = this.resetForRecording.bind(this);
     this.setup = this.setup.bind(this);
+    this.mute = this.mute.bind(this);
+    this.unmute = this.unmute.bind(this);
+    this.stopRecordingCallback = this.stopRecordingCallback.bind(this);
   }
 
   static defaultProps = {
@@ -97,9 +101,26 @@ class VideoRecorder extends React.Component {
     this.updateStatus(VideoRecorder.STATUS.REPLAY);
   }
 
+  mute() {
+    this.videoElement.current.volume = 0;
+    this.videoElement.current.muted = true;
+  }
+
+  unmute() {
+    this.videoElement.current.volume = 1;
+    this.videoElement.current.muted = false;
+  }
+
   stopRecording() {
-    this.recorder.stopRecording(this.stopRecordingCallback.bind(this));
-  };
+    this.recorder.stopRecording(this.stopRecordingCallback);
+  }
+
+  stopRecordingWithCallback(callback) {
+    this.recorder.stopRecording(() =>
+      {this.stopRecordingCallback();
+       callback();
+      });
+  }
 
   resetForRecording() {
     this.blob = null;
