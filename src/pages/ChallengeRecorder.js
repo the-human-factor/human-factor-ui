@@ -59,7 +59,9 @@ class ChallengeRecorder extends React.Component {
       status: VideoRecorder.STATUS.WAITING_FOR_CAMERA,
       toggleBehavior: () => {},
       toggleString: "...",
-      formData: {},
+      formData: {
+        grading_notes: ""
+      },
       readyToSubmit: false,
       waitingForSubmit: false
     };
