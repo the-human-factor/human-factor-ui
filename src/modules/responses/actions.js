@@ -6,6 +6,7 @@ export const createResponse = data => dispatch => {
   dispatch(actions.createResponsePending());
   return api.createResponse(data).then(response => {
     dispatch(actions.createResponseSuccess(response));
+    return response;
   });
 };
 

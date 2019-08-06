@@ -113,7 +113,7 @@ class ResponseRecorder extends React.Component {
     // Mutes the video while the challenge is playing.
     // TODO: make this more reacty.
     this.challengeVideo.current.onended = () => {
-	this.videoRecorder.current.unmute();
+    this.videoRecorder.current.unmute();
     }
   }
 
@@ -184,9 +184,9 @@ class ResponseRecorder extends React.Component {
     this.setState({ waitingForSubmit: true });
     this.props.actions
       .createResponse(response)
-      .then(response => {
+      .then(newResponse => {
         this.setState({ waitingForSubmit: false });
-        navigate(`/responses/${response.id}`);
+        navigate(`/responses/${newResponse.id}`);
       })
       .catch(err => {
         this.setState({ waitingForSubmit: false });
