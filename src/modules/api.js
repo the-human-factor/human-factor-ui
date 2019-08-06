@@ -12,39 +12,18 @@ class HumanApi {
     this.token = "";
     this.refreshToken = "";
 
+    this.becameUnauthenticated = () => {
+      throw Error("becameUnauthenticated should be set by a redux action.");
+    }
+
     this.setAuthHeader = this.setAuthHeader.bind(this);
-    this.authenticatedFetch = this.authenticatedFetch.bind(this);
+    this.authFetch = this.authFetch.bind(this);
     this.refreshUser = this.refreshUser.bind(this);
-  }
+    this.hasValidAccessToken = this.hasValidAccessToken.bind(this);
+    this.hasValidRefreshToken = this.hasValidRefreshToken.bind(this);
 
-  // setToken(token) {
-  //   // The token should be kept in sync with the user slice, so that the redux
-  //   // records are sensible.
-  //   // Actually probably better to keep the token out of the redux store
-  //   // and instead just keep it locally in the api
-  //   // But that needs to be updated nicely
-  //   this.token = token;
-  // }
-
-  getUser() {
-    return new Promise((resolve, reject) => {
-      this.token = this.token || localStorage.getItem("userToken");
-      this.refreshToken = this.refreshToken || localStorage.getItem("refreshToken");
-
-      if (this.token) {
-        // TODO: decrypt the token and see if the expiration is after now.
-        // let user = {name: 'Alex'};
-        // return new Promise(resolve => resolve(user));
-        reject("Not implemented");
-      } else if (this.refreshToken) {
-        this
-          .refreshUser()
-          .then(user => {resolve(user)})
-          .catch(error => {reject(error)});
-      } else {
-        reject("Missing tokens");
-      }
-    });
+    this.pendingRefresh = false;
+    this.pendingRequestQueue = [];
   }
 
   setAuthHeader(init, token) {
@@ -55,63 +34,155 @@ class HumanApi {
     return init;
   }
 
-  authenticatedFetch(resource, init) {
-    if (!this.token) {
-      if (!this.refreshToken) {
-        throw "Missing tokens, can not make authenticated fetch";
-      }
-      // TODO: Refresh token here?
-      throw "unimplemented";
+  authFetch(resource, init) {
+    if (this.pendingRefresh) {
+      return this.authFetchAfterRefresh(resource, init);
     }
-    let init = this.setAuthHeader(init, this.token);
-    return fetch(resource, init)
-      .catch(error => {
-        console.log(error);
-        throw error;
-        // TODO: use refresh token if that is possible
-        // Also what if there are multiple of these that
-        // have a race condition 0_o
-      });
+
+    if (!this.hasValidAccessToken()) {
+      if (!this.hasValidRefreshToken()) {
+        this.becameUnauthenticated();
+        this.token = "";
+        this.refreshToken = "";
+        throw Error("Missing tokens, cannot make authenticated fetch");
+        // TODO: This would suck if it happened in the middle
+        // of a user doing something. Maybe anticipate logout?
+      }
+      return this.authFetchAfterRefresh(resource, init);
+    }
+
+    const newInit = this.setAuthHeader(init, this.token);
+    return fetch(resource, newInit).then(res => { return res });
   }
 
+  authFetchAfterRefresh(resource, init) {
+    this.pendingRequestQueue.push({resource: resource, init: init});
+    
+    if (!this.pendingRefresh) {
+      this.pendingRefresh = true;
+      this.refreshUser()
+          .then(user => {
+            this.pendingRefresh = false;
+            // Loop through all the pendingRequests
+            return user;
+          })
+          .catch(err => {
+            this.pendingRefresh = false;
+            throw err;
+          });
+    } else {
+      this.pendingRequestChain = this.pendingRequestChain.then(res => {
+        const newInit = this.setAuthHeader(init, this.token);
+        return fetch(resource, newInit).then(res => { return res });
+      });
+    }
+  }
+
+  getUser() {
+    return new Promise((resolve, reject) => {
+      this.token = this.token || localStorage.getItem("userToken");
+      this.refreshToken = this.refreshToken || localStorage.getItem("refreshToken");
+
+      if (!this.hasValidAccessToken() && !this.hasValidRefreshToken()) {
+        reject("Missing tokens");
+      } else {
+        this.refreshUser()
+          .then(user => {resolve(user)})
+          .catch(err => {reject(err)});
+      }
+    });
+  }
+
+  // TODO: DRY: login and register and refresh are almost exactly the same
   login(credentials) {
-    let formData = this.convertToForm(credentials);
-    return fetch(`${AUTH_API}/logon`, {
+    const self = this;
+    return fetch(`${AUTH_API}/login`, {
       method: "POST",
-      body: formData
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials)
     })
       .then(res => {
-        let obj = res.json();
-        console.log(obj);
-        return obj.user;
+        if (!res.ok) {
+          throw Error(`Login failed: ${res.status} (${res.statusText})`);
+        }
+
+        return res
+          .json()
+          .then(json => {
+            self.token = json.access_token;
+            self.refreshToken = json.refresh_token;
+            try {
+              self.saveTokensToLocalStore();
+            } catch (err) {
+              console.error("Failed to save token to local storage");
+              console.error(err);
+            }
+            return json.user;
+          });
       })
       .catch(error => {
         console.error("Failed to log in:", error);
+        throw error;
       });
   }
 
   register(credentials) {
-    let formData = this.convertToForm(credentials);
+    const self = this;
     return fetch(`${AUTH_API}/register`, {
       method: "POST",
-      body: formData
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials)
     })
       .then(res => {
-        let obj = res.json();
-        console.log(obj);
-        return obj.user;
+        if (!res.ok) {
+          throw Error(`Register failed: ${res.status} (${res.statusText})`);
+        }
+
+        return res
+          .json()
+          .then(json => {
+            self.token = json.access_token;
+            self.refreshToken = json.refresh_token;
+            try {
+              self.saveTokensToLocalStore();
+            } catch (err) {
+              console.error("Failed to save token to local storage");
+              console.error(err);
+            }
+            return json.user;
+          });
       })
       .catch(error => {
-        console.error("Failed to log in:", error);
+        console.error("Failed to register:", error);
+        throw error;
       });
   }
 
   refreshUser() {
+    const self = this;
     let init = this.setAuthHeader({ method: "GET" }, this.refreshToken);
-    return this.fetch(`${AUTH_API}/refresh`, init)
+    return fetch(`${AUTH_API}/refresh`, init)
       .then(res => {
-        console.log("Got auth/status response");
-        console.log(res);
+        if (!res.ok) {
+          throw Error(`refreshUser failed: ${res.status} (${res.statusText})`);
+        }
+
+        return res
+          .json()
+          .then(json => {
+            self.token = json.access_token;
+            try {
+              self.saveTokensToLocalStore();
+            } catch (err) {
+              console.error("Failed to save token to local storage");
+              console.error(err);
+            }
+            return json.user;
+          });
       });
   }
 
@@ -127,7 +198,7 @@ class HumanApi {
 
   createChallenge(challenge) {
     let formData = this.convertToForm(challenge);
-    return authenticatedFetch(`${CHALLENGE_API}/create`, {
+    return this.authFetch(`${CHALLENGE_API}/create`, {
       method: "POST",
       body: formData
     })
@@ -141,7 +212,7 @@ class HumanApi {
 
   createResponse(response) {
     let formData = this.convertToForm(response);
-    return authenticatedFetch(`${RESPONSE_API}/create`, {
+    return this.authFetch(`${RESPONSE_API}/create`, {
       method: "POST",
       body: formData
     })
@@ -154,7 +225,7 @@ class HumanApi {
   }
 
   fetchChallenges() {
-    return authenticatedFetch(`${CHALLENGE_API}`, {
+    return this.authFetch(`${CHALLENGE_API}`, {
       mode: "cors"
     })
       .then(res => res.json())
@@ -164,7 +235,7 @@ class HumanApi {
   }
 
   fetchResponses() {
-    return authenticatedFetch(`${RESPONSE_API}`)
+    return this.authFetch(`${RESPONSE_API}`)
       .then(res => res.json(), {
         mode: "cors"
       })
@@ -182,21 +253,37 @@ class HumanApi {
   }
 
   loadTokensFromLocalStore() {
-    try {
-      this.token = localStorage.getItem('userToken');
-      this.refreshToken = localStorage.getItem('refreshToken');
-    } catch (err) {
-      console.error(err);
-    }
+    this.token = localStorage.getItem('accessToken');
+    this.refreshToken = localStorage.getItem('refreshToken');
   }
 
   saveTokensToLocalStore() {
-    try {
-      localStorage.setItem('userToken', this.token);
-      localStorage.setItem('refreshToken', this.refreshToken);
-    } catch (err) {
-      console.error(err)
+    localStorage.setItem('accessToken', this.token);
+    localStorage.setItem('refreshToken', this.refreshToken);
+  }
+
+  readToken(str) {
+    const parts = str.split(".");
+    return {
+      header: atob(parts[0]),
+      body: atob(parts[1]),
+      signature: atob(parts[2])
     }
+  }
+
+  tokenHasValidTime(token) {
+    const time = Math.floor( Date.now() / 1000 );
+    return token.body.nbf < time && time < token.body.exp;
+  }
+
+  hasValidAccessToken() {
+    return Boolean(this.token) &&
+        this.tokenHasValidTime(this.readToken(this.token));
+  }
+
+  hasValidRefreshToken() {
+    return Boolean(this.refreshToken) &&
+        this.tokenHasValidTime(this.readToken(this.refreshToken));
   }
 }
 

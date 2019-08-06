@@ -23,22 +23,22 @@ export const { actions, selectors, reducer } = createSlice({
       state.meta = LoginState.LOGGING_IN;
     },
     loginSuccess(state, action) {
-      state.user = action.payload;
       state.meta = LoginState.LOGGED_IN;
+      state.user = action.payload;
     },
     logoutPending(state) {
       state.meta = LoginState.LOGGING_OUT;
     },
-    logoutSuccess(state, action) {
-      state.user = action.payload;
+    logoutSuccess(state) {
       state.meta = LoginState.LOGGED_OUT;
+      state.user = {};
     },
     registerPending(state) {
       state.meta = LoginState.REGISTERING;
     },
     registerSuccess(state, action) {
-      state.user = action.payload;
       state.meta = LoginState.LOGGED_IN;
+      state.user = action.payload;
     }
   }
 });

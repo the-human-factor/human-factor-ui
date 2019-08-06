@@ -60,9 +60,9 @@ const renderTextField = ({
 )
 
 const Login = props => {
-  const { handleSubmit, pristine, submitting, classes } = props;
+  const { handleSubmit, pristine, submitting, classes, onSubmit } = props;
   return (
-    <form className={classes.form} onSubmit={handleSubmit(login)}>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
              name="email"
              label="Email"
@@ -92,9 +92,9 @@ const Login = props => {
 
 // TODO: How to validate password is the same?
 const Register = props => {
-  const { handleSubmit, pristine, submitting, classes } = props;
+  const { handleSubmit, pristine, submitting, classes, onSubmit } = props;
   return (
-    <form className={classes.form} onSubmit={handleSubmit(register)}>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
              name="name"
              label="Name"
@@ -134,26 +134,18 @@ const Register = props => {
   );
 };
 
-const login = (values) => {
-  console.log(values);
-}
-
-const register = (values) => {
-  console.log(values);
-}
-
 const ReduxLogin = reduxForm({ form: "login" })(Login);
 const ReduxRegister = reduxForm({ form: "register"})(Register);
 
 const LoginRegister = props => {
-  const { classes } = props;
+  const { classes, actions } = props;
   if (props.mode === "login") {
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2" className={classes.paperHeader}>
           Login
         </Typography>
-        <ReduxLogin classes={classes}/>
+        <ReduxLogin classes={classes} onSubmit={actions.login} />
       </Paper>
     );
   } else if (props.mode === "register") {
@@ -162,7 +154,7 @@ const LoginRegister = props => {
         <Typography variant="h2" className={classes.paperHeader}>
             Register
         </Typography>
-        <ReduxRegister classes={classes} />
+        <ReduxRegister classes={classes} onSubmit={actions.register} />
       </Paper>
     );
   } else {
