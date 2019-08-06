@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { compose, lifecycle, branch, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
+import { navigate } from "@reach/router";
 
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -13,6 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import * as ChallengeSelectors from "modules/challenges/selectors";
 import * as ChallengeActions from "modules/challenges/actions";
 import * as ResponseActions from "modules/responses/actions";
+import BusyDialog from "../components/BusyDialog";
 import VideoRecorder from "components/VideoRecorder";
 
 const styles = theme => ({
@@ -86,7 +88,8 @@ class ResponseRecorder extends React.Component {
       readyToSubmit: false,
       toggleBehavior: () => {},
       toggleString: "...",
-      toggleDisabled: true
+      toggleDisabled: true,
+      waitingForSubmit: false
     };
 
     this.onStatusChange = this.onStatusChange.bind(this);
@@ -173,14 +176,23 @@ class ResponseRecorder extends React.Component {
 
   submit = event => {
     event.preventDefault();
-    let response = {
+    const response = {
       ...this.state.formData,
       challengeId: this.props.challenge.id,
       videoBlob: this.videoRecorder.current.getBlob()
     };
-    this.props.actions.createResponse(response).then(status => {
-      console.log(status);
-    });
+    this.setState({ waitingForSubmit: true });
+    this.props.actions
+      .createResponse(response)
+      .then(response => {
+        this.setState({ waitingForSubmit: false });
+        navigate(`/responses/${response.id}`);
+      })
+      .catch(err => {
+        this.setState({ waitingForSubmit: false });
+        console.error(err);
+        alert("Error submitting response");
+      });
   };
 
   render() {
@@ -252,6 +264,8 @@ class ResponseRecorder extends React.Component {
             </Button>
           </form>
         </Container>
+        <BusyDialog title="Submitting Response"
+                    open={this.state.waitingForSubmit}/>
       </Paper>
     );
   }
