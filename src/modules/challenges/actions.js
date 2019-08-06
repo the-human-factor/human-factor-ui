@@ -5,7 +5,7 @@ import { selectors } from "./";
 export const createChallenge = data => dispatch => {
   dispatch(actions.createChallengePending());
   return api.createChallenge(data).then(challenge => {
-	  dispatch(actions.createChallengeSuccess(challenge));
+    dispatch(actions.createChallengeSuccess(challenge));
     return challenge;
   });
 };
