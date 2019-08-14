@@ -1,30 +1,184 @@
+import axios from 'axios';
 import config from "config";
 import lodash from "lodash";
 
 const API = config["API"];
-const CHALLENGE_API = `${API}/challenges`;
-const RESPONSE_API = `${API}/responses`;
-const AUTH_API = `${API}/auth`;
+const CHALLENGE_API = "/challenges";
+const RESPONSE_API = "/responses";
+const AUTH_API = "/auth";
+const AUTH_REFRESH_API = "/auth/refresh";
 
+class PendingRequest {
+  constructor({config,
+               isRefreshRequest=false,
+               isAuthRequest=false,
+               inFlight=false,
+               cancel=() => void 0 }) {
 
-class HumanApi {
+    this.promise = new Promise((resolve, reject) => {
+      res = resolve;
+      rej = reject;
+    });
+    this.promise.resolve = res;
+    this.promise.reject = rej;
+    
+    this.config = config;
+    this.isRefreshRequest = isRefreshRequest;
+    this.isAuthRequest = isAuthRequest;
+  }
+}
+
+class TokenStorage {
   constructor() {
-    this.token = "";
-    this.refreshToken = "";
+    this.accessToken = localStorage.getItem('accessToken') || "";
+    this.refreshToken = localStorage.getItem('refreshToken') || "";
+    
+    this.store = this.store.bind(this);
+  }
 
-    this.becameUnauthenticated = () => {
-      throw Error("becameUnauthenticated should be set by a redux action.");
+  store(accessToken, refreshToken) {
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
+    try {
+      localStorage.setItem('accessToken', this.accessToken);
+      localStorage.setItem('refreshToken', this.refreshToken);
+    } catch (err) {
+      console.error("Failed to save token to local storage");
+      console.error(err);
+    }
+  }
+}
+
+class ApiDispatcher {
+  constructor() {
+    this.pendingRequests = [];
+
+    this.tokenStorage = new TokenStorage();
+
+    this.errorInterceptor = this.errorInterceptor.bind(this);
+
+    this.axios = axios.create({
+      baseURL: API,
+    })
+
+    axios.interceptors.response.use(response => response, errorInterceptor);
+  }
+
+  errorInterceptor(error) {
+    // Return any error which is not due to authentication back to the calling service
+    if (error.response.status !== 401) {
+      return new Promise((resolve, reject) => {
+        reject(error);
+      });
     }
 
-    this.setAuthHeader = this.setAuthHeader.bind(this);
-    this.authFetch = this.authFetch.bind(this);
-    this.refreshUser = this.refreshUser.bind(this);
-    this.hasValidAccessToken = this.hasValidAccessToken.bind(this);
-    this.hasValidRefreshToken = this.hasValidRefreshToken.bind(this);
+    // Logout user if token refresh didn't work
+    if (error.config.url == AUTH_REFRESH_API) {
+      this.clearTokens();
+      this.becameUnauthenticated();
+      return new Promise((resolve, reject) => { reject(error); });
+    }
 
-    this.pendingRefresh = false;
-    this.pendingRequestQueue = [];
+    // Try request again with new token
+    return TokenStorage.getNewToken()
+      .then((token) => {
+
+        // New request with new token
+        const config = error.config;
+        config.headers['Authorization'] = `Bearer ${token}`;
+
+        return new Promise((resolve, reject) => {
+          axios.request(config).then(response => {
+            resolve(response);
+          }).catch((error) => {
+            reject(error);
+          })
+        });
+
+      })
+      .catch((error) => {
+        return new Promise((resolve, reject) => {
+          reject(error);
+        });
+      });
   }
+
+  refresh() {
+    const self = this;
+
+    const req = new PendingRequest({
+      config: {
+        method: "post",
+        headers: {"Authorization", `Bearer ${this.tokenStorage.refreshToken}`},
+        validStatus: status => status == 200
+      },
+      isRefreshRequest: true
+    });
+    this.pendingRequests.push(req);
+
+    this.cycle();
+
+    return req.promise
+      .then(res => {
+        console.log(res);
+        self.tokenStorage.store("a", "b");
+      })
+
+    
+    let init = this.setAuthHeader({ method: "GET" }, this.refreshToken);
+    return fetch(`${AUTH_API}/refresh`, init)
+      .then(res => {
+        if (!res.ok) {
+          throw Error(`refreshUser failed: ${res.status} (${res.statusText})`);
+        }
+
+        return res
+          .json()
+          .then(json => {
+            self.token = json.access_token;
+            try {
+              self.saveTokensToLocalStore();
+            } catch (err) {
+              console.error("Failed to save token to local storage");
+              console.error(err);
+            }
+            return json.user;
+          });
+      });
+  }
+
+  postData(url, data, isAuthRequest) {
+    const req = new PendingRequest({
+      config: {
+        method: "post",
+        data: data,
+        headers: {},
+      },
+      isAuthRequest: isAuthRequest,
+    });
+    this.pendingRequests.push(req);
+
+    this.cycle();
+
+    return req.promise;
+  }
+
+  cycle() {
+    if (!this.authorized) {
+      for (const req of this.pendingRequests) {
+        if (!req.inFlight) {
+          if (req.requiresAuth)
+        } 
+      }
+    }
+    // Am I authorized?
+    // 
+    // States:
+    // Ok!
+    // Needs Authentication
+    // Fail
+  }
+
 
   setAuthHeader(init, token) {
     if (!init.headers) {
@@ -54,6 +208,27 @@ class HumanApi {
     const newInit = this.setAuthHeader(init, this.token);
     return fetch(resource, newInit).then(res => { return res });
   }
+
+
+}
+
+class HumanApi {
+  constructor(apiDispatcher) {
+    this.becameUnauthenticated = () => {
+      throw Error("becameUnauthenticated should be set by a redux action.");
+    }
+
+    this.setAuthHeader = this.setAuthHeader.bind(this);
+    this.authFetch = this.authFetch.bind(this);
+    this.refreshUser = this.refreshUser.bind(this);
+    this.hasValidAccessToken = this.hasValidAccessToken.bind(this);
+    this.hasValidRefreshToken = this.hasValidRefreshToken.bind(this);
+
+    this.pendingRefresh = false;
+    this.pendingRequestQueue = [];
+  }
+
+  
 
   authFetchAfterRefresh(resource, init) {
     this.pendingRequestQueue.push({resource: resource, init: init});
@@ -287,4 +462,4 @@ class HumanApi {
   }
 }
 
-export default new HumanApi();
+export default new HumanApi(new ApiDispatcher);

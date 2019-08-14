@@ -28,7 +28,7 @@ const App = props => {
   if (!props.isLoggedIn && pathname !== "/login" && pathname !== "/register") {
     props.actions.redirectForLogin(pathname);
     navigate("/login");
-    return <Router><FullPageLoader default /></Router>;
+    // return <Router><FullPageLoader default /></Router>;
   }
 
   return (
