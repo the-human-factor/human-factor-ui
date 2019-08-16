@@ -6,12 +6,11 @@ export const initLogin = () => dispatch => {
   dispatch(actions.initialCheck());
   // TODO: See if tokens are in the local storage
   return api
-    .getUser()
+    .refresh()
     .then(user => {
       dispatch(actions.loginSuccess(user));
     })
     .catch(error => {
-      console.error(error);
       dispatch(actions.unauthenticated());
     });
 };

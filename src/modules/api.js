@@ -6,27 +6,9 @@ const API = config["API"];
 const CHALLENGE_API = "/challenges";
 const RESPONSE_API = "/responses";
 const AUTH_API = "/auth";
-const AUTH_REFRESH_API = "/auth/refresh";
-
-class PendingRequest {
-  constructor({config,
-               isRefreshRequest=false,
-               isAuthRequest=false,
-               inFlight=false,
-               cancel=() => void 0 }) {
-
-    this.promise = new Promise((resolve, reject) => {
-      res = resolve;
-      rej = reject;
-    });
-    this.promise.resolve = res;
-    this.promise.reject = rej;
-    
-    this.config = config;
-    this.isRefreshRequest = isRefreshRequest;
-    this.isAuthRequest = isAuthRequest;
-  }
-}
+const AUTH_REFRESH_API = `${AUTH_API}/refresh`;
+const AUTH_LOGIN_API = `${AUTH_API}/login`;
+const AUTH_REGISTER_API = `${AUTH_API}/register`;
 
 class TokenStorage {
   constructor() {
@@ -34,6 +16,10 @@ class TokenStorage {
     this.refreshToken = localStorage.getItem('refreshToken') || "";
     
     this.store = this.store.bind(this);
+  }
+
+  storeAccessToken(token) {
+    this.store(token, this.refreshToken);
   }
 
   store(accessToken, refreshToken) {
@@ -47,394 +33,15 @@ class TokenStorage {
       console.error(err);
     }
   }
-}
 
-class ApiDispatcher {
-  constructor() {
-    this.pendingRequests = [];
-
-    this.tokenStorage = new TokenStorage();
-
-    this.errorInterceptor = this.errorInterceptor.bind(this);
-
-    this.axios = axios.create({
-      baseURL: API,
-    })
-
-    axios.interceptors.response.use(response => response, errorInterceptor);
+  clearTokens() {
+    this.accessToken = "";
+    this.refreshToken = "";
   }
 
-  errorInterceptor(error) {
-    // Return any error which is not due to authentication back to the calling service
-    if (error.response.status !== 401) {
-      return new Promise((resolve, reject) => {
-        reject(error);
-      });
-    }
-
-    // Logout user if token refresh didn't work
-    if (error.config.url == AUTH_REFRESH_API) {
-      this.clearTokens();
-      this.becameUnauthenticated();
-      return new Promise((resolve, reject) => { reject(error); });
-    }
-
-    // Try request again with new token
-    return TokenStorage.getNewToken()
-      .then((token) => {
-
-        // New request with new token
-        const config = error.config;
-        config.headers['Authorization'] = `Bearer ${token}`;
-
-        return new Promise((resolve, reject) => {
-          axios.request(config).then(response => {
-            resolve(response);
-          }).catch((error) => {
-            reject(error);
-          })
-        });
-
-      })
-      .catch((error) => {
-        return new Promise((resolve, reject) => {
-          reject(error);
-        });
-      });
-  }
-
-  refresh() {
-    const self = this;
-
-    const req = new PendingRequest({
-      config: {
-        method: "post",
-        headers: {"Authorization", `Bearer ${this.tokenStorage.refreshToken}`},
-        validStatus: status => status == 200
-      },
-      isRefreshRequest: true
-    });
-    this.pendingRequests.push(req);
-
-    this.cycle();
-
-    return req.promise
-      .then(res => {
-        console.log(res);
-        self.tokenStorage.store("a", "b");
-      })
-
-    
-    let init = this.setAuthHeader({ method: "GET" }, this.refreshToken);
-    return fetch(`${AUTH_API}/refresh`, init)
-      .then(res => {
-        if (!res.ok) {
-          throw Error(`refreshUser failed: ${res.status} (${res.statusText})`);
-        }
-
-        return res
-          .json()
-          .then(json => {
-            self.token = json.access_token;
-            try {
-              self.saveTokensToLocalStore();
-            } catch (err) {
-              console.error("Failed to save token to local storage");
-              console.error(err);
-            }
-            return json.user;
-          });
-      });
-  }
-
-  postData(url, data, isAuthRequest) {
-    const req = new PendingRequest({
-      config: {
-        method: "post",
-        data: data,
-        headers: {},
-      },
-      isAuthRequest: isAuthRequest,
-    });
-    this.pendingRequests.push(req);
-
-    this.cycle();
-
-    return req.promise;
-  }
-
-  cycle() {
-    if (!this.authorized) {
-      for (const req of this.pendingRequests) {
-        if (!req.inFlight) {
-          if (req.requiresAuth)
-        } 
-      }
-    }
-    // Am I authorized?
-    // 
-    // States:
-    // Ok!
-    // Needs Authentication
-    // Fail
-  }
-
-
-  setAuthHeader(init, token) {
-    if (!init.headers) {
-      init.headers = new Headers();
-    }
-    init.headers.set("Authorization", `Bearer ${token}`);
-    return init;
-  }
-
-  authFetch(resource, init) {
-    if (this.pendingRefresh) {
-      return this.authFetchAfterRefresh(resource, init);
-    }
-
-    if (!this.hasValidAccessToken()) {
-      if (!this.hasValidRefreshToken()) {
-        this.becameUnauthenticated();
-        this.token = "";
-        this.refreshToken = "";
-        throw Error("Missing tokens, cannot make authenticated fetch");
-        // TODO: This would suck if it happened in the middle
-        // of a user doing something. Maybe anticipate logout?
-      }
-      return this.authFetchAfterRefresh(resource, init);
-    }
-
-    const newInit = this.setAuthHeader(init, this.token);
-    return fetch(resource, newInit).then(res => { return res });
-  }
-
-
-}
-
-class HumanApi {
-  constructor(apiDispatcher) {
-    this.becameUnauthenticated = () => {
-      throw Error("becameUnauthenticated should be set by a redux action.");
-    }
-
-    this.setAuthHeader = this.setAuthHeader.bind(this);
-    this.authFetch = this.authFetch.bind(this);
-    this.refreshUser = this.refreshUser.bind(this);
-    this.hasValidAccessToken = this.hasValidAccessToken.bind(this);
-    this.hasValidRefreshToken = this.hasValidRefreshToken.bind(this);
-
-    this.pendingRefresh = false;
-    this.pendingRequestQueue = [];
-  }
-
-  
-
-  authFetchAfterRefresh(resource, init) {
-    this.pendingRequestQueue.push({resource: resource, init: init});
-    
-    if (!this.pendingRefresh) {
-      this.pendingRefresh = true;
-      this.refreshUser()
-          .then(user => {
-            this.pendingRefresh = false;
-            // Loop through all the pendingRequests
-            return user;
-          })
-          .catch(err => {
-            this.pendingRefresh = false;
-            throw err;
-          });
-    } else {
-      this.pendingRequestChain = this.pendingRequestChain.then(res => {
-        const newInit = this.setAuthHeader(init, this.token);
-        return fetch(resource, newInit).then(res => { return res });
-      });
-    }
-  }
-
-  getUser() {
-    return new Promise((resolve, reject) => {
-      this.token = this.token || localStorage.getItem("userToken");
-      this.refreshToken = this.refreshToken || localStorage.getItem("refreshToken");
-
-      if (!this.hasValidAccessToken() && !this.hasValidRefreshToken()) {
-        reject("Missing tokens");
-      } else {
-        this.refreshUser()
-          .then(user => {resolve(user)})
-          .catch(err => {reject(err)});
-      }
-    });
-  }
-
-  // TODO: DRY: login and register and refresh are almost exactly the same
-  login(credentials) {
-    const self = this;
-    return fetch(`${AUTH_API}/login`, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials)
-    })
-      .then(res => {
-        if (!res.ok) {
-          throw Error(`Login failed: ${res.status} (${res.statusText})`);
-        }
-
-        return res
-          .json()
-          .then(json => {
-            self.token = json.access_token;
-            self.refreshToken = json.refresh_token;
-            try {
-              self.saveTokensToLocalStore();
-            } catch (err) {
-              console.error("Failed to save token to local storage");
-              console.error(err);
-            }
-            return json.user;
-          });
-      })
-      .catch(error => {
-        console.error("Failed to log in:", error);
-        throw error;
-      });
-  }
-
-  register(credentials) {
-    const self = this;
-    return fetch(`${AUTH_API}/register`, {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials)
-    })
-      .then(res => {
-        if (!res.ok) {
-          throw Error(`Register failed: ${res.status} (${res.statusText})`);
-        }
-
-        return res
-          .json()
-          .then(json => {
-            self.token = json.access_token;
-            self.refreshToken = json.refresh_token;
-            try {
-              self.saveTokensToLocalStore();
-            } catch (err) {
-              console.error("Failed to save token to local storage");
-              console.error(err);
-            }
-            return json.user;
-          });
-      })
-      .catch(error => {
-        console.error("Failed to register:", error);
-        throw error;
-      });
-  }
-
-  refreshUser() {
-    const self = this;
-    let init = this.setAuthHeader({ method: "GET" }, this.refreshToken);
-    return fetch(`${AUTH_API}/refresh`, init)
-      .then(res => {
-        if (!res.ok) {
-          throw Error(`refreshUser failed: ${res.status} (${res.statusText})`);
-        }
-
-        return res
-          .json()
-          .then(json => {
-            self.token = json.access_token;
-            try {
-              self.saveTokensToLocalStore();
-            } catch (err) {
-              console.error("Failed to save token to local storage");
-              console.error(err);
-            }
-            return json.user;
-          });
-      });
-  }
-
-  logoff() {
-    let init = this.setAuthHeader({ method: "GET" }, this.refreshToken);
-    // TODO: Delete the local storage and tokens no matter what?
-    return this.fetch(`${AUTH_API}/logout`, init)
-      .then(res => {
-        console.log("Successful Log Out");
-        console.log(res);
-      });
-  }
-
-  createChallenge(challenge) {
-    let formData = this.convertToForm(challenge);
-    return this.authFetch(`${CHALLENGE_API}/create`, {
-      method: "POST",
-      body: formData
-    })
-      .then(res => {
-        return res.json();
-      })
-      .catch(error => {
-        console.error("Failed to createChallenge:", error);
-      });
-  }
-
-  createResponse(response) {
-    let formData = this.convertToForm(response);
-    return this.authFetch(`${RESPONSE_API}/create`, {
-      method: "POST",
-      body: formData
-    })
-      .then(res => {
-        return res.json();
-      })
-      .catch(error => {
-        console.error("Failed to createResponse:", error);
-      });
-  }
-
-  fetchChallenges() {
-    return this.authFetch(`${CHALLENGE_API}`, {
-      mode: "cors"
-    })
-      .then(res => res.json())
-      .catch(error => {
-        console.error("Failed to fetch challenges", error);
-      });
-  }
-
-  fetchResponses() {
-    return this.authFetch(`${RESPONSE_API}`)
-      .then(res => res.json(), {
-        mode: "cors"
-      })
-      .catch(error => {
-        console.error("Failed to fetch challenges");
-      });
-  }
-
-  convertToForm(obj) {
-    var formData = new FormData();
-    for (const [key, val] of Object.entries(obj)) {
-      formData.append(lodash.snakeCase(key), val);
-    }
-    return formData;
-  }
-
-  loadTokensFromLocalStore() {
-    this.token = localStorage.getItem('accessToken');
-    this.refreshToken = localStorage.getItem('refreshToken');
-  }
-
-  saveTokensToLocalStore() {
-    localStorage.setItem('accessToken', this.token);
-    localStorage.setItem('refreshToken', this.refreshToken);
+  hasValidRefreshToken() {
+    return this.refreshToken !== "" && 
+           this.tokenHasValidTime(this.readToken(this.refreshToken));
   }
 
   readToken(str) {
@@ -450,16 +57,314 @@ class HumanApi {
     const time = Math.floor( Date.now() / 1000 );
     return token.body.nbf < time && time < token.body.exp;
   }
+}
 
-  hasValidAccessToken() {
-    return Boolean(this.token) &&
-        this.tokenHasValidTime(this.readToken(this.token));
+class PendingRequest {
+  constructor({config,
+               requiresAuth=false,
+               maxRetries=2,
+               cancel=() => void 0 }) {
+
+    let res, rej;
+
+    this.promise = new Promise((resolve, reject) => {
+      res = resolve;
+      rej = reject;
+    });
+    this.promise.resolve = res;
+    this.promise.reject = rej;
+
+    this.config = config;
+    this.requiresAuth = requiresAuth;
+    this.inFlight = false;
+    this.finished = false;
+    this.tries = 0;
   }
 
-  hasValidRefreshToken() {
-    return Boolean(this.refreshToken) &&
-        this.tokenHasValidTime(this.readToken(this.refreshToken));
+  cancelAndFinish() {
+    this.cancel();
+    this.finished = true;
   }
 }
 
-export default new HumanApi(new ApiDispatcher);
+const DISPATCHER_STATE = {
+  UNAUTHENTICATED: "UNAUTHENTICATED",
+  AWAITING_REFRESH: "AWAITING_REFRESH",
+  AWAITING_LOGIN_REGISTER: "AWAITING_LOGIN_REGISTER",
+  AUTHENTICATED: "AUTHENTICATED"
+}
+
+class ApiDispatcher {
+  constructor() {
+    this.updateUser = () => {
+      throw Error("ApiDispatcher.updateUser needs to be set by parent.");
+    }
+
+    this.pendingRequests = [];
+    this.pendingAuthCancel = undefined;
+
+    this.state = DISPATCHER_STATE.UNAUTHENTICATED;
+
+    this.tokenStorage = new TokenStorage();
+
+    this.cancelInFlightRequiringAuth = this.cancelInFlightRequiringAuth.bind(this);
+    this.cancelAndFinishInFlightRequiringAuth = this.cancelAndFinishInFlightRequiringAuth.bind(this);
+    this.loginRegister = this.loginRegister.bind(this);
+    this.refresh = this.refresh.bind(this);
+    this.request = this.request.bind(this);
+    this.cycle = this.cycle.bind(this);
+
+    this.axios = axios.create({
+      baseURL: API,
+    });
+  }
+
+  cancelInFlightRequiringAuth() {
+    for (const req of this.pendingRequests) {
+      if (req.requiresAuth && req.inFlight) {
+        req.cancel();
+      }
+    }
+  }
+
+  cancelAndFinishInFlightRequiringAuth() {
+    for (const req of this.pendingRequests) {
+      if (req.requiresAuth && req.inFlight) {
+        req.cancelAndFinish();
+      }
+    }
+  }
+
+  loginRegister(credentials, {isRegister=false}={}) {
+    const self = this;
+
+    if (this.state !== DISPATCHER_STATE.UNAUTHENTICATED) {
+      console.error("Login aborted while because dispatcher state !== DISPATCHER_STATE.UNAUTHENTICATED");
+      return;
+    }
+
+    this.state = DISPATCHER_STATE.AWAITING_LOGIN_REGISTER;
+    this.cancelAndFinishInFlightRequiringAuth();
+
+    const config = {
+      method: "post",
+      url: isRegister ? AUTH_LOGIN_API : AUTH_REGISTER_API,
+      data: credentials,
+      validStatus: status => status === 200
+    }
+
+    return new Promise((resolve, reject) => {
+      this.axios.request(config).then(res => {
+        console.log(res);
+        self.tokenStorage.store(res.data.access_token, res.data.refresh_token);
+        self.updateUser(res.data.user);
+        self.state = DISPATCHER_STATE.AUTHENTICATED;
+        self.cycle();
+        resolve(res);
+      }).catch((error) => {
+        self.state = DISPATCHER_STATE.UNAUTHENTICATED;
+        self.tokenStorage.clearTokens();
+        self.updateUser(undefined);
+        self.cycle(); // This will clear all pending auth requests.
+        reject(error);
+      });
+    });
+  }
+
+  refresh() {
+    const self = this;
+
+    if (this.state === DISPATCHER_STATE.AWAITING_LOGIN_REGISTER) {
+      console.log("Refresh aborted while because dispatcher state = DISPATCHER_STATE.AWAITING_LOGIN_REGISTER");
+      return;
+    }
+
+    if (!this.tokenStorage.hasValidRefreshToken()) {
+      return new Promise((resolve, reject) => { 
+        console.log("Cannot refresh, refresh token not valid.");
+        reject(new Error("invalid refresh token"));
+      });
+    }
+
+    this.state = DISPATCHER_STATE.AWAITING_REFRESH;
+    this.cancelInFlightRequiringAuth();
+
+    const config = {
+      method: "post",
+      url: AUTH_REFRESH_API,
+      headers: {Authorization: `Bearer ${this.tokenStorage.refreshToken}`},
+      validStatus: status => status === 200
+    }
+
+    return new Promise((resolve, reject) => {
+      this.axios.request(config).then(res => {
+        console.log(res);
+        self.tokenStorage.storeAccessToken(res.data.access_token);
+        self.updateUser(res.data.user);
+        self.state = DISPATCHER_STATE.AUTHENTICATED;
+        self.cycle();
+        resolve(res);
+      }).catch((error) => {
+        self.state = DISPATCHER_STATE.UNAUTHENTICATED;
+        self.tokenStorage.clearTokens();
+        self.updateUser(undefined);
+        self.cycle(); // This will clear all pending auth requests.
+        reject(error);
+      });
+    });
+  }
+
+  request(url, {data={}, method="post", requiresAuth=false}={}) {
+    const req = new PendingRequest({
+      config: {
+        method: method,
+        data: data,
+        headers: {},
+        validStatus: status => status === 200
+      },
+      requiresAuth: requiresAuth,
+    });
+
+    this.pendingRequests.push(req);
+
+    this.cycle();
+
+    return req.promise;
+  }
+
+  getWithAuth(url) {
+    return this.request(url, {method: "get", requiresAuth: true});
+  }
+
+  postWithAuth(url, data) {
+    return this.request(url, {data: data, requiresAuth: true});
+  }
+
+  cycle() {
+    const self = this;
+    this.pendingRequests = this.pendingRequests.filter(req => !req.finished);
+
+    loop: for (const req of this.pendingRequests) {
+      if (req.requiresAuth) {
+        switch (this.state) {
+          case DISPATCHER_STATE.AUTHENTICATED:
+            // We can make new requests
+            break;
+          case DISPATCHER_STATE.AWAITING_REFRESH:
+            // Nothing to do yet
+            continue loop;
+          default:
+            // If unauthenticated or awaiting login / register, ensure canceled.
+            if (req.inFlight) {
+              req.cancelAndFinish();
+            }
+            req.reject(new Error("Unauthenticated and not refreshing"));
+            continue loop;
+        }
+
+        if (req.inFlight) {
+          continue;
+        }
+        
+        req.config.headers.Authorization = `Bearer ${this.tokenStorage.accessToken}`;
+        this.axios.request(req.config).then(res => {
+          req.promise.resolve(res);
+          req.finished = true;
+        }).catch((error) => {
+          if (!axios.isCancel(error)) {
+            req.inFlight = false;
+          } else if (error.response.status !== 401 || req.tries >= req.maxRetries) {
+            req.promise.reject(error);
+            req.finished = true;
+          } else {
+            req.inFlight = false;
+            self.refresh();
+          }
+        });
+        req.inFlight = true;
+        req.tries++;
+      } else {
+        this.axios.request(req.config).then(res => {
+          req.promise.resolve(res);
+          req.finished = true;
+        }).catch((error) => {
+          if (axios.isCancel(error) && req.tries <= req.maxRetries) {
+            req.inFlight = false;
+          } else {
+            req.promise.reject(error);
+            req.finished = true;
+          }
+        });
+        req.inFlight = true;
+      }
+    }
+  }
+}
+
+class HumanApi {
+  constructor() {
+    this.dispatcher = new ApiDispatcher();
+    // TODO: Improve this Wierd pattern to get the redux callback in here...
+    this.updateUser = () => {
+      throw Error("updateUserInRedux should be set to call a redux thunk.");
+    }
+    this.dispatcher.updateUser = (user) => {
+      this.updateUser(user);
+    }
+
+    this.login = this.login.bind(this);
+    this.register = this.register.bind(this);
+    this.logout = this.logout.bind(this);
+    this.refresh = this.refresh.bind(this);
+    this.createChallenge = this.createChallenge.bind(this);
+    this.createResponse = this.createResponse.bind(this);
+    this.fetchChallenges = this.fetchChallenges.bind(this);
+    this.fetchResponses = this.fetchResponses.bind(this);
+  }
+
+  login(credentials) {
+    return this.dispatcher.loginRegister(credentials);
+  }
+
+  register(credentials) {
+    return this.dispatcher.loginRegister(credentials, {isRegister: true});
+  }
+
+  logout() {
+    return this.dispatcher.logout();
+  }
+
+  refresh() {
+    return this.dispatcher.refresh();
+  }
+
+  createChallenge(challenge) {
+    let formData = this.convertToForm(challenge);
+    return this.dispatcher.postWithAuth(`${CHALLENGE_API}/create`, formData);
+  }
+
+  createResponse(response) {
+    let formData = this.convertToForm(response);
+    return this.dispatcher.postWithAuth(`${RESPONSE_API}/create`, formData);
+  }
+
+  fetchChallenges() {
+    // TODO: Does this still need "cors"?
+    return this.dispatcher.getWithAuth(`${CHALLENGE_API}`);
+  }
+
+  fetchResponses() {
+    return this.dispatcher.getWithAuth(`${RESPONSE_API}`);
+  }
+
+  convertToForm(obj) {
+    var formData = new FormData();
+    for (const [key, val] of Object.entries(obj)) {
+      // TODO: Do this for requests and responses with Axios??????
+      formData.append(lodash.snakeCase(key), val);
+    }
+    return formData;
+  }
+}
+
+export default new HumanApi();
