@@ -1,18 +1,24 @@
 import React from "react";
 import { Link } from "@reach/router";
+import { compose } from "recompose";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 
+import * as UserActions from "modules/user/actions";
+import { selectors as UserSelectors } from "modules/user";
+
 const AdapterLink = React.forwardRef((props, ref) => (
   <Link innerRef={ref} {...props} />
 ));
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   fullPage: {
     backgroundColor: "#EEE",
     minHeight: "100vh",
@@ -33,10 +39,10 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     alignItems: "center"
   }
-}));
+});
 
-export default function NavPage(props) {
-  const classes = useStyles();
+const NavPage = props => {
+  const { classes, actions } = props;
 
   return (
     <div className={classes.fullPage}>
@@ -46,22 +52,35 @@ export default function NavPage(props) {
             <Typography variant="h1" color="inherit">
               The Human Factor
             </Typography>
-            <Button color="inherit"
-                    component={AdapterLink}
-                    to="/challenges/create">
-              Create A Challenge
-            </Button>
-            <Button color="inherit" component={AdapterLink} to="/challenges">
-              List Challenges
-            </Button>
-            <Button color="inherit" component={AdapterLink} to="/responses">
-              List Responses
-            </Button>
+            { props.isLoggedIn && (
+              <>
+                <Button color="inherit"
+                        component={AdapterLink}
+                        to="/challenges/create">
+                  Create A Challenge
+                </Button>
+                <Button color="inherit"
+                        component={AdapterLink}
+                        to="/challenges">
+                  List Challenges
+                </Button>
+                <Button color="inherit"
+                        component={AdapterLink}
+                        to="/responses">
+                  List Responses
+                </Button>
+              </>
+            )}
           </div>
           <div>
-            <Button color="inherit" component={AdapterLink} to="/login">
+            { props.isLoggedIn && (
+            <Button color="inherit"
+                    component={AdapterLink}
+                    onClick={actions.logout}>
               Login
             </Button>
+            )}
+
           </div>
         </Toolbar>
       </AppBar>
@@ -71,3 +90,15 @@ export default function NavPage(props) {
     </div>
   );
 }
+
+export default compose(
+  connect(
+    state => ({
+      isLoggedIn: UserSelectors.isLoggedIn(state)
+    }),
+    dispatch => ({
+      actions: bindActionCreators(UserActions, dispatch)
+    })
+  ),
+  withStyles(styles)
+)(NavPage);

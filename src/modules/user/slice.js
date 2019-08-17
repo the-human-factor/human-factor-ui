@@ -15,16 +15,8 @@ export const { actions, selectors, reducer } = createSlice({
     initialCheck(state) {
       state.meta = LoginState.INITIAL_CHECK;
     },
-    unauthenticated(state) {
-      state.meta = LoginState.LOGGED_OUT;
-      state.user = {};
-    },
     loginPending(state) {
       state.meta = LoginState.LOGGING_IN;
-    },
-    loginSuccess(state, action) {
-      state.meta = LoginState.LOGGED_IN;
-      state.user = action.payload;
     },
     logoutPending(state) {
       state.meta = LoginState.LOGGING_OUT;
@@ -36,7 +28,11 @@ export const { actions, selectors, reducer } = createSlice({
     registerPending(state) {
       state.meta = LoginState.REGISTERING;
     },
-    registerSuccess(state, action) {
+    unauthenticated(state) {
+      state.meta = LoginState.LOGGED_OUT;
+      state.user = {};
+    },
+    authenticated(state, action) {
       state.meta = LoginState.LOGGED_IN;
       state.user = action.payload;
     }

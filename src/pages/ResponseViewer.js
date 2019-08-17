@@ -55,7 +55,13 @@ class ResponseViewer extends React.Component {
     // TODO(Alex): I don't understand why the branch below doesn't make
     // this unncessary.
     if (!response) {
-      return (<h1>loading</h1>);
+      return (
+        <Paper className={classes.paper}>
+          <Typography variant="h2">
+            Unknown Challenge
+          </Typography>
+        </Paper>
+      );
     }
     const challenge = response.challenge;
 

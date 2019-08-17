@@ -9,11 +9,18 @@ const AUTH_API = "/auth";
 const AUTH_REFRESH_API = `${AUTH_API}/refresh`;
 const AUTH_LOGIN_API = `${AUTH_API}/login`;
 const AUTH_REGISTER_API = `${AUTH_API}/register`;
+const AUTH_LOGOUT_API = `${AUTH_API}/logout`;
 
 class TokenStorage {
   constructor() {
-    this.accessToken = localStorage.getItem('accessToken') || "";
-    this.refreshToken = localStorage.getItem('refreshToken') || "";
+    this.accessToken = localStorage.getItem('accessToken');
+    if (this.accessToken === "undefined") {
+      this.accessToken = "";
+    }
+    this.refreshToken = localStorage.getItem('refreshToken');
+    if (this.refreshToken === "undefined") {
+      this.refreshToken = "";
+    }
     
     this.store = this.store.bind(this);
   }
@@ -23,6 +30,9 @@ class TokenStorage {
   }
 
   store(accessToken, refreshToken) {
+    if (accessToken && refreshToken) {
+      console.log(`store TOKENS w/ lens: ${accessToken.length} ${refreshToken.length}`);
+    }
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     try {
@@ -34,22 +44,17 @@ class TokenStorage {
     }
   }
 
-  clearTokens() {
-    this.accessToken = "";
-    this.refreshToken = "";
-  }
-
   hasValidRefreshToken() {
-    return this.refreshToken !== "" && 
+    return this.refreshToken && 
            this.tokenHasValidTime(this.readToken(this.refreshToken));
   }
 
   readToken(str) {
     const parts = str.split(".");
     return {
-      header: atob(parts[0]),
-      body: atob(parts[1]),
-      signature: atob(parts[2])
+      header: JSON.parse(atob(parts[0])),
+      body: JSON.parse(atob(parts[1])),
+      signature: parts[2]
     }
   }
 
@@ -91,6 +96,7 @@ const DISPATCHER_STATE = {
   UNAUTHENTICATED: "UNAUTHENTICATED",
   AWAITING_REFRESH: "AWAITING_REFRESH",
   AWAITING_LOGIN_REGISTER: "AWAITING_LOGIN_REGISTER",
+  AWAITING_LOGOUT: "AWAITING_LOGOUT",
   AUTHENTICATED: "AUTHENTICATED"
 }
 
@@ -110,12 +116,14 @@ class ApiDispatcher {
     this.cancelInFlightRequiringAuth = this.cancelInFlightRequiringAuth.bind(this);
     this.cancelAndFinishInFlightRequiringAuth = this.cancelAndFinishInFlightRequiringAuth.bind(this);
     this.loginRegister = this.loginRegister.bind(this);
+    this.logout = this.logout.bind(this);
     this.refresh = this.refresh.bind(this);
     this.request = this.request.bind(this);
     this.cycle = this.cycle.bind(this);
 
     this.axios = axios.create({
       baseURL: API,
+      validateStatus: status => status >= 200 || status < 300
     });
   }
 
@@ -139,8 +147,8 @@ class ApiDispatcher {
     const self = this;
 
     if (this.state !== DISPATCHER_STATE.UNAUTHENTICATED) {
-      console.error("Login aborted while because dispatcher state !== DISPATCHER_STATE.UNAUTHENTICATED");
-      return;
+      const error = new Error("Login aborted while because dispatcher state !== DISPATCHER_STATE.UNAUTHENTICATED");
+      return new Promise((resolve, reject) => { reject(error) });
     }
 
     this.state = DISPATCHER_STATE.AWAITING_LOGIN_REGISTER;
@@ -148,14 +156,12 @@ class ApiDispatcher {
 
     const config = {
       method: "post",
-      url: isRegister ? AUTH_LOGIN_API : AUTH_REGISTER_API,
-      data: credentials,
-      validStatus: status => status === 200
+      url: isRegister ? AUTH_REGISTER_API : AUTH_LOGIN_API,
+      data: credentials
     }
 
     return new Promise((resolve, reject) => {
       this.axios.request(config).then(res => {
-        console.log(res);
         self.tokenStorage.store(res.data.access_token, res.data.refresh_token);
         self.updateUser(res.data.user);
         self.state = DISPATCHER_STATE.AUTHENTICATED;
@@ -163,7 +169,7 @@ class ApiDispatcher {
         resolve(res);
       }).catch((error) => {
         self.state = DISPATCHER_STATE.UNAUTHENTICATED;
-        self.tokenStorage.clearTokens();
+        self.tokenStorage.store("", "");
         self.updateUser(undefined);
         self.cycle(); // This will clear all pending auth requests.
         reject(error);
@@ -171,17 +177,53 @@ class ApiDispatcher {
     });
   }
 
+  logout() {
+    const self = this;
+
+    const config = {
+      method: "post",
+      url: AUTH_LOGOUT_API,
+      headers: {Authorization: `Bearer ${this.tokenStorage.refreshToken}`}
+    }
+
+    this.tokenStorage.store("", "");
+
+    if (this.state !== DISPATCHER_STATE.AUTHENTICATED) {
+      const error = new Error("Logout aborted while because dispatcher state !== DISPATCHER_STATE.AUTHENTICATED");
+      return new Promise((resolve, reject) => { reject(error) });
+    }
+
+    this.state = DISPATCHER_STATE.AWAITING_LOGOUT;
+    this.cancelAndFinishInFlightRequiringAuth();
+
+    const finish = (promiseClose, result) => {
+      self.updateUser(undefined);
+      self.state = DISPATCHER_STATE.UNAUTHENTICATED;
+      self.cycle();
+      promiseClose(result);
+    };
+
+    return new Promise((resolve, reject) => {
+      this.axios.request(config).then(res => {
+        finish(resolve, res);
+      }).catch((error) => {
+        finish(reject, error);
+      });
+    });
+  }
+
   refresh() {
     const self = this;
 
-    if (this.state === DISPATCHER_STATE.AWAITING_LOGIN_REGISTER) {
-      console.log("Refresh aborted while because dispatcher state = DISPATCHER_STATE.AWAITING_LOGIN_REGISTER");
-      return;
+    if (this.state === DISPATCHER_STATE.AWAITING_LOGIN_REGISTER ||
+        this.state === DISPATCHER_STATE.AWAITING_LOGOUT) {
+      const error = new Error(`Refresh aborted while because dispatcher state = DISPATCHER_STATE.${this.state}`);
+      return new Promise((resolve, reject) => { reject(error) });
     }
 
     if (!this.tokenStorage.hasValidRefreshToken()) {
-      return new Promise((resolve, reject) => { 
-        console.log("Cannot refresh, refresh token not valid.");
+      return new Promise((resolve, reject) => {
+        self.updateUser(undefined);
         reject(new Error("invalid refresh token"));
       });
     }
@@ -192,13 +234,11 @@ class ApiDispatcher {
     const config = {
       method: "post",
       url: AUTH_REFRESH_API,
-      headers: {Authorization: `Bearer ${this.tokenStorage.refreshToken}`},
-      validStatus: status => status === 200
+      headers: {Authorization: `Bearer ${this.tokenStorage.refreshToken}`}
     }
 
     return new Promise((resolve, reject) => {
       this.axios.request(config).then(res => {
-        console.log(res);
         self.tokenStorage.storeAccessToken(res.data.access_token);
         self.updateUser(res.data.user);
         self.state = DISPATCHER_STATE.AUTHENTICATED;
@@ -206,7 +246,7 @@ class ApiDispatcher {
         resolve(res);
       }).catch((error) => {
         self.state = DISPATCHER_STATE.UNAUTHENTICATED;
-        self.tokenStorage.clearTokens();
+        self.tokenStorage.store("", "");
         self.updateUser(undefined);
         self.cycle(); // This will clear all pending auth requests.
         reject(error);
@@ -217,13 +257,16 @@ class ApiDispatcher {
   request(url, {data={}, method="post", requiresAuth=false}={}) {
     const req = new PendingRequest({
       config: {
+        url: url,
         method: method,
         data: data,
-        headers: {},
-        validStatus: status => status === 200
+        headers: {}
       },
       requiresAuth: requiresAuth,
     });
+
+    console.log("PUSH REQUEST");
+    console.log(req);
 
     this.pendingRequests.push(req);
 
@@ -243,6 +286,8 @@ class ApiDispatcher {
   cycle() {
     const self = this;
     this.pendingRequests = this.pendingRequests.filter(req => !req.finished);
+
+    console.log(this.state);
 
     loop: for (const req of this.pendingRequests) {
       if (req.requiresAuth) {
@@ -270,8 +315,10 @@ class ApiDispatcher {
         this.axios.request(req.config).then(res => {
           req.promise.resolve(res);
           req.finished = true;
+          self.cycle();
         }).catch((error) => {
-          if (!axios.isCancel(error)) {
+          console.log(req.tries);
+          if (axios.isCancel(error)) {
             req.inFlight = false;
           } else if (error.response.status !== 401 || req.tries >= req.maxRetries) {
             req.promise.reject(error);
@@ -280,6 +327,7 @@ class ApiDispatcher {
             req.inFlight = false;
             self.refresh();
           }
+          self.cycle();
         });
         req.inFlight = true;
         req.tries++;
@@ -287,6 +335,7 @@ class ApiDispatcher {
         this.axios.request(req.config).then(res => {
           req.promise.resolve(res);
           req.finished = true;
+          self.cycle();
         }).catch((error) => {
           if (axios.isCancel(error) && req.tries <= req.maxRetries) {
             req.inFlight = false;
@@ -294,6 +343,7 @@ class ApiDispatcher {
             req.promise.reject(error);
             req.finished = true;
           }
+          self.cycle();
         });
         req.inFlight = true;
       }

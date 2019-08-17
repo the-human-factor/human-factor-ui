@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { Field, reduxForm } from "redux-form";
@@ -137,15 +137,49 @@ const Register = props => {
 const ReduxLogin = reduxForm({ form: "login" })(Login);
 const ReduxRegister = reduxForm({ form: "register"})(Register);
 
+
+
 const LoginRegister = props => {
   const { classes, actions } = props;
-  if (props.mode === "login") {
+
+  const loginWithRedirect = (credentials) => {
+    actions.login(credentials)
+      .then((res) => {
+        navigate(props.returnToRoute, { replace: true });
+      })
+      .catch((error) => {
+        alert(`login failed, ${error.message}`);
+      });
+  };
+
+  const registerWithRedirect = (credentials) => {
+    actions.register(credentials)
+      .then((res) => {
+        navigate(props.returnToRoute, { replace: true });
+      })
+      .catch((error) => {
+        alert(`login failed, ${error.message}`);
+      });
+  };
+
+  if (props.isLoggedIn) {
+    return (
+      <Paper className={classes.paper}>
+        <Button className={classes.submit}
+                onClick={actions.logout}
+                variant="contained"
+                color="primary">
+          Log Out
+        </Button>
+      </Paper>
+    )
+  } else if (props.mode === "login") {
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2" className={classes.paperHeader}>
           Login
         </Typography>
-        <ReduxLogin classes={classes} onSubmit={actions.login} />
+        <ReduxLogin classes={classes} onSubmit={loginWithRedirect} />
       </Paper>
     );
   } else if (props.mode === "register") {
@@ -154,7 +188,7 @@ const LoginRegister = props => {
         <Typography variant="h2" className={classes.paperHeader}>
             Register
         </Typography>
-        <ReduxRegister classes={classes} onSubmit={actions.register} />
+        <ReduxRegister classes={classes} onSubmit={registerWithRedirect} />
       </Paper>
     );
   } else {
@@ -166,8 +200,7 @@ export default compose(
   connect(
     state => ({
       isLoggedIn: UserSelectors.isLoggedIn(state),
-      isLoggedOut: UserSelectors.isLoggedOut(state),
-      isLoggingIn: UserSelectors.isLoggingIn(state)
+      returnToRoute: UserSelectors.returnToRoute(state)
     }),
     dispatch => ({
       actions: bindActionCreators(UserActions, dispatch)

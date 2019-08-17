@@ -19,5 +19,7 @@ export const fetchResponses = (force = false) => (dispatch, getState) => {
   dispatch(actions.fetchResponsesPending());
   return api
     .fetchResponses()
-    .then(responses => dispatch(actions.fetchResponsesSuccess(responses)));
+    .then(response => {
+      dispatch(actions.fetchResponsesSuccess(response.data));
+    });
 };

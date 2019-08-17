@@ -1,52 +1,44 @@
-import { actions, selectors } from "./index";
+import { actions } from "./index";
 
 import api from "modules/api";
 
 export const initLogin = () => dispatch => {
   dispatch(actions.initialCheck());
-  // TODO: See if tokens are in the local storage
-  return api
-    .refresh()
-    .then(user => {
-      dispatch(actions.loginSuccess(user));
-    })
-    .catch(error => {
+
+  api.updateUser = (user) => {
+    if (user === undefined) {
       dispatch(actions.unauthenticated());
-    });
+    } else {
+      dispatch(actions.authenticated(user));
+    }
+  }
+
+  return api.refresh()
+    .then(user => {})
+    .catch(error => {});
 };
 
 export const redirectForLogin = (previousPath="/") => dispatch => {
   dispatch(actions.setReturnToRoute(previousPath));
 };
 
-export const login = (values) => dispatch => {
+export const login = (credentials) => dispatch => {
   dispatch(actions.loginPending());
-  return api
-    .login(values)
-    .then(res => {
-      console.log("Logged in as:");
-      console.log(res);
-      dispatch(actions.loginSuccess(res.user));
-      // TODO: Redirect
-      console.log(`Need to redirect to ${selectors.returnToRoute}`);
+  return api.login(credentials)
+    .then(user => {
+      console.log("login succcess");
     })
     .catch(error => {
-      dispatch(actions.unauthenticated());
+      console.error(error);
     });
 }
 
-export const register = (values) => dispatch => {
+export const register = (credentials) => dispatch => {
   dispatch(actions.registerPending());
-  return api
-    .register(values)
-    .then(res => {
-      console.log("Registered as:");
-      console.log(res);
-      dispatch(actions.registerSuccess(res.user));
-      // TODO: Redirect
-      console.log(`Need to redirect to ${selectors.returnToRoute}`);
-    })
-    .catch(error => {
-      dispatch(actions.unauthenticated());
-    });
+  return api.register(credentials);
+}
+
+export const logout = () => dispatch => {
+  dispatch(actions.logoutPending());
+  return api.logout();
 }
