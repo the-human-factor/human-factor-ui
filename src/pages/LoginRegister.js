@@ -8,12 +8,12 @@ import { bindActionCreators } from "redux";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
 import * as UserActions from "modules/user/actions";
 import { selectors as UserSelectors } from "modules/user";
-import { validateEmail, validateRequired } from "components/utils"
+import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
+import { renderInputWithHelper } from "components/wrappableMuiFormElems";
 import AdapterLink from "components/AdapterLink";
 
 const styles = theme => ({
@@ -44,40 +44,30 @@ const styles = theme => ({
   }
 });
 
-const renderTextField = ({
-  input,
-  label,
-  meta: { touched, error },
-  ...custom
-}) => (
-  <TextField label={label}
-             error={touched && error}
-             {...input}
-             {...custom}/>
-)
+
 
 const Login = props => {
-  const { handleSubmit, pristine, submitting, classes, onSubmit } = props;
+  const { handleSubmit, pristine, submitting, valid, classes, onSubmit } = props;
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
              name="email"
              label="Email"
-             component={renderTextField}
-             validate={[validateRequired, validateEmail]}/>
+             component={renderInputWithHelper}
+             validate={[required, isEmail]}/>
 
       <Field className={classes.textField}
              name="password"
              label="Password"
              type="password"
-             component={renderTextField}
-             validate={[validateRequired]}/>
+             component={renderInputWithHelper}
+             validate={[required]}/>
 
       <Button className={classes.submit}
               type="submit"
               variant="contained"
               color="primary"
-              disabled={pristine || submitting}>
+              disabled={pristine || !valid || submitting}>
         Log In
       </Button>
       <br />
@@ -86,43 +76,41 @@ const Login = props => {
   );
 };
 
-
-// TODO: How to validate password is the same?
 const Register = props => {
-  const { handleSubmit, pristine, submitting, classes, onSubmit } = props;
+  const { handleSubmit, pristine, submitting, valid, classes, onSubmit } = props;
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
              name="fullName"
              label="Name"
-             component={renderTextField}
-             validate={[validateRequired]}/>
+             component={renderInputWithHelper}
+             validate={[required]}/>
 
       <Field className={classes.textField}
              name="email"
              label="Email"
-             component={renderTextField}
-             validate={[validateRequired, validateEmail]}/>
+             component={renderInputWithHelper}
+             validate={[required, isEmail]}/>
 
       <Field className={classes.textField}
              name="password"
              label="Password"
              type="password"
-             component={renderTextField}
-             validate={[validateRequired]}/>
+             component={renderInputWithHelper}
+             validate={[required, validPassword]}/>
 
       <Field className={classes.textField}
-             name="password2"
+             name="passwordConfirmation"
              label="Re-enter Password"
              type="password"
-             component={renderTextField}
-             validate={[validateRequired]}/>
+             component={renderInputWithHelper}
+             validate={[required, passwordsMatch]}/>
 
       <Button className={classes.submit}
               type="submit"
               variant="contained"
               color="primary"
-              disabled={pristine || submitting}>
+              disabled={pristine || !valid || submitting}>
         Register
       </Button>
       <br />
@@ -143,7 +131,7 @@ const LoginRegister = props => {
         navigate(props.returnToRoute, { replace: true });
       })
       .catch((error) => {
-        alert(`login failed, ${error.message}`);
+        alert(`Log In failed, ${error.message}`);
       });
   };
 
@@ -153,7 +141,7 @@ const LoginRegister = props => {
         navigate(props.returnToRoute, { replace: true });
       })
       .catch((error) => {
-        alert(`login failed, ${error.message}`);
+        alert(`Register failed, ${error.message}`);
       });
   };
 

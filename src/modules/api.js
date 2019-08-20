@@ -20,13 +20,32 @@ class HumanApi {
   login(credentials) {
     return this.dispatcher
       .loginRegister(credentials)
-      .then(res => res.data );
+      .then(res => res.data )
+      .catch(error => {
+        // TODO wrap this into axios.
+        try {
+          const data = error.response.data;
+          error = new Error(data.message);
+        } catch(err) {
+          console.error(err);
+        };
+        throw error;
+      });
   }
 
   register(credentials) {
     return this.dispatcher
       .loginRegister(credentials, {isRegister: true})
-      .then(res => res.data );
+      .then(res => res.data )
+      .catch(error => {
+        try {
+          const data = error.response.data;
+          error = new Error(data.message);
+        } catch(err) {
+          console.error(err);
+        };
+        throw error;
+      });
   }
 
   logout() {
