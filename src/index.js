@@ -3,11 +3,11 @@ import { render } from "react-dom";
 import { Provider } from "react-redux";
 import "./index.css";
 import App from "./App";
+import ErrorBoundary from "./components/ErrorBoundary"
 import { initLogin } from "./modules/user/actions";
-import createStore from "./store";
 import * as serviceWorker from "./serviceWorker";
+import store from "./storeContainer" 
 
-const store = createStore();
 store.dispatch(initLogin());
 
 if (process.env.NODE_ENV !== "production") {
@@ -18,9 +18,11 @@ if (process.env.NODE_ENV !== "production") {
 
 const renderApp = () => {
   render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
+    <ErrorBoundary>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ErrorBoundary>,
     document.getElementById("root")
   );
 };

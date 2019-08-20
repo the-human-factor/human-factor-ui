@@ -8,7 +8,7 @@ export const State = {
 };
 
 export const LoginState = {
-  INITIAL_CHECK: "INITIAL_CHECK",
+  INITIALIZING: "INITIALIZING",
   LOGGED_OUT: "LOGGED_OUT",
   LOGGING_IN: "LOGGING_IN",
   LOGGED_IN: "LOGGED_IN",

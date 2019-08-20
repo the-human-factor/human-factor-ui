@@ -4,10 +4,12 @@ import { selectors } from "./";
 
 export const createChallenge = data => dispatch => {
   dispatch(actions.createChallengePending());
-  return api.createChallenge(data).then(response => {
-    dispatch(actions.createChallengeSuccess(response.data));
-    return response.data;
-  });
+  return api
+    .createChallenge(data)
+    .then(response => {
+      dispatch(actions.createChallengeSuccess(response));
+      return response;
+    });
 };
 
 export const fetchChallenges = (force = false) => (dispatch, getState) => {
@@ -20,6 +22,6 @@ export const fetchChallenges = (force = false) => (dispatch, getState) => {
   return api
     .fetchChallenges()
     .then(response => {
-      dispatch(actions.fetchChallengesSuccess(response.data));
+      dispatch(actions.fetchChallengesSuccess(response));
     });
 };

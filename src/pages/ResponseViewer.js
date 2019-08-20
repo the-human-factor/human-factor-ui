@@ -54,7 +54,7 @@ class ResponseViewer extends React.Component {
     const { classes, response } = this.props;
     // TODO(Alex): I don't understand why the branch below doesn't make
     // this unncessary.
-    if (!response) {
+    if (!response || response === undefined) {
       return (
         <Paper className={classes.paper}>
           <Typography variant="h2">
@@ -68,7 +68,7 @@ class ResponseViewer extends React.Component {
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
-          {response.user.name} responds to {challenge.title}
+          {response.user.full_name} responds to {challenge.title}
         </Typography>
 
         <Container className={classes.instructionsContainer}>

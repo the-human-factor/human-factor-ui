@@ -4,10 +4,12 @@ import { selectors } from "./";
 
 export const createResponse = data => dispatch => {
   dispatch(actions.createResponsePending());
-  return api.createResponse(data).then(response => {
-    dispatch(actions.createResponseSuccess(response));
-    return response;
-  });
+  return api
+    .createResponse(data)
+    .then(response => {
+      dispatch(actions.createResponseSuccess(response));
+      return response;
+    });
 };
 
 export const fetchResponses = (force = false) => (dispatch, getState) => {
@@ -20,6 +22,6 @@ export const fetchResponses = (force = false) => (dispatch, getState) => {
   return api
     .fetchResponses()
     .then(response => {
-      dispatch(actions.fetchResponsesSuccess(response.data));
+      dispatch(actions.fetchResponsesSuccess(response));
     });
 };

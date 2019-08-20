@@ -14,10 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import * as UserActions from "modules/user/actions";
 import { selectors as UserSelectors } from "modules/user";
 import { validateEmail, validateRequired } from "components/utils"
-
-const AdapterLink = React.forwardRef((props, ref) => (
-  <Link innerRef={ref} {...props} />
-));
+import AdapterLink from "components/AdapterLink";
 
 const styles = theme => ({
   paper: {
@@ -96,7 +93,7 @@ const Register = props => {
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
-             name="name"
+             name="fullName"
              label="Name"
              component={renderTextField}
              validate={[validateRequired]}/>
@@ -136,8 +133,6 @@ const Register = props => {
 
 const ReduxLogin = reduxForm({ form: "login" })(Login);
 const ReduxRegister = reduxForm({ form: "register"})(Register);
-
-
 
 const LoginRegister = props => {
   const { classes, actions } = props;

@@ -9,6 +9,7 @@ import * as UserActions from "modules/user/actions";
 import * as UserSelectors from "modules/user/selectors";
 import HumanTheme from "./themes/HumanTheme";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 import LoginRegister from "./pages/LoginRegister";
 import NavPage from "./pages/NavPage";
 import ChallengeRecorder from "./pages/ChallengeRecorder";
@@ -18,8 +19,8 @@ import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
 
-const App = props => {
-  if (props.isInitialCheck) {
+const App = props =>  {
+  if (props.isInitializing) {
     return <FullPageLoader />;
   }
 
@@ -28,7 +29,6 @@ const App = props => {
   if (!props.isLoggedIn && pathname !== "/login" && pathname !== "/register") {
     props.actions.redirectForLogin(pathname);
     navigate("/login");
-    // return <Router><FullPageLoader default /></Router>;
   }
 
   return (
@@ -36,6 +36,7 @@ const App = props => {
       <NavPage>
         <Router>
           <Home path="/" />
+          <Profile path="/profile" />
           <LoginRegister path="/login" mode="login" />
           <LoginRegister path="/register" mode="register" />
           <ChallengeList path="/challenges" />
@@ -52,11 +53,8 @@ const App = props => {
 export default compose(
   connect(
     state => ({
-        isInitialCheck: UserSelectors.isInitialCheck(state),
-        isLoggedIn: UserSelectors.isLoggedIn(state),
-        // returnToRoute is included to cause a rerender after redirectForLogin.
-        returnToRoute: UserSelectors.returnToRoute(state)
-
+        isInitializing: UserSelectors.isInitializing(state),
+        isLoggedIn: UserSelectors.isLoggedIn(state)
     }),
     dispatch => ({
       actions: bindActionCreators(UserActions, dispatch)

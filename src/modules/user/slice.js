@@ -6,14 +6,14 @@ export const { actions, selectors, reducer } = createSlice({
   initialState: {
     user: {},
     returnToRoute: "/",
-    meta: LoginState.INITIAL_CHECK
+    meta: LoginState.INITIALIZING
   },
   reducers: {
     setReturnToRoute(state, action) {
       state.returnToRoute = action.payload;
     },
-    initialCheck(state) {
-      state.meta = LoginState.INITIAL_CHECK;
+    initializing(state) {
+      state.meta = LoginState.INITIALIZING;
     },
     loginPending(state) {
       state.meta = LoginState.LOGGING_IN;

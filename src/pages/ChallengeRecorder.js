@@ -60,7 +60,7 @@ class ChallengeRecorder extends React.Component {
       toggleBehavior: () => {},
       toggleString: "...",
       formData: {
-        grading_notes: ""
+        gradingNotes: ""
       },
       readyToSubmit: false,
       waitingForSubmit: false
@@ -185,7 +185,7 @@ class ChallengeRecorder extends React.Component {
                        style={{ width: "100%" }}
                        margin="normal"/>
 
-            <TextField name="grading_notes"
+            <TextField name="gradingNotes"
                        label="Grading Notes"
                        placeholder="Instructions for the grader to know what to look for."
                        multiline

@@ -197,7 +197,7 @@ class ResponseRecorder extends React.Component {
 
   render() {
     const { classes, challenge } = this.props;
-    if (!challenge) {
+    if (!challenge || challenge === undefined) {
       return (
         <Paper className={classes.paper}>
           <Typography variant="h2">
