@@ -42,7 +42,7 @@ class TokenStorage {
   }
 
   hasValidRefreshToken() {
-    return this.refreshToken && 
+    return this.refreshToken &&
            this.tokenHasValidTime(this.readToken(this.refreshToken));
   }
 
@@ -67,20 +67,24 @@ class PendingRequest {
                maxRetries=2,
                cancel=() => void 0 }) {
 
-    let res, rej;
-
     this.promise = new Promise((resolve, reject) => {
-      res = resolve;
-      rej = reject;
+      this.resolve = resolve;
+      this.reject = reject;
     });
-    this.promise.resolve = res;
-    this.promise.reject = rej;
 
     this.config = config;
     this.requiresAuth = requiresAuth;
     this.inFlight = false;
     this.finished = false;
     this.tries = 0;
+
+
+    this.cancelTokenSource = axios.CancelToken.source();
+    this.config.cancelToken = this.cancelTokenSource.token;
+  }
+
+  cancel() {
+    this.cancelTokenSource.cancel();
   }
 
   cancelAndFinish() {
@@ -125,8 +129,10 @@ class RequestDispatcher {
     store.dispatch(actions.unauthenticated());
   }
 
-  updateUser(user) {
-    store.dispatch(actions.authenticated(user));
+  updateUser(user, access_token) {
+    const token = this.tokenStorage.readToken(access_token);
+    console.log(token);
+    store.dispatch(actions.authenticated({user: user, token: token}));
   }
 
   cancelInFlightRequiringAuth() {
@@ -149,7 +155,7 @@ class RequestDispatcher {
     const self = this;
 
     if (this.state !== DISPATCHER_STATE.UNAUTHENTICATED) {
-      const error = new Error("Login aborted while because dispatcher state !== DISPATCHER_STATE.UNAUTHENTICATED");
+      const error = new Error(`Login aborted because state: ${this.state} !== DISPATCHER_STATE.UNAUTHENTICATED`);
       return new Promise((resolve, reject) => { reject(error) });
     }
 
@@ -165,7 +171,7 @@ class RequestDispatcher {
     return new Promise((resolve, reject) => {
       this.axios.request(config).then(res => {
         self.tokenStorage.store(res.data.access_token, res.data.refresh_token);
-        self.updateUser(res.data.user);
+        self.updateUser(res.data.user, res.data.access_token);
         self.state = DISPATCHER_STATE.AUTHENTICATED;
         self.cycle();
         resolve(res);
@@ -191,7 +197,7 @@ class RequestDispatcher {
     this.tokenStorage.store("", "");
 
     if (this.state !== DISPATCHER_STATE.AUTHENTICATED) {
-      const error = new Error("Logout aborted while because dispatcher state !== DISPATCHER_STATE.AUTHENTICATED");
+      const error = new Error("Logout aborted because dispatcher state !== DISPATCHER_STATE.AUTHENTICATED");
       return new Promise((resolve, reject) => { reject(error) });
     }
 
@@ -219,7 +225,7 @@ class RequestDispatcher {
 
     if (this.state === DISPATCHER_STATE.AWAITING_LOGIN_REGISTER ||
         this.state === DISPATCHER_STATE.AWAITING_LOGOUT) {
-      const error = new Error(`Refresh aborted while because dispatcher state = DISPATCHER_STATE.${this.state}`);
+      const error = new Error(`Refresh aborted because dispatcher state = DISPATCHER_STATE.${this.state}`);
       return new Promise((resolve, reject) => { reject(error) });
     }
 
@@ -242,7 +248,7 @@ class RequestDispatcher {
     return new Promise((resolve, reject) => {
       this.axios.request(config).then(res => {
         self.tokenStorage.storeAccessToken(res.data.access_token);
-        self.updateUser(res.data.user);
+        self.updateUser(res.data.user, res.data.access_token);
         self.state = DISPATCHER_STATE.AUTHENTICATED;
         self.cycle();
         resolve(res);
@@ -267,9 +273,6 @@ class RequestDispatcher {
       requiresAuth: requiresAuth,
     });
 
-    console.log("pendingRequests.push:");
-    console.log(req);
-
     if (requiresAuth && this.state === DISPATCHER_STATE.UNAUTHENTICATED) {
       this.refresh().catch(error => {});
     }
@@ -280,8 +283,16 @@ class RequestDispatcher {
     return req.promise;
   }
 
+  get(url) {
+    return this.request(url, {method: "get"});
+  }
+
   getWithAuth(url) {
     return this.request(url, {method: "get", requiresAuth: true});
+  }
+
+  post(url, data) {
+    return this.request(url, {data: data});
   }
 
   postWithAuth(url, data) {
@@ -307,7 +318,7 @@ class RequestDispatcher {
             if (req.inFlight) {
               req.cancelAndFinish();
             }
-            req.promise.reject(new Error("Unauthenticated and not refreshing"));
+            req.reject(new Error("Unauthenticated and not refreshing"));
             continue loop;
         }
 
@@ -317,14 +328,14 @@ class RequestDispatcher {
         
         req.config.headers.Authorization = `Bearer ${this.tokenStorage.accessToken}`;
         this.axios.request(req.config).then(res => {
-          req.promise.resolve(res);
+          req.resolve(res);
           req.finished = true;
           self.cycle();
         }).catch((error) => {
           if (axios.isCancel(error)) {
             req.inFlight = false;
           } else if (error.response.status !== 401 || req.tries >= req.maxRetries) {
-            req.promise.reject(error);
+            req.reject(error);
             req.finished = true;
           } else {
             req.inFlight = false;
@@ -336,14 +347,14 @@ class RequestDispatcher {
         req.tries++;
       } else {
         this.axios.request(req.config).then(res => {
-          req.promise.resolve(res);
+          req.resolve(res);
           req.finished = true;
           self.cycle();
         }).catch((error) => {
           if (axios.isCancel(error) && req.tries <= req.maxRetries) {
             req.inFlight = false;
           } else {
-            req.promise.reject(error);
+            req.reject(error);
             req.finished = true;
           }
           self.cycle();
