@@ -131,7 +131,6 @@ class RequestDispatcher {
 
   updateUser(user, access_token) {
     const token = this.tokenStorage.readToken(access_token);
-    console.log(token);
     store.dispatch(actions.authenticated({user: user, token: token}));
   }
 
