@@ -2,6 +2,7 @@ import React from "react";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { navigate } from "@reach/router";
 
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -11,6 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
 import VideoRecorder from "../components/VideoRecorder";
+import BusyDialog from "../components/BusyDialog";
 import * as ChallengeActions from "modules/challenges/actions";
 
 const styles = theme => ({
@@ -57,8 +59,11 @@ class ChallengeRecorder extends React.Component {
       status: VideoRecorder.STATUS.WAITING_FOR_CAMERA,
       toggleBehavior: () => {},
       toggleString: "...",
-      formData: {},
-      readyToSubmit: false
+      formData: {
+        gradingNotes: ""
+      },
+      readyToSubmit: false,
+      waitingForSubmit: false
     };
 
     this.onStatusChange = this.onStatusChange.bind(this);
@@ -118,11 +123,8 @@ class ChallengeRecorder extends React.Component {
 
   updateReadyToSubmit() {
     const valid = [
-      "name",
-      "email",
       "instructions",
-      "title",
-      "grading_notes"
+      "title"
     ].reduce((acum, field) => {
       return acum && Boolean(this.state.formData[field]);
     });
@@ -137,16 +139,18 @@ class ChallengeRecorder extends React.Component {
       ...this.state.formData,
       videoBlob: this.videoRecorder.current.getBlob()
     };
-    // If we submit, we shouldn't submit twice.
-    this.setState({
-	    readyToSubmit: false});
-    this.props.actions.createChallenge(challenge).then(status => {
-	    // TODO: Redux this shit
-	    console.log(status);
-      if (status.hasOwnProperty('video')) {
-	  alert('Submitted Challenge!');
-      }
-    });
+    this.setState({ waitingForSubmit: true });
+    this.props.actions
+      .createChallenge(challenge)
+      .then(challenge => {
+        this.setState({ waitingForSubmit: false });
+        navigate(`/challenges/${challenge.id}`);
+      })
+      .catch(err => {
+        this.setState({ waitingForSubmit: false });
+        console.error(err);
+        alert("Error submitting challenge");
+      });
   };
 
   render() {
@@ -168,17 +172,6 @@ class ChallengeRecorder extends React.Component {
         <Container className={classes.formContainer}>
           <form onChange={this.formChange}>
             <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
                        name="title"
                        label="Challenge Title"
                        style={{ width: "100%" }}
@@ -192,7 +185,7 @@ class ChallengeRecorder extends React.Component {
                        style={{ width: "100%" }}
                        margin="normal"/>
 
-            <TextField name="grading_notes"
+            <TextField name="gradingNotes"
                        label="Grading Notes"
                        placeholder="Instructions for the grader to know what to look for."
                        multiline
@@ -208,6 +201,8 @@ class ChallengeRecorder extends React.Component {
             </Button>
           </form>
         </Container>
+        <BusyDialog title="Submitting Challenge"
+                    open={this.state.waitingForSubmit}/>
       </Paper>
     );
   }

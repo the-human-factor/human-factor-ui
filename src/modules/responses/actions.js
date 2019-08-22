@@ -1,12 +1,15 @@
 import { actions } from "./index";
-import api from "api";
+import api from "modules/api";
 import { selectors } from "./";
 
 export const createResponse = data => dispatch => {
   dispatch(actions.createResponsePending());
-  return api.createResponse(data).then(response => {
-    dispatch(actions.createResponseSuccess(response));
-  });
+  return api
+    .createResponse(data)
+    .then(response => {
+      dispatch(actions.createResponseSuccess(response));
+      return response;
+    });
 };
 
 export const fetchResponses = (force = false) => (dispatch, getState) => {
@@ -18,5 +21,7 @@ export const fetchResponses = (force = false) => (dispatch, getState) => {
   dispatch(actions.fetchResponsesPending());
   return api
     .fetchResponses()
-    .then(responses => dispatch(actions.fetchResponsesSuccess(responses)));
+    .then(response => {
+      dispatch(actions.fetchResponsesSuccess(response));
+    });
 };

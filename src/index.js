@@ -1,26 +1,19 @@
 import React from "react";
 import { render } from "react-dom";
-import { Provider } from "react-redux";
 import "./index.css";
-import App from "./App";
-import createStore from "./store";
+
+import ProvisionedApp from "./ProvisionedApp";
+
 import * as serviceWorker from "./serviceWorker";
 
-const store = createStore();
-
 if (process.env.NODE_ENV !== "production") {
-  window.store = store;
-  window.api = require("api");
+  window.store = require("storeContainer").default;
+  window.api = require("modules/api");
   window.challenges = require("modules/challenges");
 }
 
 const renderApp = () => {
-  render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-    document.getElementById("root")
-  );
+  render(<ProvisionedApp />, document.getElementById("root"));
 };
 
 if (process.env.NODE_ENV !== "production" && module.hot) {

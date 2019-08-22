@@ -14,10 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
 import * as ChallengeActions from "modules/challenges/actions";
 import { selectors as ChallengeSelectors } from "modules/challenges";
-
-const AdapterLink = React.forwardRef((props, ref) => (
-  <Link innerRef={ref} {...props} />
-));
+import AdapterLink from "components/AdapterLink";
 
 const styles = theme => ({
   paper: {
@@ -75,7 +72,7 @@ const ChallengeList = props => {
     <React.Fragment key={`${challenge.id}`}>
       <ChallengeListItem id={challenge.id}
                          title={challenge.title}
-                         creator={challenge.name}
+                         creator={challenge.user.full_name}
                          instructions={challenge.instructions}/>
       <Divider variant="middle"
                className={classes.divider}/>

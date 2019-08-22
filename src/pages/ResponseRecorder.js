@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { compose, lifecycle, branch, renderNothing } from "recompose";
 import { bindActionCreators } from "redux";
+import { navigate } from "@reach/router";
 
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -13,6 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import * as ChallengeSelectors from "modules/challenges/selectors";
 import * as ChallengeActions from "modules/challenges/actions";
 import * as ResponseActions from "modules/responses/actions";
+import BusyDialog from "../components/BusyDialog";
 import VideoRecorder from "components/VideoRecorder";
 
 const styles = theme => ({
@@ -86,7 +88,8 @@ class ResponseRecorder extends React.Component {
       readyToSubmit: false,
       toggleBehavior: () => {},
       toggleString: "...",
-      toggleDisabled: true
+      toggleDisabled: true,
+      waitingForSubmit: false
     };
 
     this.onStatusChange = this.onStatusChange.bind(this);
@@ -110,7 +113,7 @@ class ResponseRecorder extends React.Component {
     // Mutes the video while the challenge is playing.
     // TODO: make this more reacty.
     this.challengeVideo.current.onended = () => {
-	this.videoRecorder.current.unmute();
+    this.videoRecorder.current.unmute();
     }
   }
 
@@ -163,7 +166,7 @@ class ResponseRecorder extends React.Component {
   }
 
   updateReadyToSubmit() {
-    const valid = ["name", "email", "notes"].reduce((acum, field) => {
+    const valid = ["notes"].reduce((acum, field) => {
       return acum && Boolean(this.state.formData[field]);
     });
     this.setState({
@@ -173,18 +176,36 @@ class ResponseRecorder extends React.Component {
 
   submit = event => {
     event.preventDefault();
-    let response = {
+    const response = {
       ...this.state.formData,
       challengeId: this.props.challenge.id,
       videoBlob: this.videoRecorder.current.getBlob()
     };
-    this.props.actions.createResponse(response).then(status => {
-      console.log(status);
-    });
+    this.setState({ waitingForSubmit: true });
+    this.props.actions
+      .createResponse(response)
+      .then(newResponse => {
+        this.setState({ waitingForSubmit: false });
+        navigate(`/responses/${newResponse.id}`);
+      })
+      .catch(err => {
+        this.setState({ waitingForSubmit: false });
+        console.error(err);
+        alert("Error submitting response");
+      });
   };
 
   render() {
     const { classes, challenge } = this.props;
+    if (!challenge || challenge === undefined) {
+      return (
+        <Paper className={classes.paper}>
+          <Typography variant="h2">
+            Unknown Challenge
+          </Typography>
+        </Paper>
+      );
+    }
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
@@ -226,17 +247,6 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.formContainer}>
           <form className="recordForm" onChange={this.formChange}>
-            <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
             <TextField name="notes"
                     label="Notes"
                     multiline
@@ -252,6 +262,8 @@ class ResponseRecorder extends React.Component {
             </Button>
           </form>
         </Container>
+        <BusyDialog title="Submitting Response"
+                    open={this.state.waitingForSubmit}/>
       </Paper>
     );
   }

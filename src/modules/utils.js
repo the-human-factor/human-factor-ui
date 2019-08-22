@@ -6,3 +6,12 @@ export const State = {
   LOADED: 2,
   CREATING: 3
 };
+
+export const LoginState = {
+  INITIALIZING: "INITIALIZING",
+  LOGGED_OUT: "LOGGED_OUT",
+  LOGGING_IN: "LOGGING_IN",
+  LOGGED_IN: "LOGGED_IN",
+  REGISTERING: "REGISTERING",
+  LOGGING_OUT: "LOGGING_OUT"
+}

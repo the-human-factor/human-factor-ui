@@ -13,7 +13,6 @@ export const { actions, selectors, reducer } = createSlice({
     },
     createChallengeSuccess(state, action) {
       const challenge = action.payload;
-      console.log(state, challenge);
       state.data[challenge.id] = challenge;
       delete state.data[TEMP_ID];
     },
