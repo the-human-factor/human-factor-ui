@@ -23,13 +23,8 @@ class HumanApi {
       .then(res => res.data )
       .catch(error => {
         // TODO wrap this into axios.
-        try {
-          const data = error.response.data;
-          error = new Error(data.message);
-        } catch(err) {
-          console.error(err);
-        };
-        throw error;
+        const message = (((error || {}).response || {}).data || {}).message;
+        throw message ? new Error(message) : error;
       });
   }
 
@@ -38,13 +33,9 @@ class HumanApi {
       .loginRegister(credentials, {isRegister: true})
       .then(res => res.data )
       .catch(error => {
-        try {
-          const data = error.response.data;
-          error = new Error(data.message);
-        } catch(err) {
-          console.error(err);
-        };
-        throw error;
+        // TODO wrap this into axios.
+        const message = (((error || {}).response || {}).data || {}).message;
+        throw message ? new Error(message) : error;
       });
   }
 
