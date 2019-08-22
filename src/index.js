@@ -7,7 +7,7 @@ import ProvisionedApp from "./ProvisionedApp";
 import * as serviceWorker from "./serviceWorker";
 
 if (process.env.NODE_ENV !== "production") {
-  window.store = store;
+  window.store = require("storeContainer").default;
   window.api = require("modules/api");
   window.challenges = require("modules/challenges");
 }
