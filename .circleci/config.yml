@@ -20,7 +20,7 @@ jobs:
       - run:
           name: Deploy to staging
           command:
-            DEPLOYMENT=$(./node_modules/.bin/now)
+            export DEPLOYMENT=$(./node_modules/.bin/now)
             ./node_modules/.bin/now alias set $DEPLOYMENT staging.app.thehumanfactor.ai
 
 workflows:
