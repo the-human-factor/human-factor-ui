@@ -16,7 +16,6 @@ export const { actions, selectors, reducer } = createSlice({
       console.log(state, response);
       state.data[response.id] = response;
     },
-
     // Fetch responses
     fetchResponsesPending(state) {
       state.meta = State.LOADING;

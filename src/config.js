@@ -10,7 +10,7 @@ if (["dev", "prod", "local"].includes(overrideEnv)) {
 
 const CONFIG = {
   local: {
-    API: "http://localhost:9000/api"
+    API: "http://localhost:3000/api"
   },
   dev: {
     API: "https://dev.api.thehumanfactor.ai/api"

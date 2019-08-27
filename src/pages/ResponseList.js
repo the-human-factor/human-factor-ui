@@ -14,10 +14,7 @@ import Typography from "@material-ui/core/Typography";
 import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
 import * as ResponseActions from "modules/responses/actions";
 import { selectors as ResponseSelectors } from "modules/responses";
-
-const AdapterLink = React.forwardRef((props, ref) => (
-  <Link innerRef={ref} {...props} />
-));
+import AdapterLink from "components/AdapterLink";
 
 const styles = theme => ({
   paper: {
@@ -62,7 +59,7 @@ const ResponseListItem = props => {
             {props.challengeTitle}
           </Link>
         </Typography>
-        <Typography variant="h3">Responder: {props.user}</Typography>
+        <Typography variant="h3">Responder: {props.responder}</Typography>
       </div>
     </div>
   );
@@ -75,7 +72,7 @@ const ResponseList = props => {
       <ResponseListItem
         id={response.id}
         challengeTitle={response.challenge.title}
-        user={response.user.name}
+        responder={response.user.full_name}
       />
       <Divider variant="middle" className={classes.divider} />
     </React.Fragment>

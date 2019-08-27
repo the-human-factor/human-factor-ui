@@ -113,7 +113,7 @@ class ResponseRecorder extends React.Component {
     // Mutes the video while the challenge is playing.
     // TODO: make this more reacty.
     this.challengeVideo.current.onended = () => {
-	this.videoRecorder.current.unmute();
+    this.videoRecorder.current.unmute();
     }
   }
 
@@ -166,7 +166,7 @@ class ResponseRecorder extends React.Component {
   }
 
   updateReadyToSubmit() {
-    const valid = ["name", "email", "notes"].reduce((acum, field) => {
+    const valid = ["notes"].reduce((acum, field) => {
       return acum && Boolean(this.state.formData[field]);
     });
     this.setState({
@@ -184,9 +184,9 @@ class ResponseRecorder extends React.Component {
     this.setState({ waitingForSubmit: true });
     this.props.actions
       .createResponse(response)
-      .then(response => {
+      .then(newResponse => {
         this.setState({ waitingForSubmit: false });
-        navigate(`/responses/${response.id}`);
+        navigate(`/responses/${newResponse.id}`);
       })
       .catch(err => {
         this.setState({ waitingForSubmit: false });
@@ -197,6 +197,15 @@ class ResponseRecorder extends React.Component {
 
   render() {
     const { classes, challenge } = this.props;
+    if (!challenge || challenge === undefined) {
+      return (
+        <Paper className={classes.paper}>
+          <Typography variant="h2">
+            Unknown Challenge
+          </Typography>
+        </Paper>
+      );
+    }
     return (
       <Paper className={classes.paper}>
         <Typography variant="h2">
@@ -238,17 +247,6 @@ class ResponseRecorder extends React.Component {
 
         <Container className={classes.formContainer}>
           <form className="recordForm" onChange={this.formChange}>
-            <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
             <TextField name="notes"
                     label="Notes"
                     multiline

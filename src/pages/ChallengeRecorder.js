@@ -59,7 +59,9 @@ class ChallengeRecorder extends React.Component {
       status: VideoRecorder.STATUS.WAITING_FOR_CAMERA,
       toggleBehavior: () => {},
       toggleString: "...",
-      formData: {},
+      formData: {
+        gradingNotes: ""
+      },
       readyToSubmit: false,
       waitingForSubmit: false
     };
@@ -121,8 +123,6 @@ class ChallengeRecorder extends React.Component {
 
   updateReadyToSubmit() {
     const valid = [
-      "name",
-      "email",
       "instructions",
       "title"
     ].reduce((acum, field) => {
@@ -172,17 +172,6 @@ class ChallengeRecorder extends React.Component {
         <Container className={classes.formContainer}>
           <form onChange={this.formChange}>
             <TextField className={classes.textField}
-                       name="name"
-                       label="Name"
-                       defaultValue=""
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
-                       name="email"
-                       label="Email Address"
-                       margin="normal"/>
-
-            <TextField className={classes.textField}
                        name="title"
                        label="Challenge Title"
                        style={{ width: "100%" }}
@@ -196,7 +185,7 @@ class ChallengeRecorder extends React.Component {
                        style={{ width: "100%" }}
                        margin="normal"/>
 
-            <TextField name="grading_notes"
+            <TextField name="gradingNotes"
                        label="Grading Notes"
                        placeholder="Instructions for the grader to know what to look for."
                        multiline
