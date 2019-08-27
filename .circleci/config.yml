@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Install now
-          command: npm i -g now
+          command: npm i now
 
       - run:
           name: Auth with ZEIT
