@@ -1,5 +1,4 @@
-import RequestDispatcher from "./requestDispatcher";
-import { AUTH_REFRESH_API } from "./RequestDispatcher";
+import RequestDispatcher, { AUTH_REFRESH_API } from "./requestDispatcher";
 import mockAxios from "axios";
 
 const accessTokenA = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGl0eSI6IjEiLCJ0eXBlIjoiYWNjZXNzIiwibmJmIjoxNTY2NDU4MDAwLCJleHAiOjE1NjY0NTkwMDAsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbeyJhZG1pbiI6ImFkbWluIn1dfSwiaWF0IjoxNTY2NDU4MDAwLCJqdGkiOiIxMTUxZjBlNi03NDBkLTQ3MmQtOTRmNS02YTI5MGJmNGFiZjAifQ.ZEw2CdhuBJc_QzN0YrOQ63t1JMI3KJfCJpcV-Hz9M5U";
