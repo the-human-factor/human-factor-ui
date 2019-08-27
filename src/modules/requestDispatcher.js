@@ -364,4 +364,5 @@ class RequestDispatcher {
   }
 }
 
+export { AUTH_API };
 export default RequestDispatcher;

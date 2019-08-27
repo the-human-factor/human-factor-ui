@@ -1,7 +1,8 @@
-import RequestDispatcher from "./requestDispatcher";
+import RequestDispatcher, { AUTH_API } from "./requestDispatcher";
 
 const CHALLENGE_API = "/challenges";
 const RESPONSE_API = "/responses";
+const AUTH_CHANGE_PASSWORD_API = `${AUTH_API}/changePassword`;
 
 class HumanApi {
   constructor() {
@@ -49,6 +50,10 @@ class HumanApi {
     return this.dispatcher
       .refresh()
       .then(res => res.data );
+  }
+
+  changePassword(values) {
+    return this.dispatcher.postWithAuth(AUTH_CHANGE_PASSWORD_API, values);
   }
 
   createChallenge(challenge) {
