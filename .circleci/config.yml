@@ -3,7 +3,7 @@ jobs:
   deploy-staging:
     working_directory: ~/repo
     docker:
-      - image: google/cloud-sdk
+      - image: circleci/node:stretch
     steps:
       - checkout
       - run:
