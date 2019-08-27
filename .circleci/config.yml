@@ -20,8 +20,8 @@ jobs:
       - run:
           name: Deploy to staging
           command:
-            DEPLOYMENT=$(now)
-            now alias set $DEPLOYMENT staging.app.thehumanfactor.ai
+            DEPLOYMENT=$(./node_modules/.bin/now)
+            ./node_modules/.bin/now alias set $DEPLOYMENT staging.app.thehumanfactor.ai
 
 workflows:
   version: 2
