@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install now
+          command: npm i -g now
+
+      - run:
           name: Auth with ZEIT
           command: |
             mkdir ~/.now
