@@ -1,7 +1,20 @@
-const ENV_REGEX = /http(?:s)?:\/\/(local\.|dev\.|staging\.)?app\.thehumanfactor\.ai/;
+const LOCAL_REGEX = /http(?:s)?:\/\/(local\.app\.thehumanfactor\.ai|localhost:9000)/;
+const ENV_REGEX = /http(?:s)?:\/\/(staging\.)?app\.thehumanfactor\.ai/;
 
 export const getEnv = () => {
-  const match = ENV_REGEX.exec(window.location.href);
+  const href = window.location.href
+
+  const envOverride = localStorage.getItem('OVERRIDE_ENV')
+  if (envOverride && ['local', 'staging', 'prod'].includes(envOverride)) {
+    return envOverride
+  }
+
+  const localMatch = LOCAL_REGEX.test(href)
+  if (localMatch) {
+    return "local"
+  }
+
+  const match = ENV_REGEX.exec(href);
   if (match) {
     // eslint-disable-next-line
     const [_, res] = match;
@@ -14,5 +27,5 @@ export const getEnv = () => {
     return res.slice(0, -1);
   }
 
-  return "dev";
+  return "staging";
 };
