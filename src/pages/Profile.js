@@ -42,7 +42,6 @@ const ChangePassword = props => {
       })
       .catch((error) => {
         const message = (((error || {}).response || {}).data || {}).message;
-        console.log(error.response.data.message);
         alert(`Failed to change password, ${message}`);
         setAwaitingResponse(false);
       });
