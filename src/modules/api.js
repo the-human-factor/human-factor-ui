@@ -1,8 +1,9 @@
 import RequestDispatcher, { AUTH_API } from "./requestDispatcher";
 
+// TODO: Keep all the api endpoints in the same place
 const CHALLENGE_API = "/challenges";
 const RESPONSE_API = "/responses";
-const AUTH_CHANGE_PASSWORD_API = `${AUTH_API}/changePassword`;
+const AUTH_PASSWORD_API = `${AUTH_API}/password`;
 
 class HumanApi {
   constructor() {
@@ -53,7 +54,12 @@ class HumanApi {
   }
 
   changePassword(values) {
-    return this.dispatcher.postWithAuth(AUTH_CHANGE_PASSWORD_API, values);
+    return this.dispatcher
+      .putWithAuth(AUTH_PASSWORD_API, values)
+      .then(res => {
+        const {user, access_token, refresh_token} = res.data;
+        this.dispatcher.updateUserAndTokens(user, access_token, refresh_token);
+      });
   }
 
   createChallenge(challenge) {
