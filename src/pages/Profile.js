@@ -39,7 +39,7 @@ const ChangePassword = props => {
       .then((res) => {
         alert("Password successfully changed.");
         setAwaitingResponse(false);
-      })
+      });
       .catch((error) => {
         alert(`Failed to change password, ${error.message}`);
         setAwaitingResponse(false);
