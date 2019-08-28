@@ -34,6 +34,21 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Sentry CLI
+          command: |
+            curl -sL https://deb.nodesource.com/setup_12.x | bash -
+            apt-get install -y nodejs
+            npm install @sentry/cli
+
+      - run:
+          name: Create Sentry release
+          command: |
+            export VERSION=$(./node_modules/.bin/sentry-cli releases propose-version)
+
+            # Create a release
+            ./node_modules/.bin/sentry-cli releases new -p human-factor-ui $VERSION
+
+      - run:
           name: Install now
           command: npm i now
 
@@ -49,6 +64,17 @@ jobs:
           command: |
             export DEPLOYMENT=$(./node_modules/.bin/now)
             ./node_modules/.bin/now alias set $DEPLOYMENT staging.app.thehumanfactor.ai
+
+      - run:
+          name: Finalize Sentry release
+          command: |
+            export VERSION=$(./node_modules/.bin/sentry-cli releases propose-version)
+
+            # Associate commits with the release
+            ./node_modules/.bin/sentry-cli releases set-commits --auto $VERSION
+
+            # Finalize release
+            ./node_modules/.bin/sentry-cli releases finalize $VERSION
 
 workflows:
   version: 2
