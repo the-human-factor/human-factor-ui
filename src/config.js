@@ -12,11 +12,11 @@ const CONFIG = {
   local: {
     API: "http://localhost:3000/api"
   },
-  dev: {
-    API: "https://dev.api.thehumanfactor.ai/api"
+  staging: {
+    API: "https://staging.api.thehumanfactor.ai/api"
   },
   prod: {
-    API: "https://dev.api.thehumanfactor.ai/api"
+    API: "https://api.thehumanfactor.ai/api"
   }
 };
 
