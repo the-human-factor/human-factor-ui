@@ -1,5 +1,5 @@
 import { createSlice } from "redux-starter-kit";
-import { State, TEMP_ID } from "modules/utils";
+import { State, TEMP_ID } from "modules/constants";
 
 export const { actions, selectors, reducer } = createSlice({
   slice: "challenges",

@@ -1,5 +1,5 @@
 import { selectors } from "./slice";
-import { State, TEMP_ID } from "modules/utils";
+import { State, TEMP_ID } from "modules/constants";
 
 const root = selectors.getResponses;
 

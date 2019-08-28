@@ -1,10 +1,10 @@
 export const TEMP_ID = -1;
 
 export const State = {
-  NOT_LOADED: 0,
-  LOADING: 1,
-  LOADED: 2,
-  CREATING: 3
+  NOT_LOADED: "NOT_LOADED",
+  LOADING: "LOADING",
+  LOADED: "LOADED",
+  CREATING: "CREATING"
 };
 
 export const LoginState = {
@@ -14,4 +14,9 @@ export const LoginState = {
   LOGGED_IN: "LOGGED_IN",
   REGISTERING: "REGISTERING",
   LOGGING_OUT: "LOGGING_OUT"
+}
+
+export const SequenceState = {
+  NOT_LOADED: "NOT_LOADED",
+  LOADING: "LOADING",
 }

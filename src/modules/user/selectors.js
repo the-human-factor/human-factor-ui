@@ -1,5 +1,5 @@
 import { selectors } from "./slice";
-import { LoginState } from "modules/utils";
+import { LoginState } from "modules/constants";
 
 const root = selectors.getUser;
 

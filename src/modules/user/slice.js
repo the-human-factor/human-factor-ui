@@ -1,5 +1,5 @@
 import { createSlice } from "redux-starter-kit";
-import { LoginState } from "modules/utils";
+import { LoginState } from "modules/constants";
 
 export const { actions, selectors, reducer } = createSlice({
   slice: "user",
