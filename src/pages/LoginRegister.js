@@ -1,20 +1,20 @@
 import React from "react";
-import { Link, navigate } from "@reach/router";
-import { compose } from "recompose";
-import { connect } from "react-redux";
-import { Field, reduxForm } from "redux-form";
-import { bindActionCreators } from "redux";
 
-import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
+import { bindActionCreators } from "redux";
+import { compose } from "recompose";
+import { connect } from "react-redux";
+import { Field, reduxForm } from "redux-form";
+import { Link, navigate } from "@reach/router";
+import { withStyles } from "@material-ui/core/styles";
 
 import * as UserActions from "modules/user/actions";
-import { selectors as UserSelectors } from "modules/user";
+import AdapterLink from "components/AdapterLink";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
-import AdapterLink from "components/AdapterLink";
+import { selectors as UserSelectors } from "modules/user";
 
 const styles = theme => ({
   paper: {

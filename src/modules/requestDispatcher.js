@@ -129,6 +129,11 @@ class RequestDispatcher {
     store.dispatch(actions.unauthenticated());
   }
 
+  updateUserAndTokens(user, access_token, refresh_token) {
+    this.tokenStorage.store(access_token, refresh_token);
+    this.updateUser(user, access_token);
+  }
+
   updateUser(user, access_token) {
     const token = this.tokenStorage.readToken(access_token);
     store.dispatch(actions.authenticated({user: user, token: token}));
@@ -169,8 +174,8 @@ class RequestDispatcher {
 
     return new Promise((resolve, reject) => {
       this.axios.request(config).then(res => {
-        self.tokenStorage.store(res.data.access_token, res.data.refresh_token);
-        self.updateUser(res.data.user, res.data.access_token);
+        const {user, access_token, refresh_token} = res.data;
+        self.updateUserAndTokens(user, access_token, refresh_token);
         self.state = DISPATCHER_STATE.AUTHENTICATED;
         self.cycle();
         resolve(res);
@@ -298,6 +303,10 @@ class RequestDispatcher {
     return this.request(url, {data: data, requiresAuth: true});
   }
 
+  putWithAuth(url, data) {
+    return this.request(url, {data: data, method: "put", requiresAuth: true});
+  }
+
   cycle() {
     const self = this;
     
@@ -364,4 +373,5 @@ class RequestDispatcher {
   }
 }
 
+export { AUTH_API };
 export default RequestDispatcher;
