@@ -121,6 +121,10 @@ class RequestDispatcher {
 
     this.axios = axios.create({
       baseURL: API,
+      // TODO: Make this more specific.
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
       validateStatus: status => status >= 200 && status < 300
     });
   }
