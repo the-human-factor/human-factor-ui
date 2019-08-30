@@ -125,7 +125,8 @@ class RequestDispatcher {
         // TODO: Make this more specific.
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
+        mode: "cors"
       },
       validateStatus: status => status >= 200 && status < 300
     });
