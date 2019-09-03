@@ -10,6 +10,7 @@ if (process.env.NODE_ENV !== "production") {
   window.store = require("storeContainer").default;
   window.api = require("modules/api");
   window.challenges = require("modules/challenges");
+  window.setEnv = (env) => localStorage.setItem("env", env);
 }
 
 const renderApp = () => {
