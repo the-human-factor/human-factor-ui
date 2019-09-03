@@ -121,13 +121,6 @@ class RequestDispatcher {
 
     this.axios = axios.create({
       baseURL: API,
-      headers: {
-        // TODO: Make this more specific.
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, POST, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        mode: "cors"
-      },
       validateStatus: status => status >= 200 && status < 300
     });
   }
@@ -200,7 +193,7 @@ class RequestDispatcher {
     const self = this;
 
     const config = {
-      method: "post",
+      method: "get",
       url: AUTH_LOGOUT_API,
       headers: { Authorization: `Bearer ${this.tokenStorage.refreshToken}` }
     }
