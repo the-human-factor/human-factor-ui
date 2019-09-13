@@ -3,10 +3,10 @@ import RecordRTC from "recordrtc";
 
 class VideoRecorder extends React.Component {
   static STATUS = {
-    WAITING_FOR_CAMERA: 'waiting_for_camera',
-    READY_TO_RECORD: 'ready_to_record',
-    RECORDING: 'recording',
-    REPLAY: 'replay',
+    WAITING_FOR_CAMERA: "WAITING_FOR_CAMERA",
+    READY_TO_RECORD: "READY_TO_RECORD",
+    RECORDING: "RECORDING",
+    REPLAY: "REPLAY",
   };
 
   constructor(props) {
@@ -33,6 +33,7 @@ class VideoRecorder extends React.Component {
     width: "640",
     height: "480",
     allowReview: false,
+    className: "",
     onStatusChange: (status) => {}
   };
 
@@ -54,11 +55,12 @@ class VideoRecorder extends React.Component {
 
   async setup() {
     this.camera = await this.captureCamera();
+    
     this.videoElement.current.muted = true;
     this.videoElement.current.volume = 0;
     this.videoElement.current.srcObject = this.camera;
     this.videoElement.current.controls = false;
-    this.videoElement.current.autoPlay = true;
+    this.videoElement.current.autoplay = true;
   }
 
   async captureCamera() {
@@ -86,7 +88,7 @@ class VideoRecorder extends React.Component {
     this.videoElement.current.src = this.videoElement.current.srcObject = null;
     this.videoElement.current.muted = false;
     this.videoElement.current.volume = 1;
-    this.videoElement.current.autoPlay = false;
+    this.videoElement.current.autoplay = false;
 
     if (this.props.allowReview) {
       this.videoElement.current.controls = true;
@@ -116,10 +118,10 @@ class VideoRecorder extends React.Component {
   }
 
   stopRecordingWithCallback(callback) {
-    this.recorder.stopRecording(() =>
-      {this.stopRecordingCallback();
-       callback();
-      });
+    this.recorder.stopRecording(() => {
+      this.stopRecordingCallback();
+      callback();
+    });
   }
 
   resetForRecording() {
@@ -133,22 +135,13 @@ class VideoRecorder extends React.Component {
   }
 
   render() {
-    // const divStyle = {
-    //   backgroundColor: '#333',
-    //   width: this.props.width + "px",
-    //   height: this.props.height + "px",
-    // };
-
     return (
-      <div>
-        <video
-          ref={this.videoElement}
-          autoPlay
-          playsInline
-          width={this.props.width}
-          height={this.props.height}
-        />
-      </div>
+      <video className={this.props.className}
+             ref={this.videoElement}
+             playsInline
+             autoPlay
+             width={this.props.width}
+             height={this.props.height}/>
     );
   }
 }

@@ -90,8 +90,6 @@ const Profile = () => {
   const classes = useStyles();
   const user = useSelector(state => UserSelectors.user(state));
 
-  console.log(user);
-
   return (
     <Paper className={classes.paper}>
         <Typography variant="h2">

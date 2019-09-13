@@ -11,12 +11,9 @@ import Typography from "@material-ui/core/Typography";
 
 import * as ResponseActions from "modules/responses/actions";
 import { selectors as ResponseSelectors } from "modules/responses";
+import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
-  paper: {
-    padding: 10,
-    minWidth: 650,
-  },
   videoContainer: {
     padding: 10,
     display: "flex",
@@ -25,9 +22,13 @@ const styles = theme => ({
     alignItems: "center",
     justifyContent: "center"
   },
+  toggleCenterer: {
+    width: "100%",
+    textAlign: "center"
+  },
   toggleButton: {
-    width: 640,
-    margin: 5
+    width: "80%",
+    margin: theme.spacing(2)
   }
 });
 
@@ -64,34 +65,33 @@ class ResponseViewer extends React.Component {
       );
     }
     const challenge = response.challenge;
-
     return (
-      <Paper className={classes.paper}>
-        <Typography variant="h2">
-          {response.user.full_name} responds to {challenge.title}
-        </Typography>
-
+      <PaperPage superTitle={`${response.user.full_name} responds to`}
+                 title={challenge.title}>
         <Container className={classes.instructionsContainer}>
-          <Typography variant="h3">Instructions:</Typography>
-          <div>{challenge.instructions}</div>
+          <Typography variant="h4">Instructions:</Typography>
+          <Typography variant="body1">{challenge.instructions}</Typography>
         </Container>
 
-        <Container className={classes.videoContainer}>
+        <div className={classes.videoContainer}>
           <video width="250" ref={this.videoChallenge}>
             <source src={challenge.video.url} type="video/webm" />
           </video>
           <video width="250" ref={this.videoResponse}>
             <source src={response.video.url} type="video/webm" />
           </video>
+        </div>
 
+        <div className={classes.toggleCenterer}>
           <Button className={classes.toggleButton}
                   onClick={this.startPlaying}
                   variant="contained"
                   color="primary">
             Play
           </Button>
-        </Container>
-      </Paper>
+        </div>
+
+      </PaperPage>
     );
   }
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "react-dom";
 import "./index.css";
 
+import { HumanTheme } from "./themes/HumanTheme";
 import ProvisionedApp from "./ProvisionedApp";
 
 import * as serviceWorker from "./serviceWorker";
@@ -10,6 +11,7 @@ if (process.env.NODE_ENV !== "production") {
   window.store = require("storeContainer").default;
   window.api = require("modules/api");
   window.challenges = require("modules/challenges");
+  window.theme = HumanTheme;
   window.setEnv = (env) => localStorage.setItem("env", env);
 }
 

@@ -7,19 +7,14 @@ import { navigate } from "@reach/router";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 
 import VideoRecorder from "../components/VideoRecorder";
 import BusyDialog from "../components/BusyDialog";
 import * as ChallengeActions from "modules/challenges/actions";
+import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
-  paper: {
-    padding: 10,
-    minWidth: 650
-  },
   videoContainer: {
     padding: 10,
     display: "flex",
@@ -156,8 +151,7 @@ class ChallengeRecorder extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Paper className={classes.paper}>
-        <Typography variant="h2">Record A Challenge</Typography>
+      <PaperPage title="Record A Challenge">
         <Container className={classes.videoContainer}>
           <VideoRecorder ref={this.videoRecorder}
                          onStatusChange={this.onStatusChange}
@@ -203,7 +197,7 @@ class ChallengeRecorder extends React.Component {
         </Container>
         <BusyDialog title="Submitting Challenge"
                     open={this.state.waitingForSubmit}/>
-      </Paper>
+      </PaperPage>
     );
   }
 }
