@@ -7,7 +7,6 @@ import { bindActionCreators } from "redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 // TODO: Tell Webpack this JS file uses this image
@@ -15,15 +14,9 @@ import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
 import * as ResponseActions from "modules/responses/actions";
 import { selectors as ResponseSelectors } from "modules/responses";
 import AdapterLink from "components/AdapterLink";
+import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
-  paper: {
-    padding: 10
-  },
-  paperHeader: {
-    margin: 15,
-    marginBottom: 30
-  },
   divider: {
     margin: 15,
     marginBottom: 30
@@ -48,18 +41,19 @@ const useItemStyles = makeStyles({
 const ResponseListItem = props => {
   const classes = useItemStyles();
   const link = "/responses/" + props.id;
+  const thumbnail = (props.thumbnail) ? props.thumbnail : VideoPlaceholder;
   return (
     <div className={classes.item} key={props.id}>
       <img className={classes.preview}
-           src={VideoPlaceholder}
+           src={thumbnail}
            alt="placeholder"/>
       <div className={classes.text}>
-        <Typography variant="h2">
+        <Typography variant="h4">
           <Link component={AdapterLink} to={link}>
             {props.challengeTitle}
           </Link>
         </Typography>
-        <Typography variant="h3">Responder: {props.responder}</Typography>
+        <Typography variant="h5">Responder: {props.responder}</Typography>
       </div>
     </div>
   );
@@ -69,23 +63,19 @@ const ResponseList = props => {
   const { classes, responses } = props;
   let responseItems = Object.values(responses).map(response => (
     <React.Fragment key={response.id}>
-      <ResponseListItem
-        id={response.id}
-        challengeTitle={response.challenge.title}
-        responder={response.user.full_name}
-      />
+      <ResponseListItem id={response.id}
+                        challengeTitle={response.challenge.title}
+                        responder={response.user.full_name}
+                        thumbnail={response.video.thumbnail_url}/>
       <Divider variant="middle" className={classes.divider} />
     </React.Fragment>
   ));
 
   return (
-    <Paper className={classes.paper}>
-      <Typography variant="h2" className={classes.paperHeader}>
-        Responses
-      </Typography>
+    <PaperPage title="Responses">
       <Container>{responseItems}</Container>
-    </Paper>
-  );
+    </PaperPage>
+  )
 };
 
 export default compose(

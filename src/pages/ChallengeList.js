@@ -7,7 +7,6 @@ import { bindActionCreators } from "redux";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Divider from '@material-ui/core/Divider';
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 // TODO: Tell Webpack this JS file uses this image
@@ -15,15 +14,9 @@ import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
 import * as ChallengeActions from "modules/challenges/actions";
 import { selectors as ChallengeSelectors } from "modules/challenges";
 import AdapterLink from "components/AdapterLink";
+import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
-  paper: {
-    padding: 10,
-  },
-  paperHeader: {
-    margin: 15,
-    marginBottom: 30,
-  },
   divider: {
     margin: 15,
     marginBottom: 30,
@@ -36,7 +29,8 @@ const useItemStyles = makeStyles({
     flexDirection: 'row',
   },
   text: {
-    padding: 10
+    padding: 10,
+    paddingTop: 0
   },
   preview: {
     width: 100,
@@ -48,19 +42,20 @@ const useItemStyles = makeStyles({
 function ChallengeListItem(props) {
   const classes = useItemStyles();
   const link = "/challenges/" + props.id;
+  const thumbnail = (props.thumbnail) ? props.thumbnail : VideoPlaceholder;
   return (
     <div className={classes.item}>
-      <img className={classes.preview} src={VideoPlaceholder} alt="placeholder"/>
+      <img className={classes.preview} src={thumbnail} alt="placeholder"/>
       <div className={classes.text}>
-        <Typography variant="h2">
+        <Typography variant="h4">
             <Link component={AdapterLink} to={link}>{props.title}</Link>
         </Typography>
-        <Typography variant="h3">
+        <Typography variant="h5">
           Created by: {props.creator}
         </Typography>
-        <div>
+        <Typography variant="body1">
           {props.instructions}
-        </div>
+        </Typography>
       </div>
     </div>
   )
@@ -73,21 +68,19 @@ const ChallengeList = props => {
       <ChallengeListItem id={challenge.id}
                          title={challenge.title}
                          creator={challenge.user.full_name}
-                         instructions={challenge.instructions}/>
+                         instructions={challenge.instructions}
+                         thumbnail={challenge.video.thumbnail_url}/>
       <Divider variant="middle"
                className={classes.divider}/>
     </React.Fragment>
   ))
 
   return (
-    <Paper className={classes.paper}>
-      <Typography variant="h2" className={classes.paperHeader}>
-          Challenges
-      </Typography>
+    <PaperPage title="Challenges">
       <Container>
         {challengeItems}
       </Container>
-    </Paper>
+    </PaperPage>
   );
 };
 

@@ -6,7 +6,7 @@ import App from "./App";
 import store from "./storeContainer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { initLogin } from "./modules/user/actions";
-import HumanTheme from "./themes/HumanTheme";
+import { HumanTheme } from "./themes/HumanTheme";
 
 store.dispatch(initLogin());
 

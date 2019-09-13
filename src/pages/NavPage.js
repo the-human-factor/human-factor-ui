@@ -1,47 +1,59 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { navigate } from "@reach/router";
-import { compose } from "recompose";
-import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { withStyles } from "@material-ui/core/styles";
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Link from "@material-ui/core/Link";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-
-import Menu from '@material-ui/core/Menu';
-import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/styles';
 
 import AdapterLink from "components/AdapterLink";
 import * as UserActions from "modules/user/actions";
 import { selectors as UserSelectors } from "modules/user";
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   fullPage: {
-    backgroundColor: "#EEE",
-    minHeight: "100vh",
-    paddingBottom: 10
+    minHeight: "95vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between"
+  },
+  appBar: {
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    paddingTop: theme.spacing(1),
+    marginBottom: theme.spacing(2)
   },
   toolBar: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between"
   },
-  appBar: {
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    paddingTop: 5,
-    marginBottom: 15
-  },
   body: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "stretch",
+    padding: 0,
+    margin: 0
+  },
+  footer: {
+    color: theme.palette.grey[700],
+    textAlign: "center",
+    paddingBottom: theme.spacing(2)
+  },
+  footerDivider: {
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(2),
   }
-});
+}));
 
 const MenuButtons = props => {
   return (
@@ -49,30 +61,29 @@ const MenuButtons = props => {
       <Button color="inherit"
               component={AdapterLink}
               to="/challenges/create">
-        Create A Challenge
+        Create Challenge
       </Button>
       <Button color="inherit"
               component={AdapterLink}
               to="/challenges">
-        List Challenges
+        Challenges
       </Button>
       <Button color="inherit"
               component={AdapterLink}
               to="/responses">
-        List Responses
+        Responses
       </Button>
     </React.Fragment>
   );
 }
 
 const UserMenu = props => {
-  const { actions } = props;
+  const dispatch = useDispatch();
+  const actions = bindActionCreators(UserActions, dispatch);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
-
   const openMenu = (event) => setAnchorEl(event.currentTarget);
-
   const menuClose = () => setAnchorEl(null);
 
   const logout = () => {
@@ -109,7 +120,8 @@ const UserMenu = props => {
 }
 
 const NavPage = props => {
-  const { classes, actions } = props;
+  const classes = useStyles();
+  const isLoggedIn = useSelector(state => UserSelectors.isLoggedIn(state));
 
   return (
     <div className={classes.fullPage}>
@@ -119,28 +131,28 @@ const NavPage = props => {
             <Typography variant="h1" color="inherit">
               The Human Factor
             </Typography>
-            { props.isLoggedIn && (<MenuButtons />)}
+            { isLoggedIn && (<MenuButtons />)}
           </div>
           <div>
-            { props.isLoggedIn && (<UserMenu actions={actions}/>)}
+            { isLoggedIn && (<UserMenu />)}
           </div>
         </Toolbar>
       </AppBar>
-      <Container className={classes.body}>
+      <div className={classes.body}>
         {props.children}
+      </div>
+      <Container className={classes.footer}>
+        <Divider variant="middle" className={classes.footerDivider}/>
+        <Typography variant="body2">
+          The Human Factor © 2019<br/>
+          Contact us at&nbsp;
+          <Link href="mailto:brian@thehumanfactor.ai">
+            brian@thehumanfactor.ai
+          </Link>
+        </Typography>
       </Container>
     </div>
   );
 }
 
-export default compose(
-  connect(
-    state => ({
-      isLoggedIn: UserSelectors.isLoggedIn(state)
-    }),
-    dispatch => ({
-      actions: bindActionCreators(UserActions, dispatch)
-    })
-  ),
-  withStyles(styles)
-)(NavPage);
+export default NavPage;

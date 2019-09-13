@@ -11,7 +11,7 @@ import LoginRegister from "./pages/LoginRegister";
 import NavPage from "./pages/NavPage";
 import ChallengeRecorder from "./pages/ChallengeRecorder";
 import FullPageLoader from "./pages/FullPageLoader";
-import ResponseRecorder from "./pages/ResponseRecorder";
+import TakeChallenge from "./pages/TakeChallenge";
 import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
@@ -42,7 +42,7 @@ const App = props =>  {
         <LoginRegister path="/register" mode="register" />
         <ChallengeList path="/challenges" />
         <ChallengeRecorder path="/challenges/create" />
-        <ResponseRecorder path="/challenges/:challengeId" />
+        <TakeChallenge path="/challenges/:challengeId" />
         <ResponseList path="/responses" />
         <ResponseViewer path="/responses/:responseId" />
       </Router>
