@@ -107,14 +107,14 @@ const useStyles = makeStyles(theme => ({
   },
   mainOverlay: {
     zIndex: 41,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     display: props => props.mainOverlay ? "block" : "none",
     ...size100Percent,
     ...absoluteTopLeft
   },
   miniOverlay: {
     zIndex: 51,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     display: props => props.miniOverlay ? "block" : "none",
     width: props => props.miniWidth,
     height: props => props.miniHeight,
@@ -158,7 +158,8 @@ const Assessment = props => {
   let challengeVideo = null;
   let challengeVideoRef = null;
 
-  const miniScale = (mode === MODE.RESPONDING)? .5 : .3;
+  // const miniScale = (mode === MODE.RESPONDING)? .5 : .3;
+  const miniScale = .35;
 
   const windowSize = useWindowSize();
   const sourceDims = { width: 640, height: 480 };
