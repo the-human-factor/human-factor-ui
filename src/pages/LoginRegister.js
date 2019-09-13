@@ -1,7 +1,6 @@
 import React from "react";
 
 import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import { bindActionCreators } from "redux";
 import { compose } from "recompose";
@@ -10,6 +9,7 @@ import { Field, reduxForm } from "redux-form";
 import { Link, navigate } from "@reach/router";
 import { withStyles } from "@material-ui/core/styles";
 
+import PaperPage from "components/PaperPage";
 import * as UserActions from "modules/user/actions";
 import AdapterLink from "components/AdapterLink";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
@@ -17,14 +17,6 @@ import { renderInputWithHelper } from "components/wrappableMuiFormElems";
 import { selectors as UserSelectors } from "modules/user";
 
 const styles = theme => ({
-  paper: {
-    padding: 10,
-    maxWidth: theme.spacing(80)
-  },
-  paperHeader: {
-    margin: 15,
-    marginBottom: 30,
-  },
   divider: {
     margin: 15,
     marginBottom: 30,
@@ -147,32 +139,26 @@ const LoginRegister = props => {
 
   if (props.isLoggedIn) {
     return (
-      <Paper className={classes.paper}>
+      <PaperPage title="">
         <Button className={classes.submit}
                 onClick={actions.logout}
                 variant="contained"
                 color="primary">
           Log Out
         </Button>
-      </Paper>
+      </PaperPage>
     )
   } else if (props.mode === "login") {
     return (
-      <Paper className={classes.paper}>
-        <Typography variant="h2" className={classes.paperHeader}>
-          Login
-        </Typography>
+      <PaperPage title="Login">
         <ReduxLogin classes={classes} onSubmit={loginWithRedirect} />
-      </Paper>
+      </PaperPage>
     );
   } else if (props.mode === "register") {
     return (
-      <Paper className={classes.paper}>
-        <Typography variant="h2" className={classes.paperHeader}>
-            Register
-        </Typography>
+      <PaperPage title="Register">
         <ReduxRegister classes={classes} onSubmit={registerWithRedirect} />
-      </Paper>
+      </PaperPage>
     );
   } else {
     console.error(`Unexpected mode for LoginRegister, ${props.mode}`);
