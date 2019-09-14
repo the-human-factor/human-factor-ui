@@ -17,6 +17,8 @@ import VideoRecorder from "components/VideoRecorder";
 import * as ResponseActions from "modules/responses/actions";
 
 const FOOTER_HEIGHT = 40;
+const MINI_SCALE = .35;
+
 const MODE = {
   INSTRUCTIONS_WAITING: "INSTRUCTIONS_WAITING",
   INSTRUCTIONS_READY: "INSTRUCTIONS_READY",
@@ -70,15 +72,18 @@ const useStyles = makeStyles(theme => ({
   dialogPaper: {
     margin: 0,
     maxWidth: "100%",
-    maxHeight: "100%"
+    maxHeight: "100%",
+    backgroundColor: "#000"
   },
   footer: {
     height: FOOTER_HEIGHT,
-    color: theme.palette.text.secondary,
-    fontSize: "20px",
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
+  },
+  footerText: {
+    paddingTop: theme.spacing(1),
+    color: theme.palette.grey[400],
   },
   frame: {
     position: "relative",
@@ -88,9 +93,14 @@ const useStyles = makeStyles(theme => ({
   closeButton: {
     zIndex: 70,
     color: theme.palette.grey[300],
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     display: props => props.allowClose ? "block" : "none",
-    ...absoluteTopRight
+    ...absoluteTopRight,
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
+    }
   },
+
   instructions: {
     zIndex: 60,
     backgroundColor: "#000",
@@ -154,19 +164,17 @@ const Assessment = props => {
     setMode(MODE.INSTRUCTIONS_READY);
   }
 
-  // Will be set by useRefWithListeners: ?????
+  // These will be set by useRefWithListeners.
   let challengeVideo = null;
   let challengeVideoRef = null;
 
-  // const miniScale = (mode === MODE.RESPONDING)? .5 : .3;
-  const miniScale = .35;
-
+  // Create all the dimensions based on what's available
   const windowSize = useWindowSize();
-  const sourceDims = { width: 640, height: 480 };
+  const sourceDims = { width: 640, height: 480 }; // TODO: use real video dims.
   const frameDims = calcDims(sourceDims,
                              windowSize,
                              FOOTER_HEIGHT + 4,
-                             miniScale);
+                             MINI_SCALE);
 
 
   const canPlayThrough = event => setHasChallenge(true);
@@ -273,21 +281,27 @@ const Assessment = props => {
     switch(mode) {
       case MODE.INSTRUCTIONS_WAITING:
         return (
-          <Typography variant="body1">Loading...</Typography>
+          <Typography variant="body1" className={classes.footerText}>
+            Loading and Starting Camera...
+          </Typography>
         );
       case MODE.INSTRUCTIONS_READY:
         return (
-          <Typography variant="body1">
+          <Typography variant="body1" className={classes.footerText}>
             Click card or hit &lt;space&gt; to begin.
           </Typography>
         );
       case MODE.WATCHING:
         return (
-          <span>Respond when video stops...</span>
+          <Typography variant="body1" className={classes.footerText}>
+            Respond when video stops...
+          </Typography>
         );
       case MODE.RESPONDING:
         return (
-          <span>Respond then click or hit &lt;space&gt; to finish.</span>
+          <Typography variant="body1" className={classes.footerText}>
+            Respond then click or hit &lt;space&gt; to finish.
+          </Typography>
         );
       case MODE.FINISHED:
         return (
@@ -312,6 +326,7 @@ const Assessment = props => {
         <div className={classes.frame}>
           <IconButton aria-label="close"
                       color="primary"
+                      size="small"
                       className={classes.closeButton}
                       onClick={forceClose}>
             <Close fontSize="large" />
@@ -325,7 +340,7 @@ const Assessment = props => {
                 {challenge.instructions}
               </Typography>
               <Typography variant="body2" className={classes.instructionsText}>
-                Respond immediatly after video stops.
+                Respond after the shown video.
               </Typography>
             </div>
           </div>
