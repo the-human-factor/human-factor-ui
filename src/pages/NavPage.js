@@ -145,9 +145,8 @@ const NavPage = props => {
         <Divider variant="middle" className={classes.footerDivider}/>
         <Typography variant="body2">
           The Human Factor © 2019<br/>
-          Contact us at&nbsp;
-          <Link href="mailto:brian@thehumanfactor.ai">
-            brian@thehumanfactor.ai
+          <Link href="mailto:contact@thehumanfactor.ai">
+            contact@thehumanfactor.ai
           </Link>
         </Typography>
       </Container>
