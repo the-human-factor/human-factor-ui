@@ -52,11 +52,14 @@ const TakeChallenge = props => {
 
   const [openAssessment, setOpenAssessment] = React.useState(false);
 
-  useEffect(() => {
-    if (!isLoaded && !isLoading) {
-      actions.fetchChallenges(); // This is overkill, we could just fetch the single challenge that is being responded
-    }
-  });
+  useEffect(
+    () => {
+      if (!isLoaded && !isLoading) {
+        actions.fetchChallenges(); // This is overkill, we could just fetch the single challenge that is being responded
+      }
+    },
+    [isLoaded, isLoading, actions]
+  );
 
   const classes = useStyles();
 

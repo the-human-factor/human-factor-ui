@@ -1,13 +1,11 @@
-import React from "react";
-import { Link } from "@reach/router";
-import { compose, lifecycle, branch, renderNothing } from "recompose";
-import { connect } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import { makeStyles } from "@material-ui/core/styles";
 import Divider from '@material-ui/core/Divider';
 import Typography from "@material-ui/core/Typography";
+import Link from '@material-ui/core/Link';
 
 // TODO: Tell Webpack this JS file uses this image
 import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
@@ -16,39 +14,50 @@ import { selectors as ChallengeSelectors } from "modules/challenges";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
+  list: {
+    maxWidth: theme.breakpoints.width('md'),
+    [theme.breakpoints.down('md')]: {
+      maxWidth: theme.breakpoints.width('sm')
+    },
+  },
   divider: {
     margin: 15,
     marginBottom: 30,
-  }
-});
-
-const useItemStyles = makeStyles({
+  },
   item: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
   },
   text: {
     padding: 10,
     paddingTop: 0
   },
   preview: {
-    width: 100,
-    height: 75,
-    backgroundColor: '#333'
+    backgroundColor: "#333",
+    width: 200,
+    height: 150,
+    [theme.breakpoints.down('md')]: {
+      width: 100,
+      height: 75,
+    },
   },
-});
+}));
 
 function ChallengeListItem(props) {
-  const classes = useItemStyles();
+  const classes = useStyles();
   const link = "/challenges/" + props.id;
   const thumbnail = (props.thumbnail) ? props.thumbnail : VideoPlaceholder;
   return (
     <div className={classes.item}>
-      <img className={classes.preview} src={thumbnail} alt="placeholder"/>
+      <div>
+        <img className={classes.preview} src={thumbnail} alt="placeholder"/>
+      </div>
       <div className={classes.text}>
         <Typography variant="h4">
-            <Link component={AdapterLink} to={link}>{props.title}</Link>
+          <Link component={AdapterLink} to={link} color="secondary">
+            {props.title}
+          </Link>
         </Typography>
         <Typography variant="h5">
           Created by: {props.creator}
@@ -62,7 +71,22 @@ function ChallengeListItem(props) {
 }
 
 const ChallengeList = props => {
-  const { classes, challenges } = props;
+  const classes = useStyles();
+
+  const isLoading = useSelector(state => ChallengeSelectors.isLoading(state));
+  const isLoaded = useSelector(state => ChallengeSelectors.isLoaded(state));
+  const challenges = useSelector(state => ChallengeSelectors.challenges(state));
+  const dispatch = useDispatch();
+  const actions = bindActionCreators(ChallengeActions, dispatch);
+  useEffect(
+    () => {
+      if (!isLoaded && !isLoading) {
+        actions.fetchChallenges(); // This is overkill, we could just fetch the single challenge that is being responded
+      }
+    },
+    [isLoaded, isLoading, actions]
+  );
+
   let challengeItems = Object.values(challenges).map(challenge => (
     <React.Fragment key={`${challenge.id}`}>
       <ChallengeListItem id={challenge.id}
@@ -76,29 +100,12 @@ const ChallengeList = props => {
   ))
 
   return (
-    <PaperPage title="Challenges">
-      <Container>
+    <PaperPage title="Challenges" >
+      <div className={classes.list}>
         {challengeItems}
-      </Container>
+      </div>
     </PaperPage>
   );
 };
 
-export default compose(
-  connect(
-    state => ({
-      isLoading: ChallengeSelectors.isLoading(state),
-      challenges: ChallengeSelectors.challenges(state)
-    }),
-    dispatch => ({
-      actions: bindActionCreators(ChallengeActions, dispatch)
-    })
-  ),
-  lifecycle({
-    componentDidMount() {
-      this.props.actions.fetchChallenges();
-    }
-  }),
-  branch(props => props.isLoading, renderNothing), // TODO: replace with a loading component
-  withStyles(styles)
-)(ChallengeList);
+export default ChallengeList;
