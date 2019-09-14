@@ -1,13 +1,11 @@
-import React from "react";
-import { Link } from "@reach/router";
-import { compose, lifecycle, branch, renderNothing } from "recompose";
-import { connect } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import { makeStyles } from "@material-ui/core/styles";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
+import Link from '@material-ui/core/Link';
 
 // TODO: Tell Webpack this JS file uses this image
 import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
@@ -16,40 +14,50 @@ import { selectors as ResponseSelectors } from "modules/responses";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
+  list: {
+    maxWidth: theme.breakpoints.width('md'),
+    [theme.breakpoints.down('md')]: {
+      maxWidth: theme.breakpoints.width('sm')
+    },
+  },
   divider: {
     margin: 15,
-    marginBottom: 30
-  }
-});
-
-const useItemStyles = makeStyles({
+    marginBottom: 30,
+  },
   item: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   text: {
-    padding: 10
+    padding: 10,
+    paddingTop: 0
   },
   preview: {
-    width: 100,
-    height: 75,
-    backgroundColor: "#333"
+    backgroundColor: "#333",
+    width: 200,
+    height: 150,
+    [theme.breakpoints.down('md')]: {
+      width: 100,
+      height: 75,
+    },
   }
-});
+}));
 
 const ResponseListItem = props => {
-  const classes = useItemStyles();
+  const classes = useStyles();
   const link = "/responses/" + props.id;
   const thumbnail = (props.thumbnail) ? props.thumbnail : VideoPlaceholder;
   return (
     <div className={classes.item} key={props.id}>
-      <img className={classes.preview}
-           src={thumbnail}
-           alt="placeholder"/>
+      <div>
+        <img className={classes.preview}
+             src={thumbnail}
+             alt="placeholder"/>
+      </div>
       <div className={classes.text}>
         <Typography variant="h4">
-          <Link component={AdapterLink} to={link}>
+          <Link component={AdapterLink} to={link} color="secondary">
             {props.challengeTitle}
           </Link>
         </Typography>
@@ -60,7 +68,22 @@ const ResponseListItem = props => {
 };
 
 const ResponseList = props => {
-  const { classes, responses } = props;
+  const classes = useStyles();
+
+  const isLoading = useSelector(state => ResponseSelectors.isLoading(state));
+  const isLoaded = useSelector(state => ResponseSelectors.isLoaded(state));
+  const responses = useSelector(state => ResponseSelectors.responses(state));
+  const dispatch = useDispatch();
+  const actions = bindActionCreators(ResponseActions, dispatch);
+  useEffect(
+    () => {
+      if (!isLoaded && !isLoading) {
+        actions.fetchResponses(); // This is overkill, we could just fetch the single challenge that is being responded
+      }
+    },
+    [isLoaded, isLoading, actions]
+  );
+
   let responseItems = Object.values(responses).map(response => (
     <React.Fragment key={response.id}>
       <ResponseListItem id={response.id}
@@ -73,26 +96,9 @@ const ResponseList = props => {
 
   return (
     <PaperPage title="Responses">
-      <Container>{responseItems}</Container>
+      <div>{responseItems}</div>
     </PaperPage>
   )
 };
 
-export default compose(
-  connect(
-    state => ({
-      isLoading: ResponseSelectors.isLoading(state),
-      responses: ResponseSelectors.responses(state)
-    }),
-    dispatch => ({
-      actions: bindActionCreators(ResponseActions, dispatch)
-    })
-  ),
-  lifecycle({
-    componentDidMount() {
-      this.props.actions.fetchResponses();
-    }
-  }),
-  branch(props => props.isLoading, renderNothing), // TODO: replace with a loading component
-  withStyles(styles)
-)(ResponseList);
+export default ResponseList;
