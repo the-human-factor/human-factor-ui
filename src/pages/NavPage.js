@@ -1,7 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { navigate } from "@reach/router";
-import { bindActionCreators } from "redux";
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from "@material-ui/core/AppBar";
@@ -17,8 +15,9 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from '@material-ui/styles';
 
 import AdapterLink from "components/AdapterLink";
-import * as UserActions from "modules/user/actions";
-import { selectors as UserSelectors } from "modules/user";
+import { selectors as UserSelectors,
+         actions as UserActions } from "modules/user";
+import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({
   fullPage: {
@@ -78,8 +77,7 @@ const MenuButtons = props => {
 }
 
 const UserMenu = props => {
-  const dispatch = useDispatch();
-  const actions = bindActionCreators(UserActions, dispatch);
+  const actions = useActions(UserActions);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -121,7 +119,7 @@ const UserMenu = props => {
 
 const NavPage = props => {
   const classes = useStyles();
-  const isLoggedIn = useSelector(state => UserSelectors.isLoggedIn(state));
+  const { isLoggedIn } = useSelectors(UserSelectors);
 
   return (
     <div className={classes.fullPage}>

@@ -51,7 +51,7 @@ const HumanTheme = responsiveFontSizes(createMuiTheme({
       main: pink[300]
     },
     secondary: {
-      main: indigo[300]
+      main: indigo[400]
     }
   },
   typography: {

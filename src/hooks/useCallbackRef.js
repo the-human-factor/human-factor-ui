@@ -7,7 +7,7 @@ function useCallbackRef() {
     setNode(newNode);
   }, []);
 
-  return [ref, node]
+  return [ref, node];
 }
 
 export default useCallbackRef;

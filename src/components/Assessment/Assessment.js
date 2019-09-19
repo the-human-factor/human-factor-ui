@@ -19,6 +19,11 @@ import * as ResponseActions from "modules/responses/actions";
 const FOOTER_HEIGHT = 40;
 const MINI_SCALE = .35;
 
+// TODO: Replace mode in accordance with Leo's comment on the PR:
+// It seems like you could refactor this into multiple components,
+// one per "mode". That way a lot of the styling can be inside of
+// the component. I see many switch statements on mode. That to me
+// is code smell that you could break it apart.
 const MODE = {
   INSTRUCTIONS_WAITING: "INSTRUCTIONS_WAITING",
   INSTRUCTIONS_READY: "INSTRUCTIONS_READY",
@@ -277,43 +282,37 @@ const Assessment = props => {
     ...frameDims
   });
 
-  const Footer = () => {
-    switch(mode) {
-      case MODE.INSTRUCTIONS_WAITING:
-        return (
-          <Typography variant="body1" className={classes.footerText}>
-            Loading and Starting Camera...
-          </Typography>
-        );
-      case MODE.INSTRUCTIONS_READY:
-        return (
-          <Typography variant="body1" className={classes.footerText}>
-            Click card or hit &lt;space&gt; to begin.
-          </Typography>
-        );
-      case MODE.WATCHING:
-        return (
-          <Typography variant="body1" className={classes.footerText}>
-            Respond when video stops...
-          </Typography>
-        );
-      case MODE.RESPONDING:
-        return (
-          <Typography variant="body1" className={classes.footerText}>
-            Respond then click or hit &lt;space&gt; to finish.
-          </Typography>
-        );
-      case MODE.FINISHED:
-        return (
-          <ButtonGroup color="primary" fullWidth>
-            <Button onClick={submit}>Submit</Button>
-            <Button onClick={retake}>Retake</Button>
-          </ButtonGroup>
-        );
-      default:
-        throw new Error(`Unknown mode: ${mode}`);
-    }
+  
+  const FOOTER_COMPONENT_FOR_MODE = {
+    [MODE.INSTRUCTIONS_WAITING]: (
+      <Typography variant="body1" className={classes.footerText}>
+        Loading and Starting Camera...
+      </Typography>
+    ),
+    [MODE.INSTRUCTIONS_READY]: (
+      <Typography variant="body1" className={classes.footerText}>
+        Click card or hit &lt;space&gt; to begin.
+      </Typography>
+    ),
+    [MODE.WATCHING]: (
+      <Typography variant="body1" className={classes.footerText}>
+        Respond when video stops...
+      </Typography>
+    ),
+    [MODE.RESPONDING]: (
+      <Typography variant="body1" className={classes.footerText}>
+        Respond then click or hit &lt;space&gt; to finish.
+      </Typography>
+    ),
+    [MODE.FINISHED]: (
+      <ButtonGroup color="primary" fullWidth>
+        <Button onClick={submit}>Submit</Button>
+        <Button onClick={retake}>Retake</Button>
+      </ButtonGroup>
+    )
   }
+
+  const Footer = () => FOOTER_COMPONENT_FOR_MODE[mode];
 
   return (
     <Dialog aria-labelledby="customized-dialog-title"

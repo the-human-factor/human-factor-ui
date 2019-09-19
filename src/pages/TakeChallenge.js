@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { bindActionCreators } from "redux";
+
 
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -13,6 +12,7 @@ import FullPageLoader from "pages/FullPageLoader";
 import Assessment from "components/Assessment/Assessment";
 import * as ChallengeSelectors from "modules/challenges/selectors";
 import * as ChallengeActions from "modules/challenges/actions";
+import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({
   buttons: {
@@ -42,13 +42,11 @@ const useStyles = makeStyles(theme => ({
 
 const TakeChallenge = props => {
   const { challengeId } = props;
-  const challenge = useSelector(
-    state => ChallengeSelectors.challenge(state, {challengeId: challengeId})
-  );
-  const isLoaded = useSelector(state => ChallengeSelectors.isLoaded(state));
-  const isLoading = useSelector(state => ChallengeSelectors.isLoading(state));
-  const dispatch = useDispatch();
-  const actions = bindActionCreators(ChallengeActions, dispatch);
+  const { challenge,
+          isLoaded,
+          isLoading} = useSelectors(ChallengeSelectors, {challengeId: challengeId});
+
+  const actions = useActions(ChallengeActions);
 
   const [openAssessment, setOpenAssessment] = React.useState(false);
 

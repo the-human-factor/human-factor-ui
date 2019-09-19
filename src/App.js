@@ -1,10 +1,6 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Router, navigate } from "@reach/router";
-import { bindActionCreators } from "redux";
 
-import * as UserActions from "modules/user/actions";
-import * as UserSelectors from "modules/user/selectors";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import LoginRegister from "./pages/LoginRegister";
@@ -15,12 +11,12 @@ import TakeChallenge from "./pages/TakeChallenge";
 import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
+import { selectors as UserSelectors, actions as UserActions } from "modules/user";
+import { useActions, useSelectors } from "hooks";
 
 const App = props =>  {
-  const isInitializing = useSelector(state => UserSelectors.isInitializing(state));
-  const isLoggedIn = useSelector(state => UserSelectors.isLoggedIn(state));
-  const dispatch = useDispatch();
-  const actions = bindActionCreators(UserActions, dispatch);
+  const actions = useActions(UserActions);
+  const { isInitializing, isLoggedIn } = useSelectors(UserSelectors);
 
   if (isInitializing) {
     return <FullPageLoader />;

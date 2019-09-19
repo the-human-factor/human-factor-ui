@@ -1,21 +1,19 @@
 import React from "react";
 
 import Button from "@material-ui/core/Button";
-import { bindActionCreators } from "redux";
-import { compose } from "recompose";
-import { connect } from "react-redux";
 import { Field, reduxForm } from "redux-form";
 import { Link, navigate } from "@reach/router";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 import PaperPage from "components/PaperPage";
-import * as UserActions from "modules/user/actions";
 import AdapterLink from "components/AdapterLink";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
-import { selectors as UserSelectors } from "modules/user";
+import { selectors as UserSelectors,
+         actions as UserActions } from "modules/user";
+import { useActions, useSelectors } from "hooks";
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   divider: {
     margin: 15,
     marginBottom: 30,
@@ -33,9 +31,7 @@ const styles = theme => ({
     marginTop: theme.spacing(5),
     width: theme.spacing(30)
   }
-});
-
-
+}));
 
 const Login = props => {
   const { handleSubmit, pristine, submitting, valid, classes, onSubmit } = props;
@@ -113,13 +109,17 @@ const Register = props => {
 const ReduxLogin = reduxForm({ form: "login" })(Login);
 const ReduxRegister = reduxForm({ form: "register"})(Register);
 
+
+
 const LoginRegister = props => {
-  const { classes, actions } = props;
+  const classes = useStyles();
+  const actions = useActions(UserActions);
+  const selectors = useSelectors(UserSelectors);
 
   const loginWithRedirect = (credentials) => {
     actions.login(credentials)
       .then((res) => {
-        navigate(props.returnToRoute, { replace: true });
+        navigate(selectors.returnToRoute, { replace: true });
       })
       .catch((error) => {
         alert(`Log In failed, ${error.message}`);
@@ -129,14 +129,14 @@ const LoginRegister = props => {
   const registerWithRedirect = (credentials) => {
     actions.register(credentials)
       .then((res) => {
-        navigate(props.returnToRoute, { replace: true });
+        navigate(selectors.returnToRoute, { replace: true });
       })
       .catch((error) => {
         alert(`Register failed, ${error.message}`);
       });
   };
 
-  if (props.isLoggedIn) {
+  if (selectors.isLoggedIn) {
     return (
       <PaperPage title="">
         <Button className={classes.submit}
@@ -164,15 +164,4 @@ const LoginRegister = props => {
   }
 };
 
-export default compose(
-  connect(
-    state => ({
-      isLoggedIn: UserSelectors.isLoggedIn(state),
-      returnToRoute: UserSelectors.returnToRoute(state)
-    }),
-    dispatch => ({
-      actions: bindActionCreators(UserActions, dispatch)
-    })
-  ),
-  withStyles(styles)
-)(LoginRegister);
+export default LoginRegister;
