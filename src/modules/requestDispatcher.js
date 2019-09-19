@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "config";
 
-import { actions } from "./user";
+import { actions } from "./user/slice";
 import store from "storeContainer";
 
 const API = config["API"];
