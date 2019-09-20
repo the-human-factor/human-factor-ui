@@ -11,7 +11,7 @@ import TextField from "@material-ui/core/TextField";
 
 import VideoRecorder from "../components/VideoRecorder";
 import BusyDialog from "../components/BusyDialog";
-import * as ChallengeActions from "modules/challenges/actions";
+import { ChallengesActions } from "modules/challenges";
 import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
@@ -207,7 +207,7 @@ export default compose(
   connect(
     () => ({}), // Nothing here for now
     dispatch => ({
-      actions: bindActionCreators(ChallengeActions, dispatch)
+      actions: bindActionCreators(ChallengesActions, dispatch)
     })
   )
 )(ChallengeRecorder);

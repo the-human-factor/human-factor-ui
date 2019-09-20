@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/styles';
 import { useSelector } from "react-redux";
 
 import api from "modules/api";
-import { selectors as UserSelectors } from "modules/user";
+import { UserSelectors } from "modules/user";
 import { required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
 

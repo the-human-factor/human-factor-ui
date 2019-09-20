@@ -15,8 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from '@material-ui/styles';
 
 import AdapterLink from "components/AdapterLink";
-import { selectors as UserSelectors,
-         actions as UserActions } from "modules/user";
+import { UserSelectors, UserActions } from "modules/user";
 import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({

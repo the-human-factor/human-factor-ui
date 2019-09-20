@@ -1,13 +1,13 @@
 export const TEMP_ID = -1;
 
-export const State = {
-  NOT_LOADED: 0,
-  LOADING: 1,
-  LOADED: 2,
-  CREATING: 3
+export const STATE = {
+  NOT_LOADED: "NOT_LOADED",
+  LOADING: "LOADING",
+  LOADED: "LOADED",
+  CREATING: "CREATING"
 };
 
-export const LoginState = {
+export const LOGIN_STATE = {
   INITIALIZING: "INITIALIZING",
   LOGGED_OUT: "LOGGED_OUT",
   LOGGING_IN: "LOGGING_IN",

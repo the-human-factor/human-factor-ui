@@ -1,22 +1,21 @@
 import { actions as sliceActions,
          selectors as sliceSelectors } from "./slice";
-import { LoginState } from "modules/utils";
+import { LOGIN_STATE } from "modules/constants";
 import api from "modules/api";
 
 const root = sliceSelectors.getUser;
 
-export const selectors = {
+export const UserSelectors = {
   user: (state) => root(state).user,
-  isLoggingIn: (state) => root(state).meta === LoginState.LOGGING_IN,
-  isLoggedOut: (state) => root(state).meta === LoginState.LOGGED_OUT,
-  isLoggedIn: (state) => root(state).meta === LoginState.LOGGED_IN,
-  isInitializing: (state) => root(state).meta === LoginState.INITIALIZING,
+  isLoggingIn: (state) => root(state).meta === LOGIN_STATE.LOGGING_IN,
+  isLoggedOut: (state) => root(state).meta === LOGIN_STATE.LOGGED_OUT,
+  isLoggedIn: (state) => root(state).meta === LOGIN_STATE.LOGGED_IN,
+  isInitializing: (state) => root(state).meta === LOGIN_STATE.INITIALIZING,
   returnToRoute: (state) => root(state).returnToRoute
 };
 
-export const actions = {
+export const UserActions = {
   initLogin: () => dispatch => {
-    console.log("userActions.initializing")
     dispatch(sliceActions.initializing());
     return api.refresh().catch(error => {}); // Do nothing about an error.
   },
