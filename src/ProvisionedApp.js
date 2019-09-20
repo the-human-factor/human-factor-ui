@@ -5,10 +5,10 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import App from "./App";
 import store from "./storeContainer";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { actions } from "./modules/user";
+import { UserActions } from "./modules/user";
 import { HumanTheme } from "./themes/HumanTheme";
 
-store.dispatch(actions.initLogin());
+store.dispatch(UserActions.initLogin());
 
 const ProvisionedApp = () => (
   <ErrorBoundary>

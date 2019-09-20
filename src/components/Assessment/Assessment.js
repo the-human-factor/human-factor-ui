@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { useWindowSize, useKeyUp, useRefWithListeners, useCallbackRef } from "hooks";
 import BusyDialog from "components/BusyDialog";
 import VideoRecorder from "components/VideoRecorder";
-import * as ResponseActions from "modules/responses/actions";
+import { ResponsesActions } from "modules/responses";
 
 const FOOTER_HEIGHT = 40;
 const MINI_SCALE = .35;
@@ -157,7 +157,7 @@ const Assessment = props => {
   const { challengeId, challenge, open, onClose } = props;
 
   const dispatch = useDispatch();
-  const actions = bindActionCreators(ResponseActions, dispatch);
+  const actions = bindActionCreators(ResponsesActions, dispatch);
   
   const [mode, setMode] = useState(MODE.INSTRUCTIONS_WAITING);
   const [hasChallenge, setHasChallenge] = useState(false);

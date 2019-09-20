@@ -9,8 +9,7 @@ import Link from '@material-ui/core/Link';
 
 // TODO: Tell Webpack this JS file uses this image
 import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
-import * as ChallengeActions from "modules/challenges/actions";
-import { selectors as ChallengeSelectors } from "modules/challenges";
+import { ChallengesSelectors, ChallengesActions } from "modules/challenges";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
 
@@ -73,11 +72,11 @@ function ChallengeListItem(props) {
 const ChallengeList = props => {
   const classes = useStyles();
 
-  const isLoading = useSelector(state => ChallengeSelectors.isLoading(state));
-  const isLoaded = useSelector(state => ChallengeSelectors.isLoaded(state));
-  const challenges = useSelector(state => ChallengeSelectors.challenges(state));
+  const isLoading = useSelector(state => ChallengesSelectors.isLoading(state));
+  const isLoaded = useSelector(state => ChallengesSelectors.isLoaded(state));
+  const challenges = useSelector(state => ChallengesSelectors.challenges(state));
   const dispatch = useDispatch();
-  const actions = bindActionCreators(ChallengeActions, dispatch);
+  const actions = bindActionCreators(ChallengesActions, dispatch);
   useEffect(
     () => {
       if (!isLoaded && !isLoading) {

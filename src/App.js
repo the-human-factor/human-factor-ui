@@ -11,7 +11,7 @@ import TakeChallenge from "./pages/TakeChallenge";
 import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
-import { selectors as UserSelectors, actions as UserActions } from "modules/user";
+import { UserSelectors, UserActions } from "modules/user";
 import { useActions, useSelectors } from "hooks";
 
 const App = props =>  {

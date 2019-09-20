@@ -10,8 +10,7 @@ import { red, green } from '@material-ui/core/colors';
 import PaperPage from "components/PaperPage";
 import FullPageLoader from "pages/FullPageLoader";
 import Assessment from "components/Assessment/Assessment";
-import * as ChallengeSelectors from "modules/challenges/selectors";
-import * as ChallengeActions from "modules/challenges/actions";
+import { ChallengesSelectors, ChallengesActions } from "modules/challenges";
 import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({
@@ -44,9 +43,10 @@ const TakeChallenge = props => {
   const { challengeId } = props;
   const { challenge,
           isLoaded,
-          isLoading} = useSelectors(ChallengeSelectors, {challengeId: challengeId});
+          isLoading } = useSelectors(ChallengesSelectors,
+                                     { challengeId: challengeId });
 
-  const actions = useActions(ChallengeActions);
+  const actions = useActions(ChallengesActions);
 
   const [openAssessment, setOpenAssessment] = React.useState(false);
 

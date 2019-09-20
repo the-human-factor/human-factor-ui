@@ -9,8 +9,7 @@ import PaperPage from "components/PaperPage";
 import AdapterLink from "components/AdapterLink";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
-import { selectors as UserSelectors,
-         actions as UserActions } from "modules/user";
+import { UserSelectors, UserActions } from "modules/user";
 import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({

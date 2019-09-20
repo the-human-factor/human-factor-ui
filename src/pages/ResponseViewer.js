@@ -9,8 +9,7 @@ import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
-import * as ResponseActions from "modules/responses/actions";
-import { selectors as ResponseSelectors } from "modules/responses";
+import { ResponsesSelectors, ResponsesActions } from "modules/responses";
 import PaperPage from "components/PaperPage";
 
 const styles = theme => ({
@@ -99,11 +98,11 @@ class ResponseViewer extends React.Component {
 export default compose(
   connect(
     (state, ownProps) => ({
-      isLoading: ResponseSelectors.isLoading(state),
-      response: ResponseSelectors.response(state, ownProps)
+      isLoading: ResponsesSelectors.isLoading(state),
+      response: ResponsesSelectors.response(state, ownProps)
     }),
     dispatch => ({
-      actions: bindActionCreators(ResponseActions, dispatch)
+      actions: bindActionCreators(ResponsesActions, dispatch)
     })
   ),
   lifecycle({

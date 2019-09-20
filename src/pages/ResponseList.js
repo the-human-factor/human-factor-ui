@@ -9,8 +9,7 @@ import Link from '@material-ui/core/Link';
 
 // TODO: Tell Webpack this JS file uses this image
 import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
-import * as ResponseActions from "modules/responses/actions";
-import { selectors as ResponseSelectors } from "modules/responses";
+import { ResponsesSelectors, ResponsesActions } from "modules/responses";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
 
@@ -70,11 +69,11 @@ const ResponseListItem = props => {
 const ResponseList = props => {
   const classes = useStyles();
 
-  const isLoading = useSelector(state => ResponseSelectors.isLoading(state));
-  const isLoaded = useSelector(state => ResponseSelectors.isLoaded(state));
-  const responses = useSelector(state => ResponseSelectors.responses(state));
+  const isLoading = useSelector(state => ResponsesSelectors.isLoading(state));
+  const isLoaded = useSelector(state => ResponsesSelectors.isLoaded(state));
+  const responses = useSelector(state => ResponsesSelectors.responses(state));
   const dispatch = useDispatch();
-  const actions = bindActionCreators(ResponseActions, dispatch);
+  const actions = bindActionCreators(ResponsesActions, dispatch);
   useEffect(
     () => {
       if (!isLoaded && !isLoading) {
