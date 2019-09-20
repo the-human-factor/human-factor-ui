@@ -74,9 +74,12 @@ class VideoRecorder extends React.Component {
     if (this.camera == null || this.status !== VideoRecorder.STATUS.READY_TO_RECORD) {
       throw new Error("Can't start playing status:" + this.status)
     }
-    this.updateStatus(VideoRecorder.STATUS.RECORDING)
-    
-    this.recorder = RecordRTC(this.camera, {type: "video"});
+    this.updateStatus(VideoRecorder.STATUS.RECORDING);
+
+    this.recorder = RecordRTC(this.camera, {
+      type: "video",
+      mimeType: "video/webm;codecs=vp8"
+    });
     this.recorder.startRecording();
     this.recorder.camera = this.camera;
     window.recorder = this.recorder;
