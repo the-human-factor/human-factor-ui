@@ -22,8 +22,8 @@ const useStyles = makeStyles(theme => ({
   title: {
     lineHeight: .8,
     paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     marginTop: theme.spacing(-.8),
-    // borderTop: "1px solid " + theme.palette.grey[300],
     marginBottom: theme.spacing(2)
   }
 }));
