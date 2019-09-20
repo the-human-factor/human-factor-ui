@@ -342,7 +342,7 @@ class RequestDispatcher {
         }).catch((error) => {
           if (axios.isCancel(error)) {
             req.inFlight = false;
-          } else if (error.response.status !== 401 || req.tries >= req.maxRetries) {
+          } else if ((error.response || {}).status !== 401 || req.tries >= req.maxRetries) {
             req.reject(error);
             req.finished = true;
           } else {

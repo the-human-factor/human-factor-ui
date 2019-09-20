@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 
 import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import { Field, reduxForm } from "redux-form";
 import { makeStyles } from '@material-ui/styles';
-import { useSelector } from "react-redux";
+
+import { Field, reduxForm } from "redux-form";
 
 import api from "modules/api";
-import { UserSelectors } from "modules/user";
-import { required, passwordsMatch, validPassword } from "components/reactFormValidation";
+import PaperPage from "components/PaperPage";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
+import { required, passwordsMatch, validPassword } from "components/reactFormValidation";
+import { UserSelectors } from "modules/user";
+import { useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({
   textField: {
@@ -21,10 +22,6 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "left"
-  },
-  paper: {
-    padding: 10,
-    minWidth: 650,
   },
 }));
 
@@ -49,7 +46,7 @@ const ChangePassword = props => {
 
   return (
     <form className={classes.form} onSubmit={handleSubmit(changePassword)}>
-      <Typography variant="h3">
+      <Typography variant="h4">
         Change Password:
       </Typography>
       <Field className={classes.textField}
@@ -87,16 +84,14 @@ const ChangePassword = props => {
 const ReduxChangePassword = reduxForm({ form: "changePassword" })(ChangePassword);
 
 const Profile = () => {
-  const classes = useStyles();
-  const user = useSelector(state => UserSelectors.user(state));
+  const { user } = useSelectors(UserSelectors);
+
+  const title = `Hi ${user.full_name}!`;
 
   return (
-    <Paper className={classes.paper}>
-        <Typography variant="h2">
-          Hi {user.full_name}!
-        </Typography>
+    <PaperPage title={title} >
         <ReduxChangePassword/>
-    </Paper>
+    </PaperPage>
   );
 };
 

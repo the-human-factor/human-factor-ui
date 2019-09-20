@@ -1,16 +1,19 @@
 import React from "react";
 
-import Button from "@material-ui/core/Button";
 import { Field, reduxForm } from "redux-form";
-import { Link, navigate } from "@reach/router";
+import { navigate } from "@reach/router";
+
+import Button from "@material-ui/core/Button";
+import Link from '@material-ui/core/Link';
+import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
-import PaperPage from "components/PaperPage";
 import AdapterLink from "components/AdapterLink";
+import PaperPage from "components/PaperPage";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
-import { UserSelectors, UserActions } from "modules/user";
 import { useActions, useSelectors } from "hooks";
+import { UserSelectors, UserActions } from "modules/user";
 
 const useStyles = makeStyles(theme => ({
   divider: {
@@ -28,6 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(7),
     width: theme.spacing(30)
   }
 }));
@@ -56,8 +60,13 @@ const Login = props => {
               disabled={pristine || !valid || submitting}>
         Log In
       </Button>
-      <br />
-      <Link component={AdapterLink} to="/register">Register</Link>
+
+      <Typography variant="h5">
+        Don't have an account?
+      </Typography>
+      <Typography variant="h5">
+        Please <Link component={AdapterLink} to="/register">Register.</Link>
+      </Typography>
     </form>
   );
 };
@@ -99,8 +108,9 @@ const Register = props => {
               disabled={pristine || !valid || submitting}>
         Register
       </Button>
-      <br />
-      <Link component={AdapterLink} to="/login">Log In</Link>
+      <Typography variant="h5">
+        Back to <Link component={AdapterLink} to="/login">Log In.</Link>
+      </Typography>
     </form>
   );
 };
@@ -108,15 +118,13 @@ const Register = props => {
 const ReduxLogin = reduxForm({ form: "login" })(Login);
 const ReduxRegister = reduxForm({ form: "register"})(Register);
 
-
-
 const LoginRegister = props => {
   const classes = useStyles();
   const actions = useActions(UserActions);
   const selectors = useSelectors(UserSelectors);
 
   const loginWithRedirect = (credentials) => {
-    actions.login(credentials)
+    return actions.login(credentials)
       .then((res) => {
         navigate(selectors.returnToRoute, { replace: true });
       })
@@ -126,7 +134,7 @@ const LoginRegister = props => {
   };
 
   const registerWithRedirect = (credentials) => {
-    actions.register(credentials)
+    return actions.register(credentials)
       .then((res) => {
         navigate(selectors.returnToRoute, { replace: true });
       })
