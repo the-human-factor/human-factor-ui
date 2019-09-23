@@ -78,7 +78,7 @@ class VideoRecorder extends React.Component {
       video: {
         width: this.props.recordWidth,
         height: this.props.recordHeight
-      } 
+      }
     })
       .catch((error) => {
         this.handleError(error,
@@ -104,6 +104,7 @@ class VideoRecorder extends React.Component {
         width: this.props.width,
         height: this.props.height
       },
+      mimeType: "video/webm;codecs=vp8"
     }
     
     this.recorder = RecordRTC(this.camera, settings);
