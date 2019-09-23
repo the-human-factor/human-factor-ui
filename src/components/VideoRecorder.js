@@ -1,12 +1,24 @@
 import React from "react";
 import RecordRTC from "recordrtc";
 
+import ErrorContext from "components/ErrorContext";
+
 class VideoRecorder extends React.Component {
   static STATUS = {
     WAITING_FOR_CAMERA: "WAITING_FOR_CAMERA",
     READY_TO_RECORD: "READY_TO_RECORD",
     RECORDING: "RECORDING",
     REPLAY: "REPLAY",
+  };
+
+  static defaultProps = {
+    width: "640",
+    height: "480",
+    recordWidth: 1024,
+    recordHeight: 768,
+    allowReview: false,
+    className: "",
+    onStatusChange: (status) => {}
   };
 
   constructor(props) {
@@ -29,17 +41,12 @@ class VideoRecorder extends React.Component {
     this.stopRecordingCallback = this.stopRecordingCallback.bind(this);
   }
 
-  static defaultProps = {
-    width: "640",
-    height: "480",
-    allowReview: false,
-    className: "",
-    onStatusChange: (status) => {}
-  };
+  static contextType = ErrorContext;
 
   componentDidMount() {
-    this.setup()
-    this.videoElement.current.addEventListener('loadeddata', this.loadedData)
+    this.handleError = this.context;
+    this.setup();
+    this.videoElement.current.addEventListener('loadeddata', this.loadedData);
   }
 
   updateStatus(status) {
@@ -55,30 +62,51 @@ class VideoRecorder extends React.Component {
 
   async setup() {
     this.camera = await this.captureCamera();
-    
-    this.videoElement.current.muted = true;
-    this.videoElement.current.volume = 0;
-    this.videoElement.current.srcObject = this.camera;
-    this.videoElement.current.controls = false;
-    this.videoElement.current.autoplay = true;
+    if (this.camera) {
+      this.videoElement.current.muted = true;
+      this.videoElement.current.volume = 0;
+      this.videoElement.current.srcObject = this.camera;
+      this.videoElement.current.controls = false;
+      this.videoElement.current.autoplay = true;
+    }
   }
 
   async captureCamera() {
-    try {
-      return navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    } catch (error) {
-      alert("Unable to capture your camera. Please check console logs.");
-      console.error(error);
-    }
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    return navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: {
+        width: this.props.recordWidth,
+        height: this.props.recordHeight
+      } 
+    })
+      .catch((error) => {
+        this.handleError(error,
+                         "Error in mediaDevices.getUserMedia",
+                         true);
+        return undefined;
+      });
   }
 
   async startRecording() {
     if (this.camera == null || this.status !== VideoRecorder.STATUS.READY_TO_RECORD) {
-      throw new Error("Can't start playing status:" + this.status)
+      this.handleError(new Error("Can't start playing status:" + this.status),
+                       "Error in startRecording VideoRecorder",
+                       true);
+      return;
     }
-    this.updateStatus(VideoRecorder.STATUS.RECORDING)
+    this.updateStatus(VideoRecorder.STATUS.RECORDING);
+    this.videoElement.current.muted = true;
+
+    const settings = {
+      type: "video",
+      canvas: {
+        width: this.props.width,
+        height: this.props.height
+      },
+    }
     
-    this.recorder = RecordRTC(this.camera, {type: "video"});
+    this.recorder = RecordRTC(this.camera, settings);
     this.recorder.startRecording();
     this.recorder.camera = this.camera;
     window.recorder = this.recorder;

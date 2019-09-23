@@ -1,23 +1,26 @@
 import React, { useState } from "react";
+
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { navigate } from "@reach/router";
 
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
 import Button from "@material-ui/core/Button";
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Close from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { useWindowSize, useKeyUp, useRefWithListeners, useCallbackRef } from "hooks";
 import BusyDialog from "components/BusyDialog";
 import VideoRecorder from "components/VideoRecorder";
 import { ResponsesActions } from "modules/responses";
+import { useWindowSize, useWindowListener, useRefWithListeners, useCallbackRef, useErrorContext } from "hooks";
+import { calcDims } from "utils/videoDims";
+import { MINI_VIDEO_SCALE } from "utils/constants";
 
 const FOOTER_HEIGHT = 40;
-const MINI_SCALE = .35;
 
 // TODO: Replace mode in accordance with Leo's comment on the PR:
 // It seems like you could refactor this into multiple components,
@@ -30,42 +33,6 @@ const MODE = {
   WATCHING: "WATCHING",
   RESPONDING: "RESPONDING",
   FINISHED: "FINISHED"
-}
-
-function calcMainDims(sourceDims, windowSize, extraHeight) {
-  const fracWidthScaled =  windowSize.width / sourceDims.width;
-  const fracHeightScaled = windowSize.height / (sourceDims.height + extraHeight);
-
-  if (fracHeightScaled > 1.0 && fracWidthScaled > 1.0) {
-    return {
-      width: sourceDims.width,
-      height: sourceDims.height,
-      scale: 1.0
-    }
-  } else if (fracWidthScaled < fracHeightScaled) {
-    // Width is limiting
-    return {
-      width: windowSize.width,
-      height: sourceDims.height * fracWidthScaled,
-      scale: fracWidthScaled
-    }
-  } else {
-    // Height is limiting
-    return {
-      width: sourceDims.width  * fracHeightScaled,
-      height: windowSize.height - extraHeight,
-      scale: fracHeightScaled
-    }
-  }
-}
-
-function calcDims(sourceDims, windowSize, extraHeight, miniScale) {
-  const dims = calcMainDims(sourceDims, windowSize, extraHeight);
-  return {
-    miniWidth: Math.round(dims.width * miniScale),
-    miniHeight: Math.round(dims.height * miniScale),
-    ...dims
-  }
 }
 
 const size100Percent = { width: "100%", height: "100%" };
@@ -158,6 +125,7 @@ const Assessment = props => {
 
   const dispatch = useDispatch();
   const actions = bindActionCreators(ResponsesActions, dispatch);
+  const errorHandler = useErrorContext();
   
   const [mode, setMode] = useState(MODE.INSTRUCTIONS_WAITING);
   const [hasChallenge, setHasChallenge] = useState(false);
@@ -178,8 +146,8 @@ const Assessment = props => {
   const sourceDims = { width: 640, height: 480 }; // TODO: use real video dims.
   const frameDims = calcDims(sourceDims,
                              windowSize,
-                             FOOTER_HEIGHT + 4,
-                             MINI_SCALE);
+                             MINI_VIDEO_SCALE,
+                             { extraHeight: FOOTER_HEIGHT + 4 });
 
 
   const canPlayThrough = event => setHasChallenge(true);
@@ -197,7 +165,10 @@ const Assessment = props => {
       case VideoRecorder.STATUS.REPLAY:
         break;
       default:
-        throw new Error(`Unknown VideoRecorder status: ${status}`);
+        errorHandler(new Error(`Unknown VideoRecorder status: ${status}`),
+                     "Unknown VideoRecorder status",
+                     false);
+        break;
     }
   };
 
@@ -221,7 +192,10 @@ const Assessment = props => {
     if (mode === MODE.WATCHING) {
       setMode(MODE.RESPONDING);
     } else {
-      throw new Error(`Unexpected mode for challengePlaybackEnded, ${mode}`);
+      errorHandler(new Error(`Unexpected mode for challengePlaybackEnded, ${mode}`),
+                   "Unexpected mode for challengePlaybackEnded",
+                   false);
+      throw new Error();
     }
   }
   
@@ -261,7 +235,9 @@ const Assessment = props => {
       })
       .catch(err => {
         setWaitingForSubmit(false);
-        alert("Error submitting response");
+        errorHandler(err,
+                    "Error submitting response",
+                    false);
         throw new Error(`Failed to submit response, ${mode}`);
       });
   };
@@ -271,7 +247,11 @@ const Assessment = props => {
     ended: challengePlaybackEnded
   });
 
-  useKeyUp("Space", tryAdvance);
+  useWindowListener("keyup", (event) => {
+    if (event.code === "Space") {
+      tryAdvance();
+    }
+  });
 
   const classes = useStyles({
     showInstructions: mode === MODE.INSTRUCTIONS_WAITING || mode === MODE.INSTRUCTIONS_READY,
@@ -282,12 +262,19 @@ const Assessment = props => {
     ...frameDims
   });
 
+  const waitingMessage = (hasChallenge ? "" : "Loading video") +
+                         (!hasChallenge && !canRecord ? " and " : "") +
+                         (canRecord ? "" : "Starting Camera") + "...";
+
   
   const FOOTER_COMPONENT_FOR_MODE = {
     [MODE.INSTRUCTIONS_WAITING]: (
-      <Typography variant="body1" className={classes.footerText}>
-        Loading and Starting Camera...
-      </Typography>
+      <React.Fragment>
+        <CircularProgress size={FOOTER_HEIGHT / 2} />
+        <Typography variant="body1" className={classes.footerText}>
+          {waitingMessage}
+        </Typography>
+      </React.Fragment>
     ),
     [MODE.INSTRUCTIONS_READY]: (
       <Typography variant="body1" className={classes.footerText}>

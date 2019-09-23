@@ -56,3 +56,11 @@ Basic styles
 body {
   background-color: #eeeeee;
 }
+
+b {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
