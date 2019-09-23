@@ -67,6 +67,11 @@ const Login = props => {
       <Typography variant="h5">
         Please <Link component={AdapterLink} to="/register">Register.</Link>
       </Typography>
+
+      <Typography variant="body1">
+        Forgot password or username?<br/>
+        Please <Link href="mailto:contact@thehumanfactor.ai">Email us.</Link>
+      </Typography>
     </form>
   );
 };
