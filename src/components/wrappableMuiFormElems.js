@@ -15,12 +15,12 @@ export const renderTextField =
   );
 
 export const renderInputWithHelper = 
-  ({input, label, meta: { touched, error }, ...custom}) => {
+  ({input, label, meta: { touched, error }, className, ...custom}) => {
     const name = input.name;
     const id = `mui-input-${name}`;
     const textId = `mui-input-${name}-text`;
     return (
-      <FormControl error={touched && Boolean(error)}>
+      <FormControl error={touched && Boolean(error)} className={className}>
         <InputLabel htmlFor={id}>{label}</InputLabel>
         <Input id={id}
                aria-describedby={textId}

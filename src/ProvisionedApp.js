@@ -6,14 +6,14 @@ import App from "./App";
 import store from "./storeContainer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { UserActions } from "./modules/user";
-import { HumanTheme } from "./themes/HumanTheme";
+import humanTheme from "./themes/humanTheme";
 
 store.dispatch(UserActions.initLogin());
 
 const ProvisionedApp = () => (
   <ErrorBoundary>
     <Provider store={store}>
-      <MuiThemeProvider theme={HumanTheme}>
+      <MuiThemeProvider theme={humanTheme}>
         <App />
       </MuiThemeProvider>
     </Provider>

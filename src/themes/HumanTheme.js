@@ -45,7 +45,7 @@ const extraSansFont = ['"Roboto"', 'sans-serif'].join(',')
 // Pink 300
 // Purple 400
 // 
-const HumanTheme = responsiveFontSizes(createMuiTheme({
+const humanTheme = responsiveFontSizes(createMuiTheme({
   palette: {
     primary: { 
       main: pink[300]
@@ -90,7 +90,8 @@ const HumanTheme = responsiveFontSizes(createMuiTheme({
 }));
 
 export {
-  HumanTheme,
   titleFont,
   bodyFont
 };
+
+export default humanTheme;
