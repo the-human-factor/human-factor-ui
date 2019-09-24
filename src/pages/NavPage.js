@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const MenuButtons = props => {
+const MenuButtons = ({ isAdmin }) => {
   return (
     <React.Fragment>
       <Button color="inherit"
@@ -71,6 +71,14 @@ const MenuButtons = props => {
               to="/responses">
         My Responses
       </Button>
+
+      { isAdmin && (
+        <Button color="inherit"
+                component={AdapterLink}
+                to="/admin">
+          Admin
+        </Button>
+      )}
     </React.Fragment>
   );
 }
@@ -118,7 +126,7 @@ const UserMenu = props => {
 
 const NavPage = props => {
   const classes = useStyles();
-  const { isLoggedIn } = useSelectors(UserSelectors);
+  const { isLoggedIn, isAdmin } = useSelectors(UserSelectors);
 
   return (
     <div className={classes.fullPage}>
@@ -128,7 +136,7 @@ const NavPage = props => {
             <Typography variant="h1" color="inherit">
               The Human Factor
             </Typography>
-            { isLoggedIn && (<MenuButtons />)}
+            { isLoggedIn && (<MenuButtons isAdmin={isAdmin} />)}
           </div>
           <div>
             { isLoggedIn && (<UserMenu />)}
