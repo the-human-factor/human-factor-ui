@@ -12,6 +12,7 @@ import VideoPlaceholder from "../images/VideoPlaceholder.jpg";
 import { ResponsesSelectors, ResponsesActions } from "modules/responses";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
+import { useErrorContext } from "hooks";
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -74,13 +75,18 @@ const ResponseList = props => {
   const responses = useSelector(state => ResponsesSelectors.responses(state));
   const dispatch = useDispatch();
   const actions = bindActionCreators(ResponsesActions, dispatch);
+  const errorHandler = useErrorContext();
+
   useEffect(
     () => {
       if (!isLoaded && !isLoading) {
-        actions.fetchResponses(); // This is overkill, we could just fetch the single challenge that is being responded
+        actions.fetchResponses().catch(error => {
+          errorHandler(error, "Failed to load challenges", true);
+        });
       }
     },
-    [isLoaded, isLoading, actions]
+    // TODO: Stop the warning from happening.
+    [isLoaded, isLoading] // This wouldn't make sense to include other vars.
   );
 
   let responseItems = Object.values(responses).map(response => (

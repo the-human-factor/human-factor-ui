@@ -69,7 +69,7 @@ const MenuButtons = props => {
       <Button color="inherit"
               component={AdapterLink}
               to="/responses">
-        Responses
+        My Responses
       </Button>
     </React.Fragment>
   );

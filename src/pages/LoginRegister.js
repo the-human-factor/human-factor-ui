@@ -12,7 +12,7 @@ import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
 import { isEmail, required, passwordsMatch, validPassword } from "components/reactFormValidation";
 import { renderInputWithHelper } from "components/wrappableMuiFormElems";
-import { useActions, useSelectors } from "hooks";
+import { useActions, useSelectors, useErrorContext } from "hooks";
 import { UserSelectors, UserActions } from "modules/user";
 
 const useStyles = makeStyles(theme => ({
@@ -127,6 +127,7 @@ const LoginRegister = props => {
   const classes = useStyles();
   const actions = useActions(UserActions);
   const selectors = useSelectors(UserSelectors);
+  const errorHandler = useErrorContext();
 
   const loginWithRedirect = (credentials) => {
     return actions.login(credentials)
@@ -134,7 +135,7 @@ const LoginRegister = props => {
         navigate(selectors.returnToRoute, { replace: true });
       })
       .catch((error) => {
-        alert(`Log In failed, ${error.message}`);
+        errorHandler(error, `Log In failed, ${error.message}`, true);
       });
   };
 
@@ -144,7 +145,7 @@ const LoginRegister = props => {
         navigate(selectors.returnToRoute, { replace: true });
       })
       .catch((error) => {
-        alert(`Register failed, ${error.message}`);
+        errorHandler(error, `Register failed, ${error.message}`, true);
       });
   };
 

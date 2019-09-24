@@ -17,6 +17,13 @@ export const UserSelectors = {
 export const UserActions = {
   initLogin: () => dispatch => {
     dispatch(sliceActions.initializing());
+
+    // TODO: don't use URLSearchParams if we decide to support IE.
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("login_token")) {
+      api.dispatcher.tokenStorage.store("", urlParams.get("login_token"));
+      urlParams.delete("login_token");
+    }
     return api.refresh().catch(error => {}); // Do nothing about an error.
   },
   redirectForLogin: (previousPath="/") => dispatch => {

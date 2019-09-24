@@ -1,5 +1,5 @@
 import { createSlice } from "redux-starter-kit";
-import { STATE, TEMP_ID } from "modules/constants";
+import { STATE } from "modules/constants";
 
 export const { actions, selectors, reducer } = createSlice({
   slice: "responses",
@@ -7,13 +7,15 @@ export const { actions, selectors, reducer } = createSlice({
   reducers: {
     // Create responses
     createResponsePending(state) {
-      const response = { meta: STATE.CREATING };
-      response.meta = STATE.CREATING;
-      state.data[TEMP_ID] = response;
+      // TODO(Alex): This was causing a bug because it wasn't being removed on 
+      // successful creation - wondering what the intention was @Leo
+      // There is a similar pattern in challenges
+      // const response = { meta: STATE.CREATING };
+      // response.meta = STATE.CREATING;
+      // state.data[TEMP_ID] = response;
     },
     createResponseSuccess(state, action) {
       const response = action.payload;
-      console.log(state, response);
       state.data[response.id] = response;
     },
     // Fetch responses
