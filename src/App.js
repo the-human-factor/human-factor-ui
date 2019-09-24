@@ -22,7 +22,6 @@ const App = props =>  {
     return <FullPageLoader />;
   }
 
-  // TODO: Is this the correct place for the redirect?
   const pathname = window.location.pathname;
   if (!isLoggedIn && pathname !== "/login" && pathname !== "/register") {
     actions.redirectForLogin(pathname);

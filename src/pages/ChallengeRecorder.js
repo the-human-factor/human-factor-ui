@@ -106,6 +106,7 @@ const useStyles = makeStyles(theme => ({
 const ChallengeForm = props => {
   const { handleSubmit, pristine, submitting, valid, onSubmit } = props;
   const classes = useStyles();
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}

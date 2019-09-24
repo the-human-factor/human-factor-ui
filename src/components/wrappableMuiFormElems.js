@@ -30,3 +30,40 @@ export const renderInputWithHelper =
       </FormControl>
     );
   };
+
+export const normalizeFileList = values => {
+  const result = [];
+  for (var i = 0; i < values.length; i++) {
+    result[i] = values[i].name;
+  }
+  console.log(result);
+  return result;
+};
+
+export const FileInput = 
+  ({input, label, meta: { touched, error }, floatingLabelText, ...custom}) => {
+  const name = input.name;
+  const id = `mui-input-${name}`;
+  const textId = `mui-input-${name}-text`;
+  // if (input.value && input.value[0] && input.value[0].name) {
+  //   floatingLabelText = input.value[0].name;
+  // }
+  delete input.value;
+  const reduxFormOnChange = input.onChange;
+  delete input.onChange
+  const onChange = (values) => {
+    console.log(values);
+    reduxFormOnChange(values);
+  };
+
+  console.log(input);
+  return (
+    <Input id={id}
+           type="file"
+           accept="webm"
+           aria-describedby={textId}
+           onChange={onChange}
+           {...input}
+           {...custom} />
+  );
+};

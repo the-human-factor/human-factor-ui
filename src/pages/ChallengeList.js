@@ -12,6 +12,7 @@ import VideoPlaceholder from '../images/VideoPlaceholder.jpg';
 import { ChallengesSelectors, ChallengesActions } from "modules/challenges";
 import AdapterLink from "components/AdapterLink";
 import PaperPage from "components/PaperPage";
+import { useErrorContext } from "hooks";
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -77,13 +78,17 @@ const ChallengeList = props => {
   const challenges = useSelector(state => ChallengesSelectors.challenges(state));
   const dispatch = useDispatch();
   const actions = bindActionCreators(ChallengesActions, dispatch);
+  const errorHandler = useErrorContext();
+
   useEffect(
     () => {
       if (!isLoaded && !isLoading) {
-        actions.fetchChallenges(); // This is overkill, we could just fetch the single challenge that is being responded
+        actions.fetchChallenges().catch(error => {
+          errorHandler(error, "Failed to load challenges", true);
+        });
       }
     },
-    [isLoaded, isLoading, actions]
+    [isLoaded, isLoading] // This wouldn't make sense to include other vars.
   );
 
   let challengeItems = Object.values(challenges).map(challenge => (
