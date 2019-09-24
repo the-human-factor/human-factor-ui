@@ -4,9 +4,12 @@ import { LOGIN_STATE } from "modules/constants";
 import api from "modules/api";
 
 const root = sliceSelectors.getUser;
+const userClaims = state => sliceSelectors.getUser(state).userClaims;
 
 export const UserSelectors = {
   user: (state) => root(state).user,
+  isAdmin: (state) => (userClaims(state) || {}).role === "admin" || (userClaims(state) || {}).role === "super_admin",
+  isSuperAdmin: (state) => (userClaims(state) || {}).role === "super_admin",
   isLoggingIn: (state) => root(state).meta === LOGIN_STATE.LOGGING_IN,
   isLoggedOut: (state) => root(state).meta === LOGIN_STATE.LOGGED_OUT,
   isLoggedIn: (state) => root(state).meta === LOGIN_STATE.LOGGED_IN,

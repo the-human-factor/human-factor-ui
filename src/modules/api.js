@@ -82,9 +82,27 @@ class HumanApi {
       .then(res => res.data );
   }
 
+  fetchChallenge(id) {
+    return this.dispatcher
+      .getWithAuth(`${CHALLENGE_API}/${id}`)
+      .then(res => res.data );
+  }
+
+  updateChallenge(id, patches) {
+    return this.dispatcher
+      .putWithAuth(`${CHALLENGE_API}/${id}`, patches)
+      .then(res => res.data );
+  }
+
   fetchResponses() {
     return this.dispatcher
       .getWithAuth(`${RESPONSE_API}`)
+      .then(res => res.data );
+  }
+
+  fetchResponse(id) {
+    return this.dispatcher
+      .getWithAuth(`${RESPONSE_API}/${id}`)
       .then(res => res.data );
   }
 

@@ -11,6 +11,7 @@ import TakeChallenge from "./pages/TakeChallenge";
 import ResponseViewer from "./pages/ResponseViewer";
 import ChallengeList from "./pages/ChallengeList";
 import ResponseList from "./pages/ResponseList";
+import HumanAdmin from "./components/HumanAdmin";
 import { UserSelectors, UserActions } from "modules/user";
 import { useActions, useSelectors } from "hooks";
 
@@ -40,6 +41,7 @@ const App = props =>  {
         <TakeChallenge path="/challenges/:challengeId" />
         <ResponseList path="/responses" />
         <ResponseViewer path="/responses/:responseId" />
+        <HumanAdmin path="/admin" />
       </Router>
     </NavPage>
   );
