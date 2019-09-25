@@ -18,7 +18,10 @@ class VideoRecorder extends React.Component {
     recordHeight: 768,
     allowReview: false,
     className: "",
-    onStatusChange: (status) => {}
+    onStatusChange: (status) => {},
+    onPlay: (e, t) => {},
+    onPause: (e, t) => {},
+    onSeeked: (e, t) => {}
   };
 
   constructor(props) {
@@ -35,7 +38,7 @@ class VideoRecorder extends React.Component {
     this.stopRecording = this.stopRecording.bind(this);
     this.stopRecordingWithCallback = this.stopRecordingWithCallback.bind(this);
     this.resetForRecording = this.resetForRecording.bind(this);
-    this.setup = this.setup.bind(this);
+    this.setupCamera = this.setupCamera.bind(this);
     this.mute = this.mute.bind(this);
     this.unmute = this.unmute.bind(this);
     this.stopRecordingCallback = this.stopRecordingCallback.bind(this);
@@ -45,8 +48,21 @@ class VideoRecorder extends React.Component {
 
   componentDidMount() {
     this.handleError = this.context;
-    this.setup();
-    this.videoElement.current.addEventListener('loadeddata', this.loadedData);
+    this.setupCamera();
+    this.addVideoListeners();
+  }
+
+  componentDidUpdate() {
+    this.addVideoListeners();
+  }
+
+  addVideoListeners() {
+    const elem = this.videoElement.current;
+    const props = this.props;
+    elem.addEventListener('loadeddata', this.loadedData);
+    elem.addEventListener('play', (e) => props.onPlay(e, elem.currentTime));
+    elem.addEventListener('pause', (e) => props.onPause(e, elem.currentTime));
+    elem.addEventListener('seeked', (e) => props.onSeeked(e, elem.currentTime));
   }
 
   updateStatus(status) {
@@ -60,7 +76,7 @@ class VideoRecorder extends React.Component {
     }
   };
 
-  async setup() {
+  async setupCamera() {
     this.camera = await this.captureCamera();
     if (this.camera) {
       this.videoElement.current.muted = true;
@@ -156,7 +172,7 @@ class VideoRecorder extends React.Component {
   resetForRecording() {
     this.blob = null;
     this.updateStatus(VideoRecorder.STATUS.WAITING_FOR_CAMERA)
-    this.setup();
+    this.setupCamera();
   }
 
   getBlob() {
