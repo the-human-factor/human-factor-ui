@@ -100,23 +100,23 @@ const useStyles = makeStyles(theme => ({
     display: props => props.miniOverlay ? "block" : "none",
     width: props => props.miniWidth,
     height: props => props.miniHeight,
-    ...absoluteBottomRight
+    ...absoluteBottomRight,
   },
-  challenge: {
+  fullFrame: {
     backgroundColor: "#000",
-    display: props => props.challengeIsMain ? "block" : "none",
-    // TODO: Show the challenge when not main, and sync it with the response.
-    zIndex: props => props.challengeIsMain ? 40 : 50,
-    width: props => props.challengeIsMain ? props.width : props.miniWidth,
-    height: props => props.challengeIsMain ? props.height : props.miniHeight,
+    zIndex: 40,
+    width: props => props.width,
+    height: props => props.height,
     ...absoluteTopLeft,
   },
-  response: {
+  cornerFrame: {
     backgroundColor: "#000",
-    zIndex: props => props.challengeIsMain ? 50 : 40,
-    width: props => props.challengeIsMain ? props.miniWidth : props.width,
-    height: props => props.challengeIsMain ? props.miniHeight : props.height,
+    zIndex: 50,
+    overflow: "hidden",
+    width: props => props.miniWidth,
+    height: props => (props.miniDuringReview) ? props.miniHeight * .8 : props.miniHeight,
     ...absoluteBottomRight,
+    bottom: props => (props.miniDuringReview) ? props.miniHeight * .2 : 0,
   }
 }));
 
@@ -144,7 +144,7 @@ const Assessment = props => {
   // Create all the dimensions based on what's available
   const windowSize = useWindowSize();
   const sourceDims = { width: 640, height: 480 }; // TODO: use real video dims.
-  const frameDims = calcDims(sourceDims,
+  const vDims = calcDims(sourceDims,
                              windowSize,
                              MINI_VIDEO_SCALE,
                              { extraHeight: FOOTER_HEIGHT + 4 });
@@ -181,6 +181,7 @@ const Assessment = props => {
         break;
       case MODE.RESPONDING:
         responseVideo.stopRecording();
+        challengeVideo.currentTime = 0;
         setMode(MODE.FINISHED);
         break;
       default:
@@ -191,11 +192,6 @@ const Assessment = props => {
   const challengePlaybackEnded = event => {
     if (mode === MODE.WATCHING) {
       setMode(MODE.RESPONDING);
-    } else {
-      errorHandler(new Error(`Unexpected mode for challengePlaybackEnded, ${mode}`),
-                   "Unexpected mode for challengePlaybackEnded",
-                   false);
-      throw new Error();
     }
   }
   
@@ -253,19 +249,43 @@ const Assessment = props => {
     }
   });
 
+  const finishedMode = mode === MODE.FINISHED;
+
+  const onResponsePlay = (event, time) => {
+    console.log(`play at ${time} finishedMode: ${finishedMode}`);
+    if (finishedMode) {
+      challengeVideo.play();
+    }
+  }
+  const onResponsePause = (event, time) => {
+    console.log(`pause at ${time}`);
+    if (finishedMode) {
+      challengeVideo.pause();
+      challengeVideo.currentTime = time;
+    }
+  }
+  const onResponseSeeked = (event, time) => {
+    console.log(`seeked at ${time}`);
+    if (finishedMode) {
+      challengeVideo.currentTime = time;
+    }
+  }
+
   const classes = useStyles({
     showInstructions: mode === MODE.INSTRUCTIONS_WAITING || mode === MODE.INSTRUCTIONS_READY,
     mainOverlay: mode === MODE.RESPONDING,
     miniOverlay: mode === MODE.WATCHING,
-    challengeIsMain: mode !== MODE.FINISHED,
+    miniDuringReview: finishedMode,
     allowClose: mode === MODE.INSTRUCTIONS_WAITING || mode === MODE.INSTRUCTIONS_READY || mode === MODE.FINISHED,
-    ...frameDims
+    ...vDims
   });
+
+  const challengeClass = finishedMode ? classes.cornerFrame : classes.fullFrame;
+  const responseClass = finishedMode ? classes.fullFrame : classes.cornerFrame;
 
   const waitingMessage = (hasChallenge ? "" : "Loading video") +
                          (!hasChallenge && !canRecord ? " and " : "") +
                          (canRecord ? "" : "Starting Camera") + "...";
-
   
   const FOOTER_COMPONENT_FOR_MODE = {
     [MODE.INSTRUCTIONS_WAITING]: (
@@ -331,18 +351,21 @@ const Assessment = props => {
             </div>
           </div>
           <div className={classes.mainOverlay} />>
-          <video className={classes.challenge}
-                 width={frameDims.width}
-                 height={frameDims.height}
-                 ref={challengeVideoRef}>
-            <source src={challenge.video.url} type="video/webm" />
-          </video>
+          <div className={challengeClass}>
+            <video width={!finishedMode ? vDims.width : vDims.miniWidth}
+                   height={!finishedMode ? vDims.height : vDims.miniHeight}
+                   ref={challengeVideoRef}>
+              <source src={challenge.video.url} type="video/webm" />
+            </video>
+          </div>
           <div className={classes.miniOverlay} />
-          <VideoRecorder className={classes.response}
-                         width={frameDims.miniWidth}
-                         height={frameDims.miniHeight}
+          <VideoRecorder className={responseClass}
+                         width={finishedMode ? vDims.width : vDims.miniWidth}
+                         height={finishedMode ? vDims.height : vDims.miniHeight}
                          ref={responseVideoRef}
                          onStatusChange={onStatusChange}
+                         onPlay={onResponsePlay}
+                         onPause={onResponsePause}
                          allowReview/>
         </div>
         <div className={classes.footer}>
