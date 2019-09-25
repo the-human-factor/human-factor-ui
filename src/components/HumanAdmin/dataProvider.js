@@ -34,18 +34,38 @@ const makeRequest = (type, resource, params) => {
   case CREATE:
     return api.createChallenge(params.data);
   case DELETE:
-    throw new Error(`Unsupported fetch action type ${type}`);
+    return api.deleteChallenge(params.id);
   default:
     throw new Error(`Unsupported fetch action type ${type}`);
   }
 };
 
+const resolve = (obj, keys) => {
+    return keys.split('.').reduce(function (cur, key) {
+        return cur[key] || {};
+    }, obj);
+};
+
+const compareInPath = (key, order='ASC') => {
+  return function(a, b) {
+    const valA = resolve(a, key);
+    const valB = resolve(b, key);
+
+    let comparison = 0;
+    if (valA > valB) {
+      comparison = 1;
+    } else if (valA < valB) {
+      comparison = -1;
+    }
+    return (order === 'DESC') ? (comparison * -1) : comparison;
+  };
+};
+
 const responseToDataProvider = (response, type, resource, params) => {
-  console.log(response);
   switch (type) {
   case GET_LIST:
     return {
-        data: response,
+        data: response.sort(compareInPath(params.sort.field, params.sort.order)),
         total: response.length,
     };
   default:

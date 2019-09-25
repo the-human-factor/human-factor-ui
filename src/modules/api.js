@@ -94,6 +94,12 @@ class HumanApi {
       .then(res => res.data );
   }
 
+  deleteChallenge(id) {
+    return this.dispatcher
+      .deleteWithAuth(`${CHALLENGE_API}/${id}`)
+      .then(res => undefined);
+  }
+
   fetchResponses() {
     return this.dispatcher
       .getWithAuth(`${RESPONSE_API}`)

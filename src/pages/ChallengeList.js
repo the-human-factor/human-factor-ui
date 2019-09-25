@@ -44,10 +44,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ChallengeListItem(props) {
+function ChallengeListItem({challenge}) {
   const classes = useStyles();
-  const link = "/challenges/" + props.id;
-  const thumbnail = (props.thumbnail) ? props.thumbnail : VideoPlaceholder;
+  const video_thumbnail = challenge.video.thumbnail_url;
+  const link = "/challenges/" + challenge.id;
+  const thumbnail = (video_thumbnail) ? video_thumbnail : VideoPlaceholder;
+  const color = (challenge.listed) ? "secondary" : "primary";
   return (
     <div className={classes.item}>
       <div>
@@ -55,15 +57,16 @@ function ChallengeListItem(props) {
       </div>
       <div className={classes.text}>
         <Typography variant="h4">
-          <Link component={AdapterLink} to={link} color="secondary">
-            {props.title}
+          <Link component={AdapterLink} to={link} color={color}>
+            {challenge.listed ? "" : "unlisted: "}
+            {challenge.title}
           </Link>
         </Typography>
         <Typography variant="h5">
-          Created by: {props.creator}
+          Created by: {challenge.user.full_name}
         </Typography>
         <Typography variant="body1">
-          {props.instructions}
+          {challenge.instructions}
         </Typography>
       </div>
     </div>
@@ -93,11 +96,7 @@ const ChallengeList = props => {
 
   let challengeItems = Object.values(challenges).map(challenge => (
     <React.Fragment key={`${challenge.id}`}>
-      <ChallengeListItem id={challenge.id}
-                         title={challenge.title}
-                         creator={challenge.user.full_name}
-                         instructions={challenge.instructions}
-                         thumbnail={challenge.video.thumbnail_url}/>
+      <ChallengeListItem challenge={challenge} />
       <Divider variant="middle"
                className={classes.divider}/>
     </React.Fragment>

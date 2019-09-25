@@ -307,6 +307,10 @@ class RequestDispatcher {
     return this.request(url, {data: data, method: "put", requiresAuth: true});
   }
 
+  deleteWithAuth(url) {
+    return this.request(url, {method: "delete", requiresAuth: true});
+  }
+
   cycle() {
     const self = this;
     
