@@ -82,7 +82,7 @@ const Register = props => {
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <Field className={classes.textField}
              name="fullName"
-             label="Name"
+             label="Full Name"
              component={renderInputWithHelper}
              validate={[required]}/>
 
