@@ -24,7 +24,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build:favicons": "node bin/favicons",
+    "build": "yarn build:favicons && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -44,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "favicons": "^5.4.1",
     "now": "^15.8.0"
   }
 }
