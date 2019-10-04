@@ -9,7 +9,7 @@ const SOURCE_PATH = 'src/images/icon.png';
 
 const outputDir = path.resolve(__dirname, OUTPUT_PATH);
 if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir);
+  fs.mkdirSync(outputDir, {recursive: true});
 }
 const index = path.resolve(__dirname, '../src/index.html');
 const outputIndex = path.resolve(__dirname, '../public/index.html');
