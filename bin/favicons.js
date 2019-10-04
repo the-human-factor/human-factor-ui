@@ -7,13 +7,18 @@ const config = require('../manifest');
 const OUTPUT_PATH = '../public/gen/';
 const SOURCE_PATH = '../src/images/icon.png';
 
-console.log('-----');
-console.log(`ls ${__dirname}`);
-fs.readdir(__dirname, (err, files) => {
+const ls = (dir) => fs.readdir(dir, (err, files) => {
   files.forEach(file => {
     console.log(file);
   });
 });
+
+const upDir = path.resolve(__dirname, '..');
+console.log('-----');
+console.log(`ls ${__dirname}`);
+ls(__dirname);
+console.log(`ls ${upDir}`);
+ls(upDir);
 
 const outputDir = path.resolve(__dirname, OUTPUT_PATH);
 if (!fs.existsSync(outputDir)) {
