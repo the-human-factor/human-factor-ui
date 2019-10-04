@@ -252,20 +252,17 @@ const Assessment = props => {
   const finishedMode = mode === MODE.FINISHED;
 
   const onResponsePlay = (event, time) => {
-    console.log(`play at ${time} finishedMode: ${finishedMode}`);
     if (finishedMode) {
       challengeVideo.play();
     }
   }
   const onResponsePause = (event, time) => {
-    console.log(`pause at ${time}`);
     if (finishedMode) {
       challengeVideo.pause();
       challengeVideo.currentTime = time;
     }
   }
   const onResponseSeeked = (event, time) => {
-    console.log(`seeked at ${time}`);
     if (finishedMode) {
       challengeVideo.currentTime = time;
     }
@@ -366,6 +363,7 @@ const Assessment = props => {
                          onStatusChange={onStatusChange}
                          onPlay={onResponsePlay}
                          onPause={onResponsePause}
+                         onSeek={onResponseSeeked}
                          allowReview/>
         </div>
         <div className={classes.footer}>
