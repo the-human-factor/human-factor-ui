@@ -7,6 +7,8 @@ import Button from "@material-ui/core/Button";
 import { makeStyles } from '@material-ui/styles';
 import { red, green } from '@material-ui/core/colors';
 
+import InstructionsListen from "../images/InstructionsListen.jpg";
+import InstructionsRespond from "../images/InstructionsRespond.jpg";
 import PaperPage from "components/PaperPage";
 import FullPageLoader from "pages/FullPageLoader";
 import Assessment from "components/Assessment/Assessment";
@@ -14,7 +16,7 @@ import { ChallengesSelectors, ChallengesActions } from "modules/challenges";
 import { useActions, useSelectors } from "hooks";
 
 const useStyles = makeStyles(theme => ({
-  buttons: {
+  content: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center"
@@ -23,6 +25,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: "3.5rem",
     lineHeight: 1,
     margin: theme.spacing(3),
+    marginBottom: theme.spacing(8),
     [theme.breakpoints.between('xs', 'sm')]: {
       width: "250px",
       fontSize: "2.5rem"
@@ -36,6 +39,13 @@ const useStyles = makeStyles(theme => ({
   },
   green: {
     color: green[500]
+  },
+  instructionsImage: {
+    maxWidth: '400px',
+    width: '100%'
+  },
+  alignLeft: {
+    alignSelf: 'flex-start'
   }
 }));
 
@@ -88,7 +98,7 @@ const TakeChallenge = props => {
   return (
     <React.Fragment>
       <PaperPage title={challenge.title} superTitle="Challenge:">
-        <div className={classes.buttons}>
+        <div className={classes.content}>
           <Button onClick={launchChallenge}
                   size="large"
                   variant="contained"
@@ -96,6 +106,21 @@ const TakeChallenge = props => {
                   className={classes.bigButton}>
             Take Challenge
           </Button>
+          <Typography variant="h2" className={classes.alignLeft}>
+            Instructions
+          </Typography>
+          <Typography variant="h4" className={classes.alignLeft}>
+            Listen to the challenge
+          </Typography>
+          <img className={classes.instructionsImage}
+             src={InstructionsListen}
+             alt="Listening to the challenge"/>
+          <Typography variant="h4" className={classes.alignLeft}>
+            Respond immediatly when it finishes
+          </Typography>
+          <img className={classes.instructionsImage}
+             src={InstructionsRespond}
+             alt="Responding to the challenge"/>
         </div>
       </PaperPage>
       <Assessment challengeId={challengeId}
