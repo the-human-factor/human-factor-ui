@@ -5,28 +5,14 @@ const fs = require('fs');
 const config = require('../manifest');
 
 const OUTPUT_PATH = '../public/gen/';
-const SOURCE_PATH = '../src/images/icon.png';
-
-const ls = (dir) => fs.readdir(dir, (err, files) => {
-  files.forEach(file => {
-    console.log(file);
-  });
-});
-
-const upDir = path.resolve(__dirname, '..');
-console.log('-----');
-console.log(`ls ${__dirname}`);
-ls(__dirname);
-console.log(`ls ${upDir}`);
-ls(upDir);
 
 const outputDir = path.resolve(__dirname, OUTPUT_PATH);
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, {recursive: true});
 }
-const index = path.resolve(__dirname, '../src/index.html');
-const outputIndex = path.resolve(__dirname, '../public/index.html');
-
+const indexPath = path.resolve(__dirname, '../src/index.html');
+const outputIndexPath = path.resolve(__dirname, '../public/index.html');
+const sourcePath = path.resolve(__dirname, '../src/images/Icon.png');
 
 const fullConfig = {
   path: '/gen/',
@@ -61,7 +47,6 @@ const writeTo = (dir, file) => fs.writeFile(
   }
 );
 
-
 const callback = function(err, res) {
   if (err) {
     return console.log(err);
@@ -70,16 +55,16 @@ const callback = function(err, res) {
   res.files.forEach(file => writeTo(OUTPUT_PATH, file));
 
   console.log('Writing index.html');
-  fs.readFile(index, 'utf8', function (err, data) {
+  fs.readFile(indexPath, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
     var result = data.replace('<!--FAVICON_HTML-->', res.html.join(''));
 
-    fs.writeFile(outputIndex, result, 'utf8', function (err) {
+    fs.writeFile(outputIndexPath, result, 'utf8', function (err) {
        if (err) return console.log(err);
     });
   });
 };
 
-favicons(SOURCE_PATH, fullConfig, callback);
+favicons(sourcePath, fullConfig, callback);
