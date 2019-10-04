@@ -5,7 +5,15 @@ const fs = require('fs');
 const config = require('../manifest');
 
 const OUTPUT_PATH = '../public/gen/';
-const SOURCE_PATH = 'src/images/icon.png';
+const SOURCE_PATH = '../src/images/icon.png';
+
+console.log('-----');
+console.log(`ls ${__dirname}`);
+fs.readdir(__dirname, (err, files) => {
+  files.forEach(file => {
+    console.log(file);
+  });
+});
 
 const outputDir = path.resolve(__dirname, OUTPUT_PATH);
 if (!fs.existsSync(outputDir)) {
