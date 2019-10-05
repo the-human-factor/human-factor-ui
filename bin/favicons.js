@@ -8,7 +8,7 @@ const OUTPUT_PATH = '../public/gen/';
 
 const outputDir = path.resolve(__dirname, OUTPUT_PATH);
 if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, {recursive: true});
+  fs.mkdirSync(outputDir, { recursive: true });
 }
 const indexPath = path.resolve(__dirname, '../src/index.html');
 const outputIndexPath = path.resolve(__dirname, '../public/index.html');
@@ -37,15 +37,12 @@ const fullConfig = {
   ...config,
 };
 
-const writeTo = (dir, file) => fs.writeFile(
-  path.resolve(__dirname, dir, file.name),
-  file.contents,
-  err => {
+const writeTo = (dir, file) =>
+  fs.writeFile(path.resolve(__dirname, dir, file.name), file.contents, err => {
     if (err) {
       console.log(err);
     }
-  }
-);
+  });
 
 const callback = function(err, res) {
   if (err) {
@@ -55,14 +52,14 @@ const callback = function(err, res) {
   res.files.forEach(file => writeTo(OUTPUT_PATH, file));
 
   console.log('Writing index.html');
-  fs.readFile(indexPath, 'utf8', function (err, data) {
+  fs.readFile(indexPath, 'utf8', function(err, data) {
     if (err) {
       return console.log(err);
     }
     var result = data.replace('<!--FAVICON_HTML-->', res.html.join(''));
 
-    fs.writeFile(outputIndexPath, result, 'utf8', function (err) {
-       if (err) return console.log(err);
+    fs.writeFile(outputIndexPath, result, 'utf8', function(err) {
+      if (err) return console.log(err);
     });
   });
 };

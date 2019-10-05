@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from "@material-ui/core/Container";
+import Container from '@material-ui/core/Container';
 
 const useStyles = makeStyles({
   progress: {
@@ -10,10 +10,10 @@ const useStyles = makeStyles({
   },
   container: {
     padding: 10,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -21,9 +21,9 @@ const FullPageLoader = props => {
   const classes = useStyles();
   return (
     <Container className={classes.container}>
-      <CircularProgress className={classes.progress}/>
+      <CircularProgress className={classes.progress} />
     </Container>
   );
-}
+};
 
 export default FullPageLoader;

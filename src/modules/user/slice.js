@@ -1,13 +1,13 @@
-import { createSlice } from "redux-starter-kit";
-import { LOGIN_STATE } from "modules/constants";
+import { createSlice } from 'redux-starter-kit';
+import { LOGIN_STATE } from 'modules/constants';
 
 export const { actions, selectors, reducer } = createSlice({
-  slice: "user",
+  slice: 'user',
   initialState: {
     user: {},
     userClaims: {},
-    returnToRoute: "/",
-    meta: LOGIN_STATE.INITIALIZING
+    returnToRoute: '/',
+    meta: LOGIN_STATE.INITIALIZING,
   },
   reducers: {
     setReturnToRoute(state, action) {
@@ -39,6 +39,6 @@ export const { actions, selectors, reducer } = createSlice({
       state.meta = LOGIN_STATE.LOGGED_IN;
       state.user = action.payload.user;
       state.userClaims = action.payload.token.body.user_claims;
-    }
-  }
+    },
+  },
 });

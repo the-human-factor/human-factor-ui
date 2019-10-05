@@ -1,25 +1,25 @@
-import React from "react";
-import { render } from "react-dom";
-import "./index.css";
+import React from 'react';
+import { render } from 'react-dom';
+import './index.css';
 
-import ProvisionedApp from "./ProvisionedApp";
+import ProvisionedApp from './ProvisionedApp';
 
-import * as serviceWorker from "./serviceWorker";
+import * as serviceWorker from './serviceWorker';
 
-if (process.env.NODE_ENV !== "production") {
-  window.store = require("storeContainer").default;
-  window.api = require("modules/api");
-  window.challenges = require("modules/challenges");
-  window.theme = require("./themes/humanTheme");
-  window.setEnv = (env) => localStorage.setItem("env", env);
+if (process.env.NODE_ENV !== 'production') {
+  window.store = require('storeContainer').default;
+  window.api = require('modules/api');
+  window.challenges = require('modules/challenges');
+  window.theme = require('./themes/humanTheme');
+  window.setEnv = env => localStorage.setItem('env', env);
 }
 
 const renderApp = () => {
-  render(<ProvisionedApp />, document.getElementById("root"));
+  render(<ProvisionedApp />, document.getElementById('root'));
 };
 
-if (process.env.NODE_ENV !== "production" && module.hot) {
-  module.hot.accept("./App", renderApp);
+if (process.env.NODE_ENV !== 'production' && module.hot) {
+  module.hot.accept('./App', renderApp);
 }
 
 // If you want your app to work offline and load faster, you can change

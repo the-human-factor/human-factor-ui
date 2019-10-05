@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react';
 
-import Typography from "@material-ui/core/Typography";
+import Typography from '@material-ui/core/Typography';
 
-import PaperPage from "components/PaperPage";
+import PaperPage from 'components/PaperPage';
 
 const Home = () => (
   <PaperPage title="The Human Factor">
-    <br/>
+    <br />
     <Typography variant="body1">
       Truly interactive online learning for interpersonal skills.
     </Typography>
-    <br/>
+    <br />
     <Typography variant="body1">
       Works best in <b>Chrome</b>.
     </Typography>

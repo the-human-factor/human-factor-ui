@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 function getSize() {
   return {
     height: window.innerHeight,
-    width: window.innerWidth
+    width: window.innerWidth,
   };
 }
 
