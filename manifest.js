@@ -6,5 +6,5 @@ module.exports = {
   start_url: '.',
   theme_color: '#000',
   background_color: '#fff',
-  logo: path.resolve(__dirname, 'src/images/icon.png')
+  logo: path.resolve(__dirname, 'src/images/Icon.png'),
 };

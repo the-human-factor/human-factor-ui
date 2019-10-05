@@ -1,27 +1,27 @@
-import React from "react";
-import RecordRTC from "recordrtc";
+import React from 'react';
+import RecordRTC from 'recordrtc';
 
-import ErrorContext from "components/ErrorContext";
+import ErrorContext from 'components/ErrorContext';
 
 class VideoRecorder extends React.Component {
   static STATUS = {
-    WAITING_FOR_CAMERA: "WAITING_FOR_CAMERA",
-    READY_TO_RECORD: "READY_TO_RECORD",
-    RECORDING: "RECORDING",
-    REPLAY: "REPLAY",
+    WAITING_FOR_CAMERA: 'WAITING_FOR_CAMERA',
+    READY_TO_RECORD: 'READY_TO_RECORD',
+    RECORDING: 'RECORDING',
+    REPLAY: 'REPLAY',
   };
 
   static defaultProps = {
-    width: "640",
-    height: "480",
+    width: '640',
+    height: '480',
     recordWidth: 1024,
     recordHeight: 768,
     allowReview: false,
-    className: "",
-    onStatusChange: (status) => {},
+    className: '',
+    onStatusChange: status => {},
     onPlay: (e, t) => {},
     onPause: (e, t) => {},
-    onSeeked: (e, t) => {}
+    onSeeked: (e, t) => {},
   };
 
   constructor(props) {
@@ -60,9 +60,9 @@ class VideoRecorder extends React.Component {
     const elem = this.videoElement.current;
     const props = this.props;
     elem.addEventListener('loadeddata', this.loadedData);
-    elem.addEventListener('play', (e) => props.onPlay(e, elem.currentTime));
-    elem.addEventListener('pause', (e) => props.onPause(e, elem.currentTime));
-    elem.addEventListener('seeked', (e) => props.onSeeked(e, elem.currentTime));
+    elem.addEventListener('play', e => props.onPlay(e, elem.currentTime));
+    elem.addEventListener('pause', e => props.onPause(e, elem.currentTime));
+    elem.addEventListener('seeked', e => props.onSeeked(e, elem.currentTime));
   }
 
   updateStatus(status) {
@@ -72,9 +72,9 @@ class VideoRecorder extends React.Component {
 
   loadedData(event) {
     if (this.status === VideoRecorder.STATUS.WAITING_FOR_CAMERA) {
-      this.updateStatus(VideoRecorder.STATUS.READY_TO_RECORD)
+      this.updateStatus(VideoRecorder.STATUS.READY_TO_RECORD);
     }
-  };
+  }
 
   async setupCamera() {
     this.camera = await this.captureCamera();
@@ -89,40 +89,44 @@ class VideoRecorder extends React.Component {
 
   async captureCamera() {
     // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    return navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: {
-        width: this.props.recordWidth,
-        height: this.props.recordHeight
-      }
-    })
-      .catch((error) => {
-        this.handleError(error,
-                         "Error in mediaDevices.getUserMedia",
-                         true);
+    return navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: {
+          width: this.props.recordWidth,
+          height: this.props.recordHeight,
+        },
+      })
+      .catch(error => {
+        this.handleError(error, 'Error in mediaDevices.getUserMedia', true);
         return undefined;
       });
   }
 
   async startRecording() {
-    if (this.camera == null || this.status !== VideoRecorder.STATUS.READY_TO_RECORD) {
-      this.handleError(new Error("Can't start playing status:" + this.status),
-                       "Error in startRecording VideoRecorder",
-                       true);
+    if (
+      this.camera == null ||
+      this.status !== VideoRecorder.STATUS.READY_TO_RECORD
+    ) {
+      this.handleError(
+        new Error("Can't start playing status:" + this.status),
+        'Error in startRecording VideoRecorder',
+        true
+      );
       return;
     }
     this.updateStatus(VideoRecorder.STATUS.RECORDING);
     this.videoElement.current.muted = true;
 
     const settings = {
-      type: "video",
+      type: 'video',
       canvas: {
         width: this.props.width,
-        height: this.props.height
+        height: this.props.height,
       },
-      mimeType: "video/webm;codecs=vp8"
-    }
-    
+      mimeType: 'video/webm;codecs=vp8',
+    };
+
     this.recorder = RecordRTC(this.camera, settings);
     this.recorder.startRecording();
     this.recorder.camera = this.camera;
@@ -171,7 +175,7 @@ class VideoRecorder extends React.Component {
 
   resetForRecording() {
     this.blob = null;
-    this.updateStatus(VideoRecorder.STATUS.WAITING_FOR_CAMERA)
+    this.updateStatus(VideoRecorder.STATUS.WAITING_FOR_CAMERA);
     this.setupCamera();
   }
 
@@ -181,12 +185,14 @@ class VideoRecorder extends React.Component {
 
   render() {
     return (
-      <video className={this.props.className}
-             ref={this.videoElement}
-             playsInline
-             autoPlay
-             width={this.props.width}
-             height={this.props.height}/>
+      <video
+        className={this.props.className}
+        ref={this.videoElement}
+        playsInline
+        autoPlay
+        width={this.props.width}
+        height={this.props.height}
+      />
     );
   }
 }

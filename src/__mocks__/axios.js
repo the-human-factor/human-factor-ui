@@ -33,7 +33,7 @@ function request(config) {
 
   pendingRequests.push({
     config: config,
-    promise: promise
+    promise: promise,
   });
 
   return promise;
@@ -43,7 +43,7 @@ function __clearMockResponses() {
   mockResponses = Object.create(null);
 }
 
-function __setMockResponse({endpoint, response}) {
+function __setMockResponse({ endpoint, response }) {
   if (!mockResponses[endpoint]) {
     mockResponses[endpoint] = [];
   }
@@ -51,13 +51,13 @@ function __setMockResponse({endpoint, response}) {
 }
 
 function failMissing(req) {
-  let error = new Error("Request failed with status code 404");
+  let error = new Error('Request failed with status code 404');
   error.config = req.config;
   error.response = {
     config: req.config,
-    data: "",
+    data: '',
     status: 404,
-    statusText: "NOT FOUND"
+    statusText: 'NOT FOUND',
   };
   req.promise.reject(error);
 }
@@ -92,7 +92,7 @@ function __cancelToken(token) {
   // loop through the requests and cancel if they have that token
   pendingRequests.forEach(req => {
     if (req.config.cancelToken == token) {
-      let error = new Error("Cancel");
+      let error = new Error('Cancel');
       error.axiosCancel = true;
       req.promise.reject(error);
     }
@@ -102,9 +102,9 @@ function __cancelToken(token) {
 function __axiosResponseError(status, statusText) {
   let error = new Error(`${status}(${statusText})`);
   error.response = {
-    data: "",
+    data: '',
     status: status,
-    statusText: statusText
+    statusText: statusText,
   };
   return error;
 }
@@ -115,8 +115,8 @@ function __axiosResponse(status, data) {
     status: status,
     headers: {},
     config: {},
-    request: {}
-  }
+    request: {},
+  };
 }
 
 function isCancel(error) {
@@ -127,12 +127,12 @@ const CancelToken = {
   source: () => {
     const result = {
       token: currentTokenId,
-      cancel: (token) => mockAxios.__cancelToken(token)
-    }
+      cancel: token => mockAxios.__cancelToken(token),
+    };
     currentTokenId++;
     return result;
-  }
-}
+  },
+};
 
 mockAxios.CancelToken = CancelToken;
 mockAxios.request = request;

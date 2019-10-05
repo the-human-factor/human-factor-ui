@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 function useRefWithListeners(listeners) {
   const [node, setNode] = useState(null);
@@ -13,7 +13,6 @@ function useRefWithListeners(listeners) {
     savedListeners.current = listeners;
   }, [listeners]);
 
-
   // This gets called often, but underlying object stays the same, so
   // listeners don't get added again.
   const ref = useCallback(newNode => {
@@ -21,31 +20,28 @@ function useRefWithListeners(listeners) {
   }, []);
 
   // Join the names so that Object.is sees that the dependency is the same.
-  const joinedNames = Object.keys(listeners).join(",");
+  const joinedNames = Object.keys(listeners).join(',');
 
-  useEffect(
-    () => {
-      if (!node) {
-        return;
-      }
-      
-      const handler = e => savedListeners.current[e.type](e);
-      const names = joinedNames.split(",");
+  useEffect(() => {
+    if (!node) {
+      return;
+    }
 
-      names.forEach((eventName) => {
-        node.addEventListener(eventName, handler);
+    const handler = e => savedListeners.current[e.type](e);
+    const names = joinedNames.split(',');
+
+    names.forEach(eventName => {
+      node.addEventListener(eventName, handler);
+    });
+
+    return () => {
+      names.forEach(eventName => {
+        node.removeEventListener(eventName, handler);
       });
-      
-      return () => {
-        names.forEach((eventName) => {
-          node.removeEventListener(eventName, handler);
-        });
-      };
-    },
-    [joinedNames, node]
-  );
+    };
+  }, [joinedNames, node]);
 
-  return [ref, node]
+  return [ref, node];
 }
 
 export default useRefWithListeners;

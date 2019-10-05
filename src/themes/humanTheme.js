@@ -35,63 +35,62 @@ import pink from '@material-ui/core/colors/pink';
 //   );
 // };
 
-const titleFont = ['"Pridi"', 'serif'].join(',')
-const bodyFont = ['"Noto Sans"', 'sans-serif'].join(',')
-const extraSansFont = ['"Roboto"', 'sans-serif'].join(',')
+const titleFont = ['"Pridi"', 'serif'].join(',');
+const bodyFont = ['"Noto Sans"', 'sans-serif'].join(',');
+const extraSansFont = ['"Roboto"', 'sans-serif'].join(',');
 
 // See the default:
 // https://material-ui.com/customization/default-theme/
 // https://material-ui.com/customization/color/#color-tool
 // Pink 300
 // Purple 400
-// 
-const humanTheme = responsiveFontSizes(createMuiTheme({
-  palette: {
-    primary: { 
-      main: pink[300]
+//
+const humanTheme = responsiveFontSizes(
+  createMuiTheme({
+    palette: {
+      primary: {
+        main: pink[300],
+      },
+      secondary: {
+        main: indigo[400],
+      },
     },
-    secondary: {
-      main: indigo[400]
-    }
-  },
-  typography: {
-    fontFamily: bodyFont,
-    h1: {
-      fontSize: "3rem",
-      fontFamily: titleFont,
+    typography: {
+      fontFamily: bodyFont,
+      h1: {
+        fontSize: '3rem',
+        fontFamily: titleFont,
+      },
+      h2: {
+        fontFamily: titleFont,
+      },
+      h3: {
+        fontFamily: titleFont,
+      },
+      h4: {
+        fontFamily: titleFont,
+      },
+      h5: {
+        fontFamily: titleFont,
+      },
+      h6: {
+        fontFamily: titleFont,
+      },
+      subtitle1: {
+        fontFamily: extraSansFont,
+      },
+      subtitle2: {
+        fontFamily: extraSansFont,
+      },
+      body1: {},
+      body2: {},
+      button: {},
+      caption: {},
+      overline: {},
     },
-    h2: {
-      fontFamily: titleFont,
-    },
-    h3: {
-      fontFamily: titleFont,
-    },
-    h4: {
-      fontFamily: titleFont,
-    },
-    h5: {
-      fontFamily: titleFont,
-    },
-    h6: {
-      fontFamily: titleFont,
-    },
-    subtitle1: {
-      fontFamily: extraSansFont,
-    },
-    subtitle2: {
-      fontFamily: extraSansFont,
-    },
-    body1: {},
-    body2: {},
-    button: {},
-    caption: {},
-    overline: {},
-  },
-}));
+  })
+);
 
-export {
-  titleFont,
-  bodyFont
-};
+export { titleFont, bodyFont };
 
 export default humanTheme;

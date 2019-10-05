@@ -1,21 +1,21 @@
-import React from "react";
-import { Router, navigate } from "@reach/router";
+import React from 'react';
+import { Router, navigate } from '@reach/router';
 
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
-import LoginRegister from "./pages/LoginRegister";
-import NavPage from "./pages/NavPage";
-import ChallengeRecorder from "./pages/ChallengeRecorder";
-import FullPageLoader from "./pages/FullPageLoader";
-import TakeChallenge from "./pages/TakeChallenge";
-import ResponseViewer from "./pages/ResponseViewer";
-import ChallengeList from "./pages/ChallengeList";
-import ResponseList from "./pages/ResponseList";
-import HumanAdmin from "./components/HumanAdmin";
-import { UserSelectors, UserActions } from "modules/user";
-import { useActions, useSelectors } from "hooks";
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import LoginRegister from './pages/LoginRegister';
+import NavPage from './pages/NavPage';
+import ChallengeRecorder from './pages/ChallengeRecorder';
+import FullPageLoader from './pages/FullPageLoader';
+import TakeChallenge from './pages/TakeChallenge';
+import ResponseViewer from './pages/ResponseViewer';
+import ChallengeList from './pages/ChallengeList';
+import ResponseList from './pages/ResponseList';
+import HumanAdmin from './components/HumanAdmin';
+import { UserSelectors, UserActions } from 'modules/user';
+import { useActions, useSelectors } from 'hooks';
 
-const App = props =>  {
+const App = props => {
   const actions = useActions(UserActions);
   const { isInitializing, isLoggedIn } = useSelectors(UserSelectors);
 
@@ -24,9 +24,9 @@ const App = props =>  {
   }
 
   const pathname = window.location.pathname;
-  if (!isLoggedIn && pathname !== "/login" && pathname !== "/register") {
+  if (!isLoggedIn && pathname !== '/login' && pathname !== '/register') {
     actions.redirectForLogin(pathname);
-    navigate("/login");
+    navigate('/login');
   }
 
   return (
@@ -45,6 +45,6 @@ const App = props =>  {
       </Router>
     </NavPage>
   );
-}
+};
 
 export default App;

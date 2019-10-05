@@ -1,8 +1,8 @@
-import { createSlice } from "redux-starter-kit";
-import { STATE, TEMP_ID } from "modules/constants";
+import { createSlice } from 'redux-starter-kit';
+import { STATE, TEMP_ID } from 'modules/constants';
 
 export const { actions, selectors, reducer } = createSlice({
-  slice: "challenges",
+  slice: 'challenges',
   initialState: { data: {}, meta: STATE.NOT_LOADED },
   reducers: {
     // Create challenge
@@ -28,6 +28,6 @@ export const { actions, selectors, reducer } = createSlice({
       }, {});
       state.meta = STATE.LOADED;
       state.data = challengesById;
-    }
-  }
+    },
+  },
 });

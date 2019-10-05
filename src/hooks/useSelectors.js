@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
 function useSelectors(selectors, props = {}) {
   return useSelector(state => {

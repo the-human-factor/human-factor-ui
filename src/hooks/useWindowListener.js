@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 function useWindowListener(type, callback) {
   // Same pattern as useRefWithListeners, we don't want to keep setting and
@@ -9,7 +9,7 @@ function useWindowListener(type, callback) {
   }, [callback]);
 
   useEffect(() => {
-    const handler = (event) => savedCallback.current(event);
+    const handler = event => savedCallback.current(event);
 
     window.addEventListener(type, handler);
     return () => {

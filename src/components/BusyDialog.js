@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
@@ -13,10 +13,10 @@ const useStyles = makeStyles({
   },
   container: {
     padding: 10,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -26,14 +26,12 @@ const BusyDialog = props => {
 
   return (
     <Dialog aria-labelledby="customized-dialog-title" open={open}>
-      <DialogTitle id="customized-dialog-title">
-        {title} 
-      </DialogTitle>
+      <DialogTitle id="customized-dialog-title">{title}</DialogTitle>
       <DialogContent className={classes.container}>
-        <CircularProgress size={70} className={classes.progress}/>
+        <CircularProgress size={70} className={classes.progress} />
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default BusyDialog;

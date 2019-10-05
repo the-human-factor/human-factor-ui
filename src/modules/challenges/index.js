@@ -1,7 +1,6 @@
-import { actions as sliceActions,
-         selectors as sliceSelectors } from "./slice";
-import { STATE, TEMP_ID } from "modules/constants";
-import api from "modules/api";
+import { actions as sliceActions, selectors as sliceSelectors } from './slice';
+import { STATE, TEMP_ID } from 'modules/constants';
+import api from 'modules/api';
 
 const root = sliceSelectors.getChallenges;
 
@@ -11,31 +10,27 @@ export const ChallengesSelectors = {
   challenges: state => root(state).data,
   challengeCreationPending: (state, props) =>
     (root(state).data[TEMP_ID] || {}).meta === STATE.CREATING,
-  challenge: (state, props) => root(state).data[props.challengeId]
+  challenge: (state, props) => root(state).data[props.challengeId],
 };
 
 export const ChallengesActions = {
   createChallenge: data => dispatch => {
     dispatch(sliceActions.createChallengePending());
-    return api
-      .createChallenge(data)
-      .then(response => {
-        dispatch(sliceActions.createChallengeSuccess(response));
-        return response;
-      });
+    return api.createChallenge(data).then(response => {
+      dispatch(sliceActions.createChallengeSuccess(response));
+      return response;
+    });
   },
 
   fetchChallenges: (force = false) => (dispatch, getState) => {
     if (ChallengesSelectors.isLoaded(getState()) && !force) {
-      console.log("Challenges already loaded");
+      console.log('Challenges already loaded');
       return;
     }
 
     dispatch(sliceActions.fetchChallengesPending());
-    return api
-      .fetchChallenges()
-      .then(response => {
-        dispatch(sliceActions.fetchChallengesSuccess(response));
-      });
-  }
+    return api.fetchChallenges().then(response => {
+      dispatch(sliceActions.fetchChallengesSuccess(response));
+    });
+  },
 };
