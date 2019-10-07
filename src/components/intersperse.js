@@ -1,3 +1,5 @@
+// From: https://stackoverflow.com/a/23619085/3304125
+
 /* intersperse: Return an array with the separator interspersed between
  * each element of the input array.
  *
