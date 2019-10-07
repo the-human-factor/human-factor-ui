@@ -20,7 +20,7 @@ import { useActions, useSelectors } from 'hooks';
 
 const useStyles = makeStyles(theme => ({
   fullPage: {
-    minHeight: '95vh',
+    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -29,16 +29,13 @@ const useStyles = makeStyles(theme => ({
     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
     paddingTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
-  },
-  toolBar: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexGrow: 1,
   },
   body: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'stretch',
+    flexGrow: 1000,
     padding: 0,
     margin: 0,
   },
@@ -46,6 +43,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[700],
     textAlign: 'center',
     paddingBottom: theme.spacing(2),
+    flexGrow: 1,
+  },
+  toolBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   footerDivider: {
     marginBottom: theme.spacing(1),
