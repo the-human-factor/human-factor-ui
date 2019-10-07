@@ -2,21 +2,15 @@ import React from 'react';
 
 import { Admin, Resource } from 'react-admin';
 
+import AdminLayout from './AdminLayout';
 import dataProvider from './dataProvider';
 import { ChallengesList, ChallengesEdit } from './challenges';
-import PaperPage from 'components/PaperPage';
 
 const HumanAdmin = () => {
   return (
-    <PaperPage title="Admin">
-      <Admin dataProvider={dataProvider}>
-        <Resource
-          name="challenges"
-          list={ChallengesList}
-          edit={ChallengesEdit}
-        />
-      </Admin>
-    </PaperPage>
+    <Admin dataProvider={dataProvider} appLayout={AdminLayout} title="Admin">
+      <Resource name="challenges" list={ChallengesList} edit={ChallengesEdit} />
+    </Admin>
   );
 };
 
