@@ -78,7 +78,7 @@ const MenuButtons = ({ isAdmin }) => {
   );
 };
 
-const UserMenu = props => {
+const UserMenu = ({ user }) => {
   const actions = useActions(UserActions);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -116,6 +116,7 @@ const UserMenu = props => {
         open={isMenuOpen}
         onClose={menuClose}
       >
+        <MenuItem disabled={true}>{user.full_name}</MenuItem>
         <MenuItem onClick={profile}>Profile</MenuItem>
         <MenuItem onClick={logout}>Log Out</MenuItem>
       </Menu>
@@ -125,7 +126,7 @@ const UserMenu = props => {
 
 const NavPage = props => {
   const classes = useStyles();
-  const { isLoggedIn, isAdmin } = useSelectors(UserSelectors);
+  const { isLoggedIn, isAdmin, user } = useSelectors(UserSelectors);
 
   return (
     <div className={classes.fullPage}>
@@ -137,7 +138,7 @@ const NavPage = props => {
             </Typography>
             {isLoggedIn && <MenuButtons isAdmin={isAdmin} />}
           </div>
-          <div>{isLoggedIn && <UserMenu />}</div>
+          <div>{isLoggedIn && <UserMenu user={user} />}</div>
         </Toolbar>
       </AppBar>
       <div className={classes.body}>{props.children}</div>
