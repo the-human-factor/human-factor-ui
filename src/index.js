@@ -1,10 +1,17 @@
 import React from 'react';
 import { render } from 'react-dom';
+
+import * as Sentry from '@sentry/browser';
+
 import './index.css';
-
 import ProvisionedApp from './ProvisionedApp';
-
 import * as serviceWorker from './serviceWorker';
+
+// https://docs.sentry.io/error-reporting/configuration/?platform=javascript
+Sentry.init({
+  dsn: 'https://0041534a8c7c47cfa5b910c330f71397@sentry.io/1543622',
+  environment: process.env.NODE_ENV,
+});
 
 if (process.env.NODE_ENV !== 'production') {
   window.store = require('storeContainer').default;
