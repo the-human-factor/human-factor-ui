@@ -14,7 +14,7 @@ import {
   renderInputWithHelper,
   FileInput,
 } from 'components/wrappableMuiFormElems';
-import { required } from 'components/reactFormValidation';
+import { required } from 'components/formValidation';
 import {
   useActions,
   useCallbackRef,
