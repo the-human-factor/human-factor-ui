@@ -1,14 +1,17 @@
 import React from 'react';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
+import * as Sentry from '@sentry/browser';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+  Link,
+  Paper,
+} from '@material-ui/core';
 
 import ErrorContext from 'components/ErrorContext';
 
@@ -26,19 +29,30 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    console.log('getDerivedStateFromError');
+    console.log('ErrorBoundary.getDerivedStateFromError');
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log('App.componentDidCatch');
+    console.log('ErrorBoundary.componentDidCatch');
     this.handleError(error, errorInfo);
   }
 
   handleError(error, errorInfo, isRecoverable = false) {
-    console.log(`handleError ${errorInfo}, isRecoverable: ${isRecoverable}`);
+    // TODO: Add user information / include redux state.
+    Sentry.withScope(scope => {
+      scope.setExtras(errorInfo);
+      const eventId = Sentry.captureException(error);
+      this.setState({ eventId });
+    });
+
+    console.group('Error Caught in Boundary');
+    console.log(`Info: ${errorInfo}`);
+    console.log(`The error is ${isRecoverable ? '' : 'not '}recoverable.`);
     console.error(error);
+    console.groupEnd();
+
     this.setState({
       hasError: true,
       error: error,
@@ -57,6 +71,15 @@ class ErrorBoundary extends React.Component {
         <Paper>
           <Typography variant="h3" color="error">
             Error
+          </Typography>
+          <Typography variant="h3" color="error">
+            <Button
+              onClick={() =>
+                Sentry.showReportDialog({ eventId: this.state.eventId })
+              }
+            >
+              Report feedback.
+            </Button>
           </Typography>
           <Typography variant="h4">{this.state.errorInfo}</Typography>
           <Typography variant="h5">{this.state.error.toString()}</Typography>
@@ -85,6 +108,16 @@ class ErrorBoundary extends React.Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
+            <Button
+              onClick={() => {
+                this.closeAlert();
+                Sentry.showReportDialog({ eventId: this.state.eventId });
+              }}
+              color="primary"
+              autoFocus
+            >
+              Report Feedback
+            </Button>
             <Button onClick={this.closeAlert} color="secondary" autoFocus>
               Ok
             </Button>
