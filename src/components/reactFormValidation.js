@@ -1,5 +1,6 @@
 // Convience functions for React Forms
 // from: https://redux-form.com/7.3.0/examples/fieldlevelvalidation/
+// Compatible with final-form
 
 export const required = value => (value ? undefined : 'Required');
 

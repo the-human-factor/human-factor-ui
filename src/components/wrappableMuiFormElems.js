@@ -1,10 +1,25 @@
 import React from 'react';
 
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import { makeStyles } from '@material-ui/core/styles';
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  Input,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+  uploadButton: {
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBottom: theme.spacing(1),
+  },
+}));
 
 export const renderTextField = ({
   input,
@@ -22,9 +37,8 @@ export const renderInputWithHelper = ({
   className,
   ...custom
 }) => {
-  const name = input.name;
-  const id = `mui-input-${name}`;
-  const textId = `mui-input-${name}-text`;
+  const id = `mui-input-${input.name}`;
+  const textId = `mui-input-${input.name}-text`;
   return (
     <FormControl error={touched && Boolean(error)} className={className}>
       <InputLabel htmlFor={id}>{label}</InputLabel>
@@ -34,46 +48,54 @@ export const renderInputWithHelper = ({
   );
 };
 
-export const normalizeFileList = values => {
-  const result = [];
-  for (var i = 0; i < values.length; i++) {
-    result[i] = values[i].name;
-  }
-  console.log(result);
-  return result;
-};
-
 export const FileInput = ({
-  input,
+  input: { onChange, value, ...input },
+  meta: { touched, error, form },
   label,
-  meta: { touched, error },
-  floatingLabelText,
+  className,
+  onFileChange,
   ...custom
 }) => {
-  const name = input.name;
-  const id = `mui-input-${name}`;
-  const textId = `mui-input-${name}-text`;
-  // if (input.value && input.value[0] && input.value[0].name) {
-  //   floatingLabelText = input.value[0].name;
-  // }
-  delete input.value;
-  const reduxFormOnChange = input.onChange;
-  delete input.onChange;
-  const onChange = values => {
-    console.log(values);
-    reduxFormOnChange(values);
+  const classes = useStyles();
+  const id = `mui-input-${input.name}`;
+  const textId = `mui-input-${input.name}-text`;
+
+  const combinedOnChange = event => {
+    onFileChange(event.target.files);
+    onChange(event);
   };
 
-  console.log(input);
   return (
-    <Input
-      id={id}
-      type="file"
-      accept="webm"
-      aria-describedby={textId}
-      onChange={onChange}
-      {...input}
-      {...custom}
-    />
+    <div className={className}>
+      <Typography variant="body1" color="error" id={textId}>
+        {error}
+      </Typography>
+      <label htmlFor={id}>
+        <Typography variant="body1" display="inline">
+          {label}
+        </Typography>
+        <Button
+          size="small"
+          variant="outlined"
+          color="primary"
+          component="span"
+          className={classes.uploadButton}
+        >
+          Upload
+        </Button>
+      </label>
+      <Typography variant="body1" display="inline">
+        {value}
+      </Typography>
+      <input
+        id={id}
+        type="file"
+        style={{ display: 'none' }}
+        onChange={combinedOnChange}
+        aria-describedby={textId}
+        {...input}
+        {...custom}
+      />
+    </div>
   );
 };

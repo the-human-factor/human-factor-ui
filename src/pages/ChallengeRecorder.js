@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 
-import { Field, reduxForm } from 'redux-form';
+import { Form, Field } from 'react-final-form';
 import { navigate } from '@reach/router';
 
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import { Typography, Button, Container, TextField } from '@material-ui/core';
 
 import BusyDialog from '../components/BusyDialog';
 import PaperPage from 'components/PaperPage';
 import VideoRecorder from '../components/VideoRecorder';
 import { ChallengesActions } from 'modules/challenges';
-import { renderInputWithHelper } from 'components/wrappableMuiFormElems';
+import {
+  renderInputWithHelper,
+  FileInput,
+} from 'components/wrappableMuiFormElems';
 import { required } from 'components/reactFormValidation';
 import {
   useActions,
@@ -79,6 +79,7 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     width: '100%',
+    marginTop: theme.spacing(2),
   },
   videoFrame: {
     position: 'relative',
@@ -111,47 +112,55 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ChallengeForm = props => {
-  const { handleSubmit, pristine, submitting, valid, onSubmit } = props;
-  const classes = useStyles();
+const ChallengeForm = ({ classes, onSubmit, validate, onFileChange }) => (
+  <Form
+    onSubmit={onSubmit}
+    validate={validate}
+    initialValues={{ instructions: '' }}
+    render={({ handleSubmit, submitting, pristine, valid, values }) => (
+      <form noValidate>
+        <Field
+          className={classes.textField}
+          name="title"
+          label="Challenge Title"
+          component={renderInputWithHelper}
+          validate={required}
+        />
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Field
-        className={classes.textField}
-        name="title"
-        label="Challenge Title"
-        component={renderInputWithHelper}
-        validate={[required]}
-      />
+        <Field
+          className={classes.textField}
+          name="instructions"
+          label="Instructions"
+          placeholder="This will be displayed to the person taking the challenge."
+          multiline
+          rows="6"
+          component={renderInputWithHelper}
+        />
 
-      <Field
-        className={classes.textField}
-        name="instructions"
-        label="Instructions"
-        placeholder="This will be displayed to the person taking the challenge."
-        multiline
-        rows="6"
-        component={renderInputWithHelper}
-      />
+        <Field
+          className={classes.textField}
+          name="uploadExisting"
+          label="Record a video above, or"
+          component={FileInput}
+          onFileChange={onFileChange}
+          type="file"
+          accept="video/*"
+        />
 
-      <Button
-        className={classes.submit}
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={pristine || !valid || submitting}
-      >
-        Submit Challenge
-      </Button>
+        <Button
+          className={classes.submit}
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={pristine || !valid || submitting}
+        >
+          Submit Challenge
+        </Button>
 
-      <BusyDialog title="Submitting Challenge" open={submitting} />
-    </form>
-  );
-};
-
-const ReduxChallengeForm = reduxForm({ form: 'createChallenge' })(
-  ChallengeForm
+        <BusyDialog title="Submitting Challenge" open={submitting} />
+      </form>
+    )}
+  />
 );
 
 const ChallengeRecorder = props => {
@@ -159,8 +168,10 @@ const ChallengeRecorder = props => {
   const errorHandler = useErrorContext();
   const [videoRecorderRef, videoRecorder] = useCallbackRef();
 
+  // TODO: Validate on setStatus
   const [status, setStatus] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [uploadFile, setUploadFile] = useState();
 
   // Create all the dimensions based on what's available
   const windowSize = useWindowSize();
@@ -169,21 +180,6 @@ const ChallengeRecorder = props => {
     extraWidth: 60,
     extraHeight: 30,
   });
-
-  const defaultValues = { instructions: '', gradingNotes: '' };
-  const submitChallenge = formValues =>
-    actions
-      .createChallenge({
-        ...defaultValues,
-        ...formValues,
-        videoBlob: videoRecorder.getBlob(),
-      })
-      .then(challenge => {
-        navigate(`/challenges/${challenge.id}`);
-      })
-      .catch(err => {
-        errorHandler(err, 'Error submitting challenge', true);
-      });
 
   let toggleString = '...';
   let toggleBehavior = () => {};
@@ -216,6 +212,39 @@ const ChallengeRecorder = props => {
       }
     }
   });
+
+  const videoValidate = values => {
+    if (!recorderReplay && uploadFile === undefined) {
+      return { error: 'this is not shown' };
+    }
+    if (recorderReplay && uploadFile !== undefined) {
+      // TODO: disable the other option, when one is used.
+      return { uploadExisting: 'Error, Uploaded and Recorded video both set.' };
+    }
+  };
+
+  const onFileChange = files => {
+    if (files.length === 1) {
+      setUploadFile(files[0]);
+    } else {
+      setUploadFile(undefined);
+    }
+  };
+
+  const submitChallenge = formValues => {
+    const videoBlob = recorderReplay ? videoRecorder.getBlob() : uploadFile;
+    return actions
+      .createChallenge({
+        ...formValues,
+        videoBlob: videoBlob,
+      })
+      .then(challenge => {
+        navigate(`/challenges/${challenge.id}`);
+      })
+      .catch(err => {
+        errorHandler(err, 'Error submitting challenge', true);
+      });
+  };
 
   const classes = useStyles({
     showMiniOverlay: !recorderReplay,
@@ -275,7 +304,12 @@ const ChallengeRecorder = props => {
       </div>
 
       <Container className={classes.formContainer}>
-        <ReduxChallengeForm onSubmit={submitChallenge} />
+        <ChallengeForm
+          classes={classes}
+          onFileChange={onFileChange}
+          onSubmit={submitChallenge}
+          validate={videoValidate}
+        />
       </Container>
       <Container className={classes.pointersContainer}>
         <Typography variant="h4">Pointers</Typography>
