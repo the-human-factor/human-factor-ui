@@ -23,9 +23,6 @@
     "redux-first-history": "^4.0.4",
     "redux-starter-kit": "^0.5.1"
   },
-  "resolutions": {
-    "react-admin/**/redux-form": "^8.2.4"
-  },
   "scripts": {
     "start": "react-scripts start",
     "build:favicons": "node bin/favicons",
