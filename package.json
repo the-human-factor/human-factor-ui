@@ -47,7 +47,6 @@
     ]
   },
   "devDependencies": {
-    "favicons": "^5.4.1",
     "now": "^15.8.0"
   }
 }
