@@ -26,8 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build:favicons": "node bin/favicons",
-    "build": "yarn build:favicons && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
