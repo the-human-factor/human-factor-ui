@@ -13,7 +13,6 @@
 
 # generated favicons
 /public/gen
-/public/index.html
 
 # misc
 .DS_Store
