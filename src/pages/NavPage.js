@@ -70,7 +70,7 @@ const MenuButtons = ({ isAdmin }) => {
       </Button>
 
       {isAdmin && (
-        <Button color="inherit" component={AdapterLink} to="/admin">
+        <Button color="inherit" component={AdapterLink} to="/challengeAdmin">
           Admin
         </Button>
       )}

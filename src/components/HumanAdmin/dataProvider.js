@@ -11,8 +11,24 @@ import * as jsonpatch from 'fast-json-patch';
 
 import api from 'modules/api';
 
+// TODO: type is undefined - this seems like a bug in the Beta React Admin.
+const fixType = (type, params) => {
+  if (type === undefined) {
+    if ('pagination' in params) {
+      type = GET_LIST;
+    } else if ('data' in params) {
+      type = UPDATE;
+    } else if ('id' in params) {
+      type = GET_ONE;
+    }
+  }
+  return type;
+};
+
 const makeRequest = (type, resource, params) => {
-  if (resource !== 'challenges') {
+  type = fixType(type, params);
+
+  if (resource !== 'challengeAdmin') {
     throw new Error(`Unsupported fetch resource ${resource}`);
   }
 
@@ -62,6 +78,7 @@ const compareInPath = (key, order = 'ASC') => {
 };
 
 const responseToDataProvider = (response, type, resource, params) => {
+  type = fixType(type, params);
   switch (type) {
     case GET_LIST:
       return {

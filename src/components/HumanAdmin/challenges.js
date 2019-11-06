@@ -13,9 +13,7 @@ import {
   EditButton,
   Edit,
   SimpleForm,
-  DisabledInput,
   TextInput,
-  LongTextInput,
   BooleanInput,
 } from 'react-admin';
 
@@ -71,10 +69,10 @@ ChallengesList.defaultProps = {
 export const ChallengesEdit = props => (
   <Edit {...props}>
     <SimpleForm>
-      <DisabledInput source="id" />
-      <DisabledInput source="user.full_name" />
+      <TextInput source="id" disabled />
+      <TextInput source="user.full_name" disabled />
       <TextInput source="title" />
-      <LongTextInput source="instructions" />
+      <TextInput source="instructions" multiline />
       <BooleanInput source="listed" />
     </SimpleForm>
   </Edit>
