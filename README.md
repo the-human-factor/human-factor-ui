@@ -1,6 +1,13 @@
+# Build and Deploy Notes
+
+## Circleci
+
+Is being used for deployment. Master is published to the staging env. Run
+`./bin/deploy` to have Now set the current prod to point to the zeit image
+where staging is pointing.
+
+
 This should be accurate. npm replaced with yarn.
-
-
 --------------------
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
