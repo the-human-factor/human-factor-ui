@@ -48,7 +48,7 @@ class ErrorBoundary extends React.Component {
     });
 
     console.group('Error Caught in Boundary');
-    console.log(`Info: ${errorInfo}`);
+    console.log(errorInfo);
     console.log(`The error is ${isRecoverable ? '' : 'not '}recoverable.`);
     console.error(error);
     console.groupEnd();
@@ -81,8 +81,8 @@ class ErrorBoundary extends React.Component {
               Report feedback.
             </Button>
           </Typography>
-          <Typography variant="h4">{this.state.errorInfo}</Typography>
-          <Typography variant="h5">{this.state.error.toString()}</Typography>
+          <Typography variant="h4">{this.state.error.toString()}</Typography>
+          <Typography variant="h5">{String(this.state.errorInfo)}</Typography>
           <Typography variant="body1">{this.state.error.stack}</Typography>
           <Typography variant="h3" color="error">
             <Link href="/">To Home Page</Link>
