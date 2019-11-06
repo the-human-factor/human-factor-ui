@@ -41,7 +41,7 @@ const App = props => {
         <TakeChallenge path="/challenges/:challengeId" />
         <ResponseList path="/responses" />
         <ResponseViewer path="/responses/:responseId" />
-        <HumanAdmin path="/admin" />
+        <HumanAdmin path="/challengeAdmin" />
       </Router>
     </NavPage>
   );

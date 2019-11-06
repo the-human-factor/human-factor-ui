@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ResourceLink = ({ name }) => (
-  <Link href={`#/${name}`} variant="body2">
+  <Link href={`/${name}`} variant="body2">
     {name}
   </Link>
 );
