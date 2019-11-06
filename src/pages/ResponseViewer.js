@@ -1,18 +1,14 @@
-import React from 'react';
-import { compose, lifecycle, branch, renderNothing } from 'recompose';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import { Button, Container, Paper, Typography } from '@material-ui/core';
 
 import { ResponsesSelectors, ResponsesActions } from 'modules/responses';
 import PaperPage from 'components/PaperPage';
+import { useActions, useCallbackRef, useErrorContext } from 'hooks';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   videoContainer: {
     padding: 10,
     display: 'flex',
@@ -29,88 +25,84 @@ const styles = theme => ({
     width: '80%',
     margin: theme.spacing(2),
   },
-});
+}));
 
-class ResponseViewer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.videoChallenge = React.createRef();
-    this.videoResponse = React.createRef();
-  }
+const ResponseViewer = props => {
+  const classes = useStyles();
+  const [videoChallengeRef, videoChallenge] = useCallbackRef();
+  const [videoResponseRef, videoResponse] = useCallbackRef();
 
-  startPlaying = () => {
-    let self = this;
-    self.videoChallenge.current.play();
-    self.videoResponse.current.play();
+  const isLoading = useSelector(state => ResponsesSelectors.isLoading(state));
+  const isLoaded = useSelector(state => ResponsesSelectors.isLoaded(state));
+  const response = useSelector(state =>
+    ResponsesSelectors.response(state, props)
+  );
+  const challenge = (response || {}).challenge;
+  const actions = useActions(ResponsesActions);
+  const errorHandler = useErrorContext();
+
+  useEffect(
+    () => {
+      if (!isLoaded && !isLoading) {
+        actions.fetchResponses().catch(error => {
+          errorHandler(error, 'Failed to load challenges', true);
+        });
+      }
+    },
+    // TODO: Stop the warning from happening.
+    [isLoaded, isLoading] // This wouldn't make sense to include other vars.
+  );
+
+  const startPlaying = () => {
+    videoChallenge.play();
+    videoResponse.play();
     // Mute the response video until the challenge is played.
     // This should be done more react-ily.
-    self.videoResponse.current.volume = 0;
-    self.videoChallenge.current.onended = () => {
-      self.videoResponse.current.volume = 1;
+    videoResponse.volume = 0;
+    videoChallenge.onended = () => {
+      videoResponse.volume = 1;
     };
   };
 
-  render() {
-    const { classes, response } = this.props;
-    // TODO(Alex): I don't understand why the branch below doesn't make
-    // this unncessary.
-    if (!response || response === undefined) {
-      return (
-        <Paper className={classes.paper}>
-          <Typography variant="h2">Unknown Challenge</Typography>
-        </Paper>
-      );
-    }
-    const challenge = response.challenge;
+  if (!response || response === undefined) {
     return (
-      <PaperPage
-        superTitle={`${response.user.full_name} responds to`}
-        title={challenge.title}
-      >
-        <Container className={classes.instructionsContainer}>
-          <Typography variant="h4">Instructions:</Typography>
-          <Typography variant="body1">{challenge.instructions}</Typography>
-        </Container>
-
-        <div className={classes.videoContainer}>
-          <video width="250" ref={this.videoChallenge}>
-            <source src={challenge.video.url} type="video/webm" />
-          </video>
-          <video width="250" ref={this.videoResponse}>
-            <source src={response.video.url} type="video/webm" />
-          </video>
-        </div>
-
-        <div className={classes.toggleCenterer}>
-          <Button
-            className={classes.toggleButton}
-            onClick={this.startPlaying}
-            variant="contained"
-            color="primary"
-          >
-            Play
-          </Button>
-        </div>
-      </PaperPage>
+      <Paper className={classes.paper}>
+        <Typography variant="h2">Unknown Challenge</Typography>
+      </Paper>
     );
   }
-}
 
-export default compose(
-  connect(
-    (state, ownProps) => ({
-      isLoading: ResponsesSelectors.isLoading(state),
-      response: ResponsesSelectors.response(state, ownProps),
-    }),
-    dispatch => ({
-      actions: bindActionCreators(ResponsesActions, dispatch),
-    })
-  ),
-  lifecycle({
-    componentDidMount() {
-      this.props.actions.fetchResponses();
-    },
-  }),
-  branch(props => props.isLoading, renderNothing), // TODO: replace with a loading component
-  withStyles(styles)
-)(ResponseViewer);
+  return (
+    <PaperPage
+      superTitle={`${response.user.full_name} responds to`}
+      title={challenge.title}
+    >
+      <Container className={classes.instructionsContainer}>
+        <Typography variant="h4">Instructions:</Typography>
+        <Typography variant="body1">{challenge.instructions}</Typography>
+      </Container>
+
+      <div className={classes.videoContainer}>
+        <video width="350" ref={videoChallengeRef}>
+          <source src={challenge.video.url} type="video/webm" />
+        </video>
+        <video width="350" ref={videoResponseRef}>
+          <source src={response.video.url} type="video/webm" />
+        </video>
+      </div>
+
+      <div className={classes.toggleCenterer}>
+        <Button
+          className={classes.toggleButton}
+          onClick={startPlaying}
+          variant="contained"
+          color="primary"
+        >
+          Play
+        </Button>
+      </div>
+    </PaperPage>
+  );
+};
+
+export default ResponseViewer;

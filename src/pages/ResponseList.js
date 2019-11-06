@@ -79,7 +79,7 @@ const ResponseList = props => {
     () => {
       if (!isLoaded && !isLoading) {
         actions.fetchResponses().catch(error => {
-          errorHandler(error, 'Failed to load challenges', true);
+          errorHandler(error, 'Failed to load responses', true);
         });
       }
     },
