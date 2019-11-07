@@ -14,7 +14,7 @@ Sentry.init({
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  window.store = require('storeContainer').default;
+  window.store = require('reduxGlobals').store;
   window.api = require('modules/api');
   window.challenges = require('modules/challenges');
   window.theme = require('./themes/humanTheme');

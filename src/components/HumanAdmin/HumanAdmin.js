@@ -3,7 +3,7 @@ import React from 'react';
 import { Admin, Resource } from 'react-admin';
 import { useTheme } from '@material-ui/core/styles';
 
-import { history } from 'storeContainer';
+import { history } from 'reduxGlobals';
 import AdminLayout from './AdminLayout';
 import dataProvider from './dataProvider';
 import { ChallengesList, ChallengesEdit } from './challenges';
