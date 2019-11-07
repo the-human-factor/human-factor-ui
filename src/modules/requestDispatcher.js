@@ -2,7 +2,6 @@ import axios from 'axios';
 import config from 'config';
 
 import { actions } from './user/slice';
-import store from 'storeContainer';
 
 const API = config['API'];
 const AUTH_API = '/auth';
@@ -108,6 +107,12 @@ class RequestDispatcher {
     this.pendingRequests = [];
     this.pendingAuthCancel = undefined;
 
+    this.store = {
+      dispatch: () => {
+        throw new Error('redux store not initialized');
+      },
+    };
+
     this.state = DISPATCHER_STATE.UNAUTHENTICATED;
 
     this.tokenStorage = new TokenStorage();
@@ -131,8 +136,12 @@ class RequestDispatcher {
     });
   }
 
+  setStore(reduxStore) {
+    this.store = reduxStore;
+  }
+
   unauthenticated() {
-    store.dispatch(actions.unauthenticated());
+    this.store.dispatch(actions.unauthenticated());
   }
 
   updateUserAndTokens(user, access_token, refresh_token) {
@@ -142,7 +151,7 @@ class RequestDispatcher {
 
   updateUser(user, access_token) {
     const token = this.tokenStorage.readToken(access_token);
-    store.dispatch(actions.authenticated({ user: user, token: token }));
+    this.store.dispatch(actions.authenticated({ user: user, token: token }));
   }
 
   cancelInFlightRequiringAuth() {
@@ -415,5 +424,5 @@ class RequestDispatcher {
   }
 }
 
-export { AUTH_API };
-export default RequestDispatcher;
+export default new RequestDispatcher();
+export { AUTH_API, RequestDispatcher };

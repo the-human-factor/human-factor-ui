@@ -6,6 +6,7 @@ import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 import { adminReducer, adminSaga } from 'react-admin';
 
+import dataProvider from 'components/HumanAdmin/dataProvider';
 import { reducer as challenges } from 'modules/challenges/slice';
 import { reducer as responses } from 'modules/responses/slice';
 import { reducer as user } from 'modules/user/slice';
@@ -14,7 +15,7 @@ import { reducer as user } from 'modules/user/slice';
 // routerMiddleware for the react-router, but the main app uses reach router.
 // TODO: Decide how to integrate the app with react-admin better.
 
-export default ({ dataProvider, history, preloadedState = {} }) => {
+export default (history, preloadedState = {}) => {
   const reducer = combineReducers({
     challenges,
     responses,
@@ -22,15 +23,6 @@ export default ({ dataProvider, history, preloadedState = {} }) => {
     admin: adminReducer,
     router: connectRouter(history),
   });
-
-  const saga = function* rootSaga() {
-    yield all(
-      [
-        adminSaga(dataProvider),
-        // add your own sagas here
-      ].map(fork)
-    );
-  };
 
   const sagaMiddleware = createSagaMiddleware();
 
@@ -44,6 +36,16 @@ export default ({ dataProvider, history, preloadedState = {} }) => {
     preloadedState,
   });
 
+  const saga = function* rootSaga() {
+    yield all(
+      [
+        adminSaga(dataProvider),
+        // add your own sagas here
+      ].map(fork)
+    );
+  };
+
   sagaMiddleware.run(saga);
+
   return store;
 };

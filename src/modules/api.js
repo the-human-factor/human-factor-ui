@@ -1,4 +1,4 @@
-import RequestDispatcher, { AUTH_API } from './requestDispatcher';
+import requestDispatcher, { AUTH_API } from './requestDispatcher';
 
 // TODO: Keep all the api endpoints in the same place
 const CHALLENGE_API = '/challenges';
@@ -7,8 +7,6 @@ const AUTH_PASSWORD_API = `${AUTH_API}/password`;
 
 class HumanApi {
   constructor() {
-    this.dispatcher = new RequestDispatcher();
-
     this.login = this.login.bind(this);
     this.register = this.register.bind(this);
     this.logout = this.logout.bind(this);
@@ -20,7 +18,7 @@ class HumanApi {
   }
 
   login(credentials) {
-    return this.dispatcher
+    return requestDispatcher
       .loginRegister(credentials)
       .then(res => res.data)
       .catch(error => {
@@ -31,7 +29,7 @@ class HumanApi {
   }
 
   register(credentials) {
-    return this.dispatcher
+    return requestDispatcher
       .loginRegister(credentials, { isRegister: true })
       .then(res => res.data)
       .catch(error => {
@@ -42,64 +40,72 @@ class HumanApi {
   }
 
   logout() {
-    return this.dispatcher.logout().then(res => res.data);
+    return requestDispatcher.logout().then(res => res.data);
   }
 
   refresh() {
-    return this.dispatcher.refresh().then(res => res.data);
+    return requestDispatcher.refresh().then(res => res.data);
   }
 
   changePassword(values) {
-    return this.dispatcher.putWithAuth(AUTH_PASSWORD_API, values).then(res => {
-      const { user, access_token, refresh_token } = res.data;
-      this.dispatcher.updateUserAndTokens(user, access_token, refresh_token);
-    });
+    return requestDispatcher
+      .putWithAuth(AUTH_PASSWORD_API, values)
+      .then(res => {
+        const { user, access_token, refresh_token } = res.data;
+        requestDispatcher.updateUserAndTokens(
+          user,
+          access_token,
+          refresh_token
+        );
+      });
   }
 
   createChallenge(challenge) {
     let formData = this.convertToForm(challenge);
-    return this.dispatcher
+    return requestDispatcher
       .postWithAuth(`${CHALLENGE_API}/create`, formData)
       .then(res => res.data);
   }
 
   createResponse(response) {
     let formData = this.convertToForm(response);
-    return this.dispatcher
+    return requestDispatcher
       .postWithAuth(`${RESPONSE_API}/create`, formData)
       .then(res => res.data);
   }
 
   fetchChallenges() {
-    return this.dispatcher
+    return requestDispatcher
       .getWithAuth(`${CHALLENGE_API}`)
       .then(res => res.data);
   }
 
   fetchChallenge(id) {
-    return this.dispatcher
+    return requestDispatcher
       .getWithAuth(`${CHALLENGE_API}/${id}`)
       .then(res => res.data);
   }
 
   updateChallenge(id, patches) {
-    return this.dispatcher
+    return requestDispatcher
       .putWithAuth(`${CHALLENGE_API}/${id}`, patches)
       .then(res => res.data);
   }
 
   deleteChallenge(id) {
-    return this.dispatcher
+    return requestDispatcher
       .deleteWithAuth(`${CHALLENGE_API}/${id}`)
       .then(res => undefined);
   }
 
   fetchResponses() {
-    return this.dispatcher.getWithAuth(`${RESPONSE_API}`).then(res => res.data);
+    return requestDispatcher
+      .getWithAuth(`${RESPONSE_API}`)
+      .then(res => res.data);
   }
 
   fetchResponse(id) {
-    return this.dispatcher
+    return requestDispatcher
       .getWithAuth(`${RESPONSE_API}/${id}`)
       .then(res => res.data);
   }

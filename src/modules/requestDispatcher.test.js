@@ -1,5 +1,7 @@
-import RequestDispatcher, { AUTH_REFRESH_API } from './requestDispatcher';
+import { AUTH_REFRESH_API, RequestDispatcher } from './requestDispatcher';
 import mockAxios from 'axios';
+import createStore from 'createStore';
+import { createMemoryHistory } from 'history';
 
 const accessTokenA =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZGVudGl0eSI6IjEiLCJ0eXBlIjoiYWNjZXNzIiwibmJmIjoxNTY2NDU4MDAwLCJleHAiOjE1NjY0NTkwMDAsInVzZXJfY2xhaW1zIjp7InJvbGVzIjpbeyJhZG1pbiI6ImFkbWluIn1dfSwiaWF0IjoxNTY2NDU4MDAwLCJqdGkiOiIxMTUxZjBlNi03NDBkLTQ3MmQtOTRmNS02YTI5MGJmNGFiZjAifQ.ZEw2CdhuBJc_QzN0YrOQ63t1JMI3KJfCJpcV-Hz9M5U';
@@ -89,6 +91,7 @@ let rd;
 describe('Testing Unauthenticated requests', () => {
   beforeAll(() => {
     rd = new RequestDispatcher();
+    rd.setStore(createStore(createMemoryHistory()));
     mockAxios.__clearMockResponses();
     mockResponses.forEach(mr => mockAxios.__setMockResponse(mr));
   });
@@ -110,6 +113,7 @@ describe('Testing Unauthenticated requests', () => {
 describe('Testing Authenticated Requests', () => {
   beforeEach(() => {
     rd = new RequestDispatcher();
+    rd.setStore(createStore(createMemoryHistory()));
     mockAxios.__clearMockResponses();
     mockResponses.forEach(mr => mockAxios.__setMockResponse(mr));
   });
