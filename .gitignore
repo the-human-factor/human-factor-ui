@@ -12,7 +12,8 @@
 /build
 
 # generated favicons
-/public/gen
+# TODO: Try reinstalling favicons later if it works with circleci again.
+# /public/gen
 
 # misc
 .DS_Store
