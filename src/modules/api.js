@@ -4,6 +4,7 @@ import requestDispatcher, { AUTH_API } from './requestDispatcher';
 const CHALLENGE_API = '/challenges';
 const RESPONSE_API = '/responses';
 const AUTH_PASSWORD_API = `${AUTH_API}/password`;
+const ADMIN_VIDEO_ENCODE_ALL = '/admin/videos/encode';
 
 class HumanApi {
   constructor() {
@@ -116,6 +117,12 @@ class HumanApi {
       formData.append(key, val);
     }
     return formData;
+  }
+
+  async adminVideoEncodeAll() {
+    const res = await requestDispatcher
+      .postWithAuth(ADMIN_VIDEO_ENCODE_ALL);
+    return res.data;
   }
 }
 

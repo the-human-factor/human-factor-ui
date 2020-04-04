@@ -6,6 +6,7 @@ import { Typography, Link } from '@material-ui/core';
 import { Notification } from 'react-admin';
 
 import intersperse from '../intersperse';
+import api from 'modules/api';
 
 const useStyles = makeStyles(theme => ({
   content: {
@@ -23,6 +24,9 @@ const useStyles = makeStyles(theme => ({
   links: {
     marginLeft: theme.spacing(1),
     marginBottom: theme.spacing(2),
+    '& a':{
+      display: 'block'
+    }
   },
 }));
 
@@ -34,12 +38,20 @@ const ResourceLink = ({ name }) => (
 
 const AdminLayout = props => {
   const { children, title } = props;
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   const admin = React.Children.only(children);
-  const resources = React.Children.map(admin.props.children, child => {
-    return <ResourceLink name={child.props.name} />;
+  var resources = React.Children.map(admin.props.children, child => {
+    return <ResourceLink name={child.props.name} key={child.props.name}/>;
   });
+
+  const adminVideoEncodeAll = () => {
+    api.adminVideoEncodeAll();
+  };
+
+  resources.push(
+    <Link onClick={adminVideoEncodeAll} href="#" key="encodeAllVideos">encode all videos</Link>
+  );
 
   return (
     <React.Fragment>
@@ -47,7 +59,9 @@ const AdminLayout = props => {
         <Typography variant="h4" className={classes.title}>
           {title}
         </Typography>
-        <div className={classes.links}>{intersperse(resources, ' | ')}</div>
+        <div className={classes.links}>
+          {resources}
+        </div>
         {children}
       </div>
       <Notification />
