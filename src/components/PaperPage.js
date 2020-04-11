@@ -26,11 +26,19 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(-0.8),
     marginBottom: theme.spacing(2),
   },
+  paper: {
+    maxWidth: props => (props.stretch ? '100%' : theme.breakpoints.width('md')),
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: props => (props.stretch ? '100%' : theme.breakpoints.width('sm')),
+    },
+  },
 }));
 
 export default function PaperPage(props) {
   const { children, title, superTitle, stretch, ...rest } = props;
   const classes = useStyles(props);
+
+  const variant = (title.length < 15)? 'h2': 'h4';
 
   return (
     <div className={classes.fullWidth}>
@@ -43,7 +51,7 @@ export default function PaperPage(props) {
           >
             {superTitle}&nbsp;
           </Typography>
-          <Typography variant="h2" className={classes.title}>
+          <Typography variant={variant} className={classes.title}>
             {title}
           </Typography>
         </div>

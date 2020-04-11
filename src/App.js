@@ -24,7 +24,7 @@ const App = props => {
   }
 
   const pathname = window.location.pathname;
-  if (!isLoggedIn && pathname !== '/login' && pathname !== '/register') {
+  if (!isLoggedIn && pathname !== '/login' && pathname !== '/register' && pathname != '/') {
     actions.redirectForLogin(pathname);
     navigate('/login');
   }
@@ -36,9 +36,9 @@ const App = props => {
         <Profile path="/profile" />
         <LoginRegister path="/login" mode="login" />
         <LoginRegister path="/register" mode="register" />
-        <ChallengeList path="/challenges" />
-        <ChallengeRecorder path="/challenges/create" />
-        <TakeChallenge path="/challenges/:challengeId" />
+        <ChallengeList path="/role-play" />
+        <ChallengeRecorder path="/role-play/create" />
+        <TakeChallenge path="/role-plays/:challengeId" />
         <ResponseList path="/responses" />
         <ResponseViewer path="/responses/:responseId" />
         <HumanAdmin path="/challengeAdmin" />

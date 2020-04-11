@@ -39,7 +39,7 @@ function truncate(s, n) {
 }
 
 const linkToChallenge = row => {
-  const path = `/challenges/${row.id}`;
+  const path = `/role-plays/${row.id}`;
   return <a href={path}>{row.id}</a>;
 };
 

@@ -60,6 +60,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   footerText: {
+    margin: 0,
     paddingTop: theme.spacing(1),
     color: theme.palette.grey[400],
   },
@@ -125,6 +126,13 @@ const useStyles = makeStyles(theme => ({
     ...absoluteBottomRight,
     bottom: props => (props.miniDuringReview ? props.miniHeight * 0.2 : 0),
   },
+  overrides: {
+    MuiTypography: {
+      root: {
+        marginTop: 0,
+      }
+    },
+  }
 }));
 
 const Assessment = props => {

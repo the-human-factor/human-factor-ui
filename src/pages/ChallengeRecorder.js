@@ -122,7 +122,7 @@ const ChallengeForm = ({ classes, onSubmit, validate, onFileChange }) => (
         <Field
           className={classes.textField}
           name="title"
-          label="Challenge Title"
+          label="Role Play Title"
           component={renderInputWithHelper}
           validate={required}
         />
@@ -131,7 +131,7 @@ const ChallengeForm = ({ classes, onSubmit, validate, onFileChange }) => (
           className={classes.textField}
           name="instructions"
           label="Instructions"
-          placeholder="This will be displayed to the person taking the challenge."
+          placeholder="This will be displayed to the person taking the role play."
           multiline
           rows="6"
           component={renderInputWithHelper}
@@ -154,10 +154,10 @@ const ChallengeForm = ({ classes, onSubmit, validate, onFileChange }) => (
           onClick={handleSubmit}
           disabled={pristine || !valid || submitting}
         >
-          Submit Challenge
+          Submit Role Play
         </Button>
 
-        <BusyDialog title="Submitting Challenge" open={submitting} />
+        <BusyDialog title="Submitting Role Play" open={submitting} />
       </form>
     )}
   />
@@ -239,7 +239,7 @@ const ChallengeRecorder = props => {
         videoBlob: videoBlob,
       })
       .then(challenge => {
-        navigate(`/challenges/${challenge.id}`);
+        navigate(`/role-plays/${challenge.id}`);
       })
       .catch(err => {
         errorHandler(err, 'Error submitting challenge', true);
@@ -255,7 +255,7 @@ const ChallengeRecorder = props => {
   const toggleShowNotes = () => setShowNotes(!showNotes);
 
   return (
-    <PaperPage title="Record A Challenge">
+    <PaperPage title="Record a Role Play">
       <div className={classes.videoAndSideBar}>
         <Container className={classes.videoWithButton}>
           <div className={classes.videoFrame}>

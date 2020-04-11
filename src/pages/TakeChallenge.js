@@ -82,15 +82,15 @@ const TakeChallenge = props => {
 
   if (!challenge || challenge === undefined) {
     return (
-      <PaperPage title="Missing Challenge">
-        <Typography variant="body1">Challenge 404</Typography>
+      <PaperPage title="Missing Role Play">
+        <Typography variant="body1">Role Play 404</Typography>
       </PaperPage>
     );
   }
 
   return (
     <React.Fragment>
-      <PaperPage title={challenge.title} superTitle="Challenge:">
+      <PaperPage title={challenge.title} superTitle="Role Play:">
         <div className={classes.content}>
           <Button
             onClick={launchChallenge}
@@ -99,18 +99,18 @@ const TakeChallenge = props => {
             color="secondary"
             className={classes.bigButton}
           >
-            Take Challenge
+            Play
           </Button>
           <Typography variant="h2" className={classes.alignLeft}>
             Instructions
           </Typography>
           <Typography variant="h4" className={classes.alignLeft}>
-            Listen to the challenge
+            Listen to the role play
           </Typography>
           <img
             className={classes.instructionsImage}
             src={InstructionsListen}
-            alt="Listening to the challenge"
+            alt="Listening to the role play"
           />
           <Typography variant="h4" className={classes.alignLeft}>
             Respond immediatly when it finishes
@@ -118,7 +118,7 @@ const TakeChallenge = props => {
           <img
             className={classes.instructionsImage}
             src={InstructionsRespond}
-            alt="Responding to the challenge"
+            alt="Responding to the role play"
           />
         </div>
       </PaperPage>

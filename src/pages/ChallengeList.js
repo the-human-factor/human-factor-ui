@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 function ChallengeListItem({ challenge }) {
   const classes = useStyles();
   const video_thumbnail = challenge.video.thumbnail_url;
-  const link = '/challenges/' + challenge.id;
+  const link = '/role-plays/' + challenge.id;
   const thumbnail = video_thumbnail ? video_thumbnail : VideoPlaceholder;
   const color = challenge.listed ? 'secondary' : 'primary';
   return (
@@ -87,7 +87,7 @@ const ChallengeList = props => {
     () => {
       if (!isLoaded && !isLoading) {
         actions.fetchChallenges().catch(error => {
-          errorHandler(error, 'Failed to load challenges', true);
+          errorHandler(error, 'Failed to load role plays', true);
         });
       }
     },
@@ -102,7 +102,7 @@ const ChallengeList = props => {
   ));
 
   return (
-    <PaperPage title="Challenges">
+    <PaperPage title="Role Plays">
       <div className={classes.list}>{challengeItems}</div>
     </PaperPage>
   );

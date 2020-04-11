@@ -82,11 +82,21 @@ const humanTheme = responsiveFontSizes(
       subtitle2: {
         fontFamily: extraSansFont,
       },
-      body1: {},
+      body1: {
+        
+      },
       body2: {},
       button: {},
       caption: {},
       overline: {},
+    },
+    overrides: {
+      MuiTypography: {
+        body1: {
+          marginTop: '1rem',
+          marginBottom: '.5rem',
+        }
+      },
     },
   })
 );

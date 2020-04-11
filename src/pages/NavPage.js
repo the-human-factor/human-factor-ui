@@ -3,6 +3,7 @@ import { navigate } from '@reach/router';
 
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
@@ -31,6 +32,10 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
     flexGrow: 1,
   },
+  title: {
+    marginTop: 0,
+    marginLeft: theme.spacing(1),
+  },
   body: {
     display: 'flex',
     flexDirection: 'column',
@@ -44,6 +49,10 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     paddingBottom: theme.spacing(2),
     flexGrow: 1,
+    '& a': {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    }
   },
   toolBar: {
     display: 'flex',
@@ -59,14 +68,14 @@ const useStyles = makeStyles(theme => ({
 const MenuButtons = ({ isAdmin }) => {
   return (
     <React.Fragment>
-      <Button color="inherit" component={AdapterLink} to="/challenges/create">
-        Create Challenge
-      </Button>
-      <Button color="inherit" component={AdapterLink} to="/challenges">
-        Challenges
+      <Button color="inherit" component={AdapterLink} to="/role-play">
+        Role Plays
       </Button>
       <Button color="inherit" component={AdapterLink} to="/responses">
         My Responses
+      </Button>
+      <Button color="inherit" component={AdapterLink} to="/role-play/create">
+        Add Role Play
       </Button>
 
       {isAdmin && (
@@ -132,12 +141,14 @@ const NavPage = props => {
     <div className={classes.fullPage}>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar className={classes.toolBar}>
-          <div>
-            <Typography variant="h1" color="inherit">
-              The Human Factor
-            </Typography>
+          <Box color="white">
+            <Link href="/" color="inherit" underline="none">
+              <Typography variant="h1" className={classes.title}>
+                The Human Factor
+              </Typography>
+            </Link>
             {isLoggedIn && <MenuButtons isAdmin={isAdmin} />}
-          </div>
+          </Box>
           <div>{isLoggedIn && <UserMenu user={user} />}</div>
         </Toolbar>
       </AppBar>
@@ -145,12 +156,14 @@ const NavPage = props => {
       <Container className={classes.footer}>
         <Divider variant="middle" className={classes.footerDivider} />
         <Typography variant="body2">
-          The Human Factor © 2019
+          The Human Factor © 2020 \\ Works best in <b>Chrome</b>.
           <br />
-          <Link href="mailto:contact@thehumanfactor.ai">
-            contact@thehumanfactor.ai
-          </Link>
+          Contact:
+          <Link href="mailto:contact@thehumanfactor.ai"> exrhizo@gmail.com</Link>
+          \\
+          <Link href="http://www.exrhizo.me/#!/thehumanfactor"> About</Link>
         </Typography>
+
       </Container>
     </div>
   );
