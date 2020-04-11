@@ -159,7 +159,7 @@ const NavPage = props => {
           The Human Factor © 2020 \\ Works best in <b>Chrome</b>.
           <br />
           Contact:
-          <Link href="mailto:contact@thehumanfactor.ai"> exrhizo@gmail.com</Link>
+          <Link href="mailto:exrhizo@gmail.com"> exrhizo@gmail.com</Link>
           \\
           <Link href="http://www.exrhizo.me/#!/thehumanfactor"> About</Link>
         </Typography>
